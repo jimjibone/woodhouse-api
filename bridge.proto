@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package woodhouse.api;
+option go_package = "github.com/jimjibone/woodhouse-4/api/go;api";
+
+import "timestamp.proto";
+
+message BridgeInfo {
+    string    bridge_id   = 1;
+    string    name        = 2;
+    string    description = 3;
+    Timestamp boot_time   = 4;
+}

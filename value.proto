@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package woodhouse.api;
+option go_package = "github.com/jimjibone/woodhouse-4/api/go;api";
+
+message BoolValue {
+    bool value = 1;
+}
+
+message NumberValue {
+    // brightness: 0-100
+    float value = 1;
+}

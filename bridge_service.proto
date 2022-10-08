@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package woodhouse.api;
+option go_package = "github.com/jimjibone/woodhouse-4/api/go;api";
+
+import "bridge.proto";
+import "device.proto";
+
+service BridgeService {
+    rpc SetBridgeInfo (BridgeInfo) returns (SetBridgeInfoResponse);
+    rpc SetDeviceInfo (DeviceInfo) returns (SetDeviceInfoResponse);
+    rpc SetDeviceState (DeviceState) returns (SetDeviceStateResponse);
+    rpc GetDeviceRequests (stream DeviceResponse) returns (stream DeviceRequest); // When opening the stream, the client should start by sending a DeviceResponse with the bridge_id set. This allows the server to filter requests.
+}
+
+message SetBridgeInfoResponse {}
+message SetDeviceInfoResponse {}
+message SetDeviceStateResponse {}
+message GetDeviceRequestsRequest {
+    string bridge_id = 1;
+}

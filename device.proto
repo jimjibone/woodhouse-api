@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package woodhouse.api;
+option go_package = "github.com/jimjibone/woodhouse-4/api/go;api";
+
+import "value.proto";
+
+message DeviceInfo {
+    string bridge_id   = 1;
+    string device_id   = 2;
+    string name        = 3;
+    string description = 4;
+}
+
+message DeviceState {
+    string   bridge_id          = 1;
+    string   device_id          = 2;
+    bool     full_update        = 3;
+    repeated DeviceValue values = 4;
+}
+
+message DeviceRequest {
+    string   bridge_id          = 1;
+    string   device_id          = 2;
+    string   request_id         = 3;
+    repeated DeviceValue values = 4;
+}
+
+message DeviceResponse {
+    string bridge_id     = 1;
+    string device_id     = 2;
+    string request_id    = 3;
+    string error_message = 4;
+}
+
+message DeviceValue {
+    string      name   = 1;
+    BoolValue   bool   = 2;
+    NumberValue number = 3;
+}
