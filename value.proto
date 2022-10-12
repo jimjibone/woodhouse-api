@@ -9,5 +9,5 @@ message BoolValue {
 
 message NumberValue {
     // brightness: 0-100
-    float value = 1;
+    double value = 1;
 }
