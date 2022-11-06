@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package woodhouse.api;
+option go_package = "github.com/jimjibone/woodhouse-4/api/go;api";
+
+import "device.proto";
+
+service ReactorService {
+    // The GetDeviceInfos stream will start by sending all current device infos
+    // infos followed by an empty message (device_id will be empty). After the
+    // empty message, only new and updated DeviceInfos will be sent.
+    rpc GetDeviceInfos (GetDeviceInfosRequest) returns (stream DeviceInfo);
+
+    // The GetDeviceStates stream will start by sending all current device
+    // states followed by an empty message (device_id will be empty). After the
+    // empty message, only new and updated DeviceStates will be sent.
+    rpc GetDeviceStates (GetDeviceStatesRequest) returns (stream DeviceState);
+
+    // Send a device request.
+    rpc SendDeviceRequest (DeviceRequest) returns (DeviceResponse);
+
+    // Send a device request.
+    // rpc SendDeviceRequestAsync (DeviceRequest) returns (stream DeviceResponse);
+}
+
+message GetDeviceInfosRequest {}
+message GetDeviceStatesRequest {}
