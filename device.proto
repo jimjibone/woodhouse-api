@@ -10,6 +10,7 @@ message DeviceInfo {
     string device_id   = 2;
     string name        = 3;
     string description = 4;
+    string url         = 5; // Device URL for direct access (eg. a device's web interface)
 }
 
 message DeviceState {
@@ -37,4 +38,5 @@ message DeviceValue {
     string      name   = 1;
     BoolValue   bool   = 2;
     NumberValue number = 3;
+    TextValue   text   = 4;
 }

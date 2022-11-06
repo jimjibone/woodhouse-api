@@ -11,3 +11,7 @@ message NumberValue {
     // brightness: 0-100
     double value = 1;
 }
+
+message TextValue {
+    string value = 1;
+}
