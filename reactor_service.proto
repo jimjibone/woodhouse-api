@@ -3,11 +3,17 @@ syntax = "proto3";
 package woodhouse.api;
 option go_package = "github.com/jimjibone/woodhouse-4/api/go;api";
 
+import "bridge.proto";
 import "device.proto";
 
 service ReactorService {
+    // The GetBridgeInfos stream will start by sending all current bridge infos
+    // followed by an empty message (bridge_id will be empty). After the empty
+    // message, only new and updated BridgeInfos will be sent.
+    rpc GetBridgeInfos (GetBridgeInfosRequest) returns (stream BridgeInfo);
+
     // The GetDeviceInfos stream will start by sending all current device infos
-    // infos followed by an empty message (device_id will be empty). After the
+    // followed by an empty message (device_id will be empty). After the
     // empty message, only new and updated DeviceInfos will be sent.
     rpc GetDeviceInfos (GetDeviceInfosRequest) returns (stream DeviceInfo);
 
@@ -23,5 +29,6 @@ service ReactorService {
     // rpc SendDeviceRequestAsync (DeviceRequest) returns (stream DeviceResponse);
 }
 
+message GetBridgeInfosRequest {}
 message GetDeviceInfosRequest {}
 message GetDeviceStatesRequest {}

@@ -22,8 +22,12 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ReactorServiceClient interface {
+	// The GetBridgeInfos stream will start by sending all current bridge infos
+	// followed by an empty message (bridge_id will be empty). After the empty
+	// message, only new and updated BridgeInfos will be sent.
+	GetBridgeInfos(ctx context.Context, in *GetBridgeInfosRequest, opts ...grpc.CallOption) (ReactorService_GetBridgeInfosClient, error)
 	// The GetDeviceInfos stream will start by sending all current device infos
-	// infos followed by an empty message (device_id will be empty). After the
+	// followed by an empty message (device_id will be empty). After the
 	// empty message, only new and updated DeviceInfos will be sent.
 	GetDeviceInfos(ctx context.Context, in *GetDeviceInfosRequest, opts ...grpc.CallOption) (ReactorService_GetDeviceInfosClient, error)
 	// The GetDeviceStates stream will start by sending all current device
@@ -42,8 +46,40 @@ func NewReactorServiceClient(cc grpc.ClientConnInterface) ReactorServiceClient {
 	return &reactorServiceClient{cc}
 }
 
+func (c *reactorServiceClient) GetBridgeInfos(ctx context.Context, in *GetBridgeInfosRequest, opts ...grpc.CallOption) (ReactorService_GetBridgeInfosClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ReactorService_ServiceDesc.Streams[0], "/woodhouse.api.ReactorService/GetBridgeInfos", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &reactorServiceGetBridgeInfosClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type ReactorService_GetBridgeInfosClient interface {
+	Recv() (*BridgeInfo, error)
+	grpc.ClientStream
+}
+
+type reactorServiceGetBridgeInfosClient struct {
+	grpc.ClientStream
+}
+
+func (x *reactorServiceGetBridgeInfosClient) Recv() (*BridgeInfo, error) {
+	m := new(BridgeInfo)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *reactorServiceClient) GetDeviceInfos(ctx context.Context, in *GetDeviceInfosRequest, opts ...grpc.CallOption) (ReactorService_GetDeviceInfosClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ReactorService_ServiceDesc.Streams[0], "/woodhouse.api.ReactorService/GetDeviceInfos", opts...)
+	stream, err := c.cc.NewStream(ctx, &ReactorService_ServiceDesc.Streams[1], "/woodhouse.api.ReactorService/GetDeviceInfos", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +111,7 @@ func (x *reactorServiceGetDeviceInfosClient) Recv() (*DeviceInfo, error) {
 }
 
 func (c *reactorServiceClient) GetDeviceStates(ctx context.Context, in *GetDeviceStatesRequest, opts ...grpc.CallOption) (ReactorService_GetDeviceStatesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ReactorService_ServiceDesc.Streams[1], "/woodhouse.api.ReactorService/GetDeviceStates", opts...)
+	stream, err := c.cc.NewStream(ctx, &ReactorService_ServiceDesc.Streams[2], "/woodhouse.api.ReactorService/GetDeviceStates", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -119,8 +155,12 @@ func (c *reactorServiceClient) SendDeviceRequest(ctx context.Context, in *Device
 // All implementations must embed UnimplementedReactorServiceServer
 // for forward compatibility
 type ReactorServiceServer interface {
+	// The GetBridgeInfos stream will start by sending all current bridge infos
+	// followed by an empty message (bridge_id will be empty). After the empty
+	// message, only new and updated BridgeInfos will be sent.
+	GetBridgeInfos(*GetBridgeInfosRequest, ReactorService_GetBridgeInfosServer) error
 	// The GetDeviceInfos stream will start by sending all current device infos
-	// infos followed by an empty message (device_id will be empty). After the
+	// followed by an empty message (device_id will be empty). After the
 	// empty message, only new and updated DeviceInfos will be sent.
 	GetDeviceInfos(*GetDeviceInfosRequest, ReactorService_GetDeviceInfosServer) error
 	// The GetDeviceStates stream will start by sending all current device
@@ -136,6 +176,9 @@ type ReactorServiceServer interface {
 type UnimplementedReactorServiceServer struct {
 }
 
+func (UnimplementedReactorServiceServer) GetBridgeInfos(*GetBridgeInfosRequest, ReactorService_GetBridgeInfosServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetBridgeInfos not implemented")
+}
 func (UnimplementedReactorServiceServer) GetDeviceInfos(*GetDeviceInfosRequest, ReactorService_GetDeviceInfosServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetDeviceInfos not implemented")
 }
@@ -156,6 +199,27 @@ type UnsafeReactorServiceServer interface {
 
 func RegisterReactorServiceServer(s grpc.ServiceRegistrar, srv ReactorServiceServer) {
 	s.RegisterService(&ReactorService_ServiceDesc, srv)
+}
+
+func _ReactorService_GetBridgeInfos_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetBridgeInfosRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ReactorServiceServer).GetBridgeInfos(m, &reactorServiceGetBridgeInfosServer{stream})
+}
+
+type ReactorService_GetBridgeInfosServer interface {
+	Send(*BridgeInfo) error
+	grpc.ServerStream
+}
+
+type reactorServiceGetBridgeInfosServer struct {
+	grpc.ServerStream
+}
+
+func (x *reactorServiceGetBridgeInfosServer) Send(m *BridgeInfo) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 func _ReactorService_GetDeviceInfos_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -231,6 +295,11 @@ var ReactorService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "GetBridgeInfos",
+			Handler:       _ReactorService_GetBridgeInfos_Handler,
+			ServerStreams: true,
+		},
 		{
 			StreamName:    "GetDeviceInfos",
 			Handler:       _ReactorService_GetDeviceInfos_Handler,
