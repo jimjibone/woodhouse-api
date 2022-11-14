@@ -8,10 +8,15 @@ message BoolValue {
 }
 
 message NumberValue {
-    // brightness: 0-100
+    // Brightness: 0-100 percent
     double value = 1;
 }
 
 message TextValue {
     string value = 1;
+}
+
+message ColorValue {
+    float hue = 1; // Hue value: 0-360 degrees
+    float sat = 2; // Saturation value: 0-100 percent
 }

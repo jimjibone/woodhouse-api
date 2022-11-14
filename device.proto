@@ -39,4 +39,5 @@ message DeviceValue {
     BoolValue   bool   = 2;
     NumberValue number = 3;
     TextValue   text   = 4;
+    ColorValue  color  = 5;
 }
