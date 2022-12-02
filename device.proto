@@ -3,21 +3,24 @@ syntax = "proto3";
 package woodhouse.api;
 option go_package = "github.com/jimjibone/woodhouse-4/api/go;api";
 
+import "timestamp.proto";
 import "value.proto";
 
 message DeviceInfo {
-    string bridge_id   = 1;
-    string device_id   = 2;
-    string name        = 3;
-    string description = 4;
-    string url         = 5; // Device URL for direct access (eg. a device's web interface)
+    string bridge_id   = 1; // The ID of the bridge that provides this device.
+    string device_id   = 2; // Unique device ID (normally based on a hardware address).
+    string name        = 3; // The human friendly name of this device.
+    string description = 4; // A description of this device (eg. model, manufacturer, etc).
+    string url         = 5; // Device URL for direct access (eg. a device's web interface).
 }
 
 message DeviceState {
-    string   bridge_id          = 1;
-    string   device_id          = 2;
-    bool     full_update        = 3;
-    repeated DeviceValue values = 4;
+    string    bridge_id          = 1; // The ID of the bridge that provides this device.
+    string    device_id          = 2; // Unique device ID (normally based on a hardware address).
+    bool      online             = 3; // True if the device is online.
+    Timestamp last_seen          = 4; // The time when the device was last seen.
+    bool      full_update        = 5; // True if the values list contains all values (or just an update of a subset).
+    repeated  DeviceValue values = 6; // All device values (or just the updated ones if full_update is false).
 }
 
 message DeviceRequest {
