@@ -14,6 +14,15 @@ message DeviceInfo {
     string url         = 5; // Device URL for direct access (eg. a device's web interface).
 }
 
+message DeviceExtendedInfo {
+    string bridge_id   = 1; // The ID of the bridge that provides this device.
+    string device_id   = 2; // Unique device ID (normally based on a hardware address).
+    string name        = 3; // The human friendly name of this device.
+    string description = 4; // A description of this device (eg. model, manufacturer, etc).
+    string url         = 5; // Device URL for direct access (eg. a device's web interface).
+    bool   hidden      = 6; // True if the device has been hidden by the user.
+}
+
 message DeviceState {
     string    bridge_id          = 1; // The ID of the bridge that provides this device.
     string    device_id          = 2; // Unique device ID (normally based on a hardware address).

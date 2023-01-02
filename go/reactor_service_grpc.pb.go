@@ -34,6 +34,8 @@ type ReactorServiceClient interface {
 	// states followed by an empty message (device_id will be empty). After the
 	// empty message, only new and updated DeviceStates will be sent.
 	GetDeviceStates(ctx context.Context, in *GetDeviceStatesRequest, opts ...grpc.CallOption) (ReactorService_GetDeviceStatesClient, error)
+	// Set a device as hidden (or unhidden).
+	SetDeviceHidden(ctx context.Context, in *SetDeviceHiddenRequest, opts ...grpc.CallOption) (*SetDeviceHiddenResponse, error)
 	// Send a device request.
 	SendDeviceRequest(ctx context.Context, in *DeviceRequest, opts ...grpc.CallOption) (*DeviceResponse, error)
 }
@@ -94,7 +96,7 @@ func (c *reactorServiceClient) GetDeviceInfos(ctx context.Context, in *GetDevice
 }
 
 type ReactorService_GetDeviceInfosClient interface {
-	Recv() (*DeviceInfo, error)
+	Recv() (*DeviceExtendedInfo, error)
 	grpc.ClientStream
 }
 
@@ -102,8 +104,8 @@ type reactorServiceGetDeviceInfosClient struct {
 	grpc.ClientStream
 }
 
-func (x *reactorServiceGetDeviceInfosClient) Recv() (*DeviceInfo, error) {
-	m := new(DeviceInfo)
+func (x *reactorServiceGetDeviceInfosClient) Recv() (*DeviceExtendedInfo, error) {
+	m := new(DeviceExtendedInfo)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -142,6 +144,15 @@ func (x *reactorServiceGetDeviceStatesClient) Recv() (*DeviceState, error) {
 	return m, nil
 }
 
+func (c *reactorServiceClient) SetDeviceHidden(ctx context.Context, in *SetDeviceHiddenRequest, opts ...grpc.CallOption) (*SetDeviceHiddenResponse, error) {
+	out := new(SetDeviceHiddenResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.ReactorService/SetDeviceHidden", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *reactorServiceClient) SendDeviceRequest(ctx context.Context, in *DeviceRequest, opts ...grpc.CallOption) (*DeviceResponse, error) {
 	out := new(DeviceResponse)
 	err := c.cc.Invoke(ctx, "/woodhouse.api.ReactorService/SendDeviceRequest", in, out, opts...)
@@ -167,6 +178,8 @@ type ReactorServiceServer interface {
 	// states followed by an empty message (device_id will be empty). After the
 	// empty message, only new and updated DeviceStates will be sent.
 	GetDeviceStates(*GetDeviceStatesRequest, ReactorService_GetDeviceStatesServer) error
+	// Set a device as hidden (or unhidden).
+	SetDeviceHidden(context.Context, *SetDeviceHiddenRequest) (*SetDeviceHiddenResponse, error)
 	// Send a device request.
 	SendDeviceRequest(context.Context, *DeviceRequest) (*DeviceResponse, error)
 	mustEmbedUnimplementedReactorServiceServer()
@@ -184,6 +197,9 @@ func (UnimplementedReactorServiceServer) GetDeviceInfos(*GetDeviceInfosRequest, 
 }
 func (UnimplementedReactorServiceServer) GetDeviceStates(*GetDeviceStatesRequest, ReactorService_GetDeviceStatesServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetDeviceStates not implemented")
+}
+func (UnimplementedReactorServiceServer) SetDeviceHidden(context.Context, *SetDeviceHiddenRequest) (*SetDeviceHiddenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetDeviceHidden not implemented")
 }
 func (UnimplementedReactorServiceServer) SendDeviceRequest(context.Context, *DeviceRequest) (*DeviceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendDeviceRequest not implemented")
@@ -231,7 +247,7 @@ func _ReactorService_GetDeviceInfos_Handler(srv interface{}, stream grpc.ServerS
 }
 
 type ReactorService_GetDeviceInfosServer interface {
-	Send(*DeviceInfo) error
+	Send(*DeviceExtendedInfo) error
 	grpc.ServerStream
 }
 
@@ -239,7 +255,7 @@ type reactorServiceGetDeviceInfosServer struct {
 	grpc.ServerStream
 }
 
-func (x *reactorServiceGetDeviceInfosServer) Send(m *DeviceInfo) error {
+func (x *reactorServiceGetDeviceInfosServer) Send(m *DeviceExtendedInfo) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -262,6 +278,24 @@ type reactorServiceGetDeviceStatesServer struct {
 
 func (x *reactorServiceGetDeviceStatesServer) Send(m *DeviceState) error {
 	return x.ServerStream.SendMsg(m)
+}
+
+func _ReactorService_SetDeviceHidden_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetDeviceHiddenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReactorServiceServer).SetDeviceHidden(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.ReactorService/SetDeviceHidden",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReactorServiceServer).SetDeviceHidden(ctx, req.(*SetDeviceHiddenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ReactorService_SendDeviceRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -289,6 +323,10 @@ var ReactorService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "woodhouse.api.ReactorService",
 	HandlerType: (*ReactorServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SetDeviceHidden",
+			Handler:    _ReactorService_SetDeviceHidden_Handler,
+		},
 		{
 			MethodName: "SendDeviceRequest",
 			Handler:    _ReactorService_SendDeviceRequest_Handler,

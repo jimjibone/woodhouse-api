@@ -15,12 +15,15 @@ service ReactorService {
     // The GetDeviceInfos stream will start by sending all current device infos
     // followed by an empty message (device_id will be empty). After the
     // empty message, only new and updated DeviceInfos will be sent.
-    rpc GetDeviceInfos (GetDeviceInfosRequest) returns (stream DeviceInfo);
+    rpc GetDeviceInfos (GetDeviceInfosRequest) returns (stream DeviceExtendedInfo);
 
     // The GetDeviceStates stream will start by sending all current device
     // states followed by an empty message (device_id will be empty). After the
     // empty message, only new and updated DeviceStates will be sent.
     rpc GetDeviceStates (GetDeviceStatesRequest) returns (stream DeviceState);
+
+    // Set a device as hidden (or unhidden).
+    rpc SetDeviceHidden (SetDeviceHiddenRequest) returns (SetDeviceHiddenResponse);
 
     // Send a device request.
     rpc SendDeviceRequest (DeviceRequest) returns (DeviceResponse);
@@ -32,3 +35,9 @@ service ReactorService {
 message GetBridgeInfosRequest {}
 message GetDeviceInfosRequest {}
 message GetDeviceStatesRequest {}
+message SetDeviceHiddenRequest {
+    string bridge_id = 1; // The bridge ID for this device.
+    string device_id = 2; // The device ID for this device.
+    bool   hidden    = 3; // True if the device should be hidden.
+}
+message SetDeviceHiddenResponse {}
