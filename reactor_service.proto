@@ -25,6 +25,9 @@ service ReactorService {
     // Set a device as hidden (or unhidden).
     rpc SetDeviceHidden (SetDeviceHiddenRequest) returns (SetDeviceHiddenResponse);
 
+    // Set a device as favourite (or unfavourite).
+    rpc SetDeviceFavourite (SetDeviceFavouriteRequest) returns (SetDeviceFavouriteResponse);
+
     // Send a device request.
     rpc SendDeviceRequest (DeviceRequest) returns (DeviceResponse);
 
@@ -35,9 +38,17 @@ service ReactorService {
 message GetBridgeInfosRequest {}
 message GetDeviceInfosRequest {}
 message GetDeviceStatesRequest {}
+
 message SetDeviceHiddenRequest {
     string bridge_id = 1; // The bridge ID for this device.
     string device_id = 2; // The device ID for this device.
     bool   hidden    = 3; // True if the device should be hidden.
 }
 message SetDeviceHiddenResponse {}
+
+message SetDeviceFavouriteRequest {
+    string bridge_id = 1; // The bridge ID for this device.
+    string device_id = 2; // The device ID for this device.
+    bool   favourite = 3; // True if the device should be a favourite.
+}
+message SetDeviceFavouriteResponse {}

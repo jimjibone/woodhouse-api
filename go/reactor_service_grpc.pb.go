@@ -36,6 +36,8 @@ type ReactorServiceClient interface {
 	GetDeviceStates(ctx context.Context, in *GetDeviceStatesRequest, opts ...grpc.CallOption) (ReactorService_GetDeviceStatesClient, error)
 	// Set a device as hidden (or unhidden).
 	SetDeviceHidden(ctx context.Context, in *SetDeviceHiddenRequest, opts ...grpc.CallOption) (*SetDeviceHiddenResponse, error)
+	// Set a device as favourite (or unfavourite).
+	SetDeviceFavourite(ctx context.Context, in *SetDeviceFavouriteRequest, opts ...grpc.CallOption) (*SetDeviceFavouriteResponse, error)
 	// Send a device request.
 	SendDeviceRequest(ctx context.Context, in *DeviceRequest, opts ...grpc.CallOption) (*DeviceResponse, error)
 }
@@ -153,6 +155,15 @@ func (c *reactorServiceClient) SetDeviceHidden(ctx context.Context, in *SetDevic
 	return out, nil
 }
 
+func (c *reactorServiceClient) SetDeviceFavourite(ctx context.Context, in *SetDeviceFavouriteRequest, opts ...grpc.CallOption) (*SetDeviceFavouriteResponse, error) {
+	out := new(SetDeviceFavouriteResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.ReactorService/SetDeviceFavourite", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *reactorServiceClient) SendDeviceRequest(ctx context.Context, in *DeviceRequest, opts ...grpc.CallOption) (*DeviceResponse, error) {
 	out := new(DeviceResponse)
 	err := c.cc.Invoke(ctx, "/woodhouse.api.ReactorService/SendDeviceRequest", in, out, opts...)
@@ -180,6 +191,8 @@ type ReactorServiceServer interface {
 	GetDeviceStates(*GetDeviceStatesRequest, ReactorService_GetDeviceStatesServer) error
 	// Set a device as hidden (or unhidden).
 	SetDeviceHidden(context.Context, *SetDeviceHiddenRequest) (*SetDeviceHiddenResponse, error)
+	// Set a device as favourite (or unfavourite).
+	SetDeviceFavourite(context.Context, *SetDeviceFavouriteRequest) (*SetDeviceFavouriteResponse, error)
 	// Send a device request.
 	SendDeviceRequest(context.Context, *DeviceRequest) (*DeviceResponse, error)
 	mustEmbedUnimplementedReactorServiceServer()
@@ -200,6 +213,9 @@ func (UnimplementedReactorServiceServer) GetDeviceStates(*GetDeviceStatesRequest
 }
 func (UnimplementedReactorServiceServer) SetDeviceHidden(context.Context, *SetDeviceHiddenRequest) (*SetDeviceHiddenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetDeviceHidden not implemented")
+}
+func (UnimplementedReactorServiceServer) SetDeviceFavourite(context.Context, *SetDeviceFavouriteRequest) (*SetDeviceFavouriteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetDeviceFavourite not implemented")
 }
 func (UnimplementedReactorServiceServer) SendDeviceRequest(context.Context, *DeviceRequest) (*DeviceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendDeviceRequest not implemented")
@@ -298,6 +314,24 @@ func _ReactorService_SetDeviceHidden_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReactorService_SetDeviceFavourite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetDeviceFavouriteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReactorServiceServer).SetDeviceFavourite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.ReactorService/SetDeviceFavourite",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReactorServiceServer).SetDeviceFavourite(ctx, req.(*SetDeviceFavouriteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ReactorService_SendDeviceRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeviceRequest)
 	if err := dec(in); err != nil {
@@ -326,6 +360,10 @@ var ReactorService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetDeviceHidden",
 			Handler:    _ReactorService_SetDeviceHidden_Handler,
+		},
+		{
+			MethodName: "SetDeviceFavourite",
+			Handler:    _ReactorService_SetDeviceFavourite_Handler,
 		},
 		{
 			MethodName: "SendDeviceRequest",

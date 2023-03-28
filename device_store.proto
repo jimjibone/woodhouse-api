@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package woodhouse.api;
+option go_package = "github.com/jimjibone/woodhouse-4/api/go;api";
+
+import "bridge.proto";
+import "device.proto";
+
+message DeviceStore {
+    repeated BridgeInfo bridge_infos         = 1;
+    repeated DeviceExtendedInfo device_infos = 2;
+    repeated DeviceState device_states       = 3;
+}
