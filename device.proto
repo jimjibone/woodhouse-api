@@ -48,9 +48,10 @@ message DeviceResponse {
 }
 
 message DeviceValue {
-    string      name   = 1;
-    BoolValue   bool   = 2;
-    NumberValue number = 3;
-    TextValue   text   = 4;
-    ColorValue  color  = 5;
+    string      name      = 1;
+    bool        read_only = 6;
+    BoolValue   bool      = 2;
+    NumberValue number    = 3;
+    TextValue   text      = 4;
+    ColorValue  color     = 5;
 }
