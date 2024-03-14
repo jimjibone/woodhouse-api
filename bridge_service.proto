@@ -19,3 +19,33 @@ message SetDeviceStateResponse {}
 message GetDeviceRequestsRequest {
     string bridge_id = 1;
 }
+
+service SecBridgeService {
+    // Only available through the insecure service.
+    // 1. Client sends client_id to server.
+    // 2. Server sends pending response to client every second until either:
+    // 2a. The user denies the pairing. - Pairing stops.
+    // 2b. The client goes offline (or there is another error). - Pairing stops.
+    // 2c. The user approves the pairing.
+    // 3. The server starts the PAKE handshake using the key provided by the user.
+    // 4. The server sends the first handshake blob to the client.
+    rpc DoPairing (stream DoPairingRequest) returns (stream DoPairingResponse);
+}
+
+message DoPairingRequest {
+    string client_id = 1; // Only needed in the first message.
+    bytes data = 2;
+}
+
+message DoPairingResponse {
+    enum State {
+        Undefined = 0;
+        Pending = 1;
+        Denied = 2;
+        Handshake = 3;
+        Test = 4;
+        Done = 5;
+    }
+    State state = 1;
+    bytes data = 2;
+}
