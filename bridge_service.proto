@@ -40,11 +40,8 @@ message DoPairingRequest {
 message DoPairingResponse {
     enum State {
         Undefined = 0;
-        Pending = 1;
-        Denied = 2;
-        Handshake = 3;
-        Test = 4;
-        Done = 5;
+        Pending   = 1;
+        Handshake = 2;
     }
     State state = 1;
     bytes data = 2;
