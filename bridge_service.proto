@@ -20,29 +20,69 @@ message GetDeviceRequestsRequest {
     string bridge_id = 1;
 }
 
-service SecBridgeService {
-    // Only available through the insecure service.
-    // 1. Client sends client_id to server.
-    // 2. Server sends pending response to client every second until either:
-    // 2a. The user denies the pairing. - Pairing stops.
-    // 2b. The client goes offline (or there is another error). - Pairing stops.
-    // 2c. The user approves the pairing.
-    // 3. The server starts the PAKE handshake using the key provided by the user.
-    // 4. The server sends the first handshake blob to the client.
-    rpc DoPairing (stream DoPairingRequest) returns (stream DoPairingResponse);
+service BridgeAuthService {
+    // Pair with (login to) the woodhouse core server. Note that this RPC can
+    // wait in the pending state for a long time, until a user approves/denies
+    // the pairing request. The bi-directional stream is normally used in
+    // 'insecure' mode (i.e. use 'insecure skip verify' TLS option) and follows
+    // this pattern (note that the bridge is the client here):
+    // 1. The client starts the bi-directional stream by sending its client_id.
+    // 2. The server will send back the 'Pending' state every second until a
+    //    user has either accepted or denied the pairing request.
+    // 3. If the user accepts the pairing request, the server will send the
+    //    first PAKE handshake blob.
+    // 4. The client should read the handshake into their PAKE object and send
+    //    back the second PAKE handshake blob.
+    // 5. Server and client should now have the session key. The server tests
+    //    this by sending some random data to client after encrypting with
+    //    AES-256.
+    // 6. The client should then decrypt the random bytes, reverse the order,
+    //    encrypt using its session key and send it back to the server.
+    // 7. If the server is happy it will send its own certificate file in PEM
+    //    format which the client should save and use to verify future
+    //    connections.
+    // 8. The server will then generate a new refresh token (JWT) and send it to
+    //    the client. The client should save this and use it to obtain new
+    //    tokens using the `Refresh` RPC.
+    // 9. Server and client should now both finish the RPC. The client should
+    //    now call `Refresh` to obtain an access token which...
+    rpc Pair (stream BridgePairRequest) returns (stream BridgePairResponse);
+
+    // Refresh session auth tokens. Should be called regularly before tokens
+    // expire.
+    rpc Refresh (BridgeRefreshRequest) returns (BridgeRefreshResponse);
+
+    // Logout the session.
+    rpc Logout (BridgeLogoutRequest) returns (BridgeLogoutResponse);
 }
 
-message DoPairingRequest {
+message BridgePairRequest {
     string client_id = 1; // Only needed in the first message.
-    bytes data = 2;
+    bytes  data      = 2;
 }
 
-message DoPairingResponse {
+message BridgePairResponse {
     enum State {
         Undefined = 0;
         Pending   = 1;
         Handshake = 2;
     }
     State state = 1;
-    bytes data = 2;
+    bytes data  = 2;
 }
+
+message BridgeRefreshRequest {
+    string refresh_token   = 1;
+    uint32 renew_threshold = 2; // Days remaining before expiry to cause the refresh token to be renewed. Set to zero to always renew.
+}
+
+message BridgeRefreshResponse {
+    string refresh_token = 1;
+    string access_token  = 2;
+}
+
+message BridgeLogoutRequest {
+    string refresh_token = 1;
+}
+
+message BridgeLogoutResponse {}

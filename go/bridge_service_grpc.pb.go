@@ -245,133 +245,246 @@ var BridgeService_ServiceDesc = grpc.ServiceDesc{
 	Metadata: "bridge_service.proto",
 }
 
-// SecBridgeServiceClient is the client API for SecBridgeService service.
+// BridgeAuthServiceClient is the client API for BridgeAuthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type SecBridgeServiceClient interface {
-	// Only available through the insecure service.
-	// 1. Client sends client_id to server.
-	// 2. Server sends pending response to client every second until either:
-	// 2a. The user denies the pairing. - Pairing stops.
-	// 2b. The client goes offline (or there is another error). - Pairing stops.
-	// 2c. The user approves the pairing.
-	// 3. The server starts the PAKE handshake using the key provided by the user.
-	// 4. The server sends the first handshake blob to the client.
-	DoPairing(ctx context.Context, opts ...grpc.CallOption) (SecBridgeService_DoPairingClient, error)
+type BridgeAuthServiceClient interface {
+	// Pair with (login to) the woodhouse core server. Note that this RPC can
+	// wait in the pending state for a long time, until a user approves/denies
+	// the pairing request. The bi-directional stream is normally used in
+	// 'insecure' mode (i.e. use 'insecure skip verify' TLS option) and follows
+	// this pattern (note that the bridge is the client here):
+	//  1. The client starts the bi-directional stream by sending its client_id.
+	//  2. The server will send back the 'Pending' state every second until a
+	//     user has either accepted or denied the pairing request.
+	//  3. If the user accepts the pairing request, the server will send the
+	//     first PAKE handshake blob.
+	//  4. The client should read the handshake into their PAKE object and send
+	//     back the second PAKE handshake blob.
+	//  5. Server and client should now have the session key. The server tests
+	//     this by sending some random data to client after encrypting with
+	//     AES-256.
+	//  6. The client should then decrypt the random bytes, reverse the order,
+	//     encrypt using its session key and send it back to the server.
+	//  7. If the server is happy it will send its own certificate file in PEM
+	//     format which the client should save and use to verify future
+	//     connections.
+	//  8. The server will then generate a new refresh token (JWT) and send it to
+	//     the client. The client should save this and use it to obtain new
+	//     tokens using the `Refresh` RPC.
+	//  9. Server and client should now both finish the RPC. The client should
+	//     now call `Refresh` to obtain an access token which...
+	Pair(ctx context.Context, opts ...grpc.CallOption) (BridgeAuthService_PairClient, error)
+	// Refresh session auth tokens. Should be called regularly before tokens
+	// expire.
+	Refresh(ctx context.Context, in *BridgeRefreshRequest, opts ...grpc.CallOption) (*BridgeRefreshResponse, error)
+	// Logout the session.
+	Logout(ctx context.Context, in *BridgeLogoutRequest, opts ...grpc.CallOption) (*BridgeLogoutResponse, error)
 }
 
-type secBridgeServiceClient struct {
+type bridgeAuthServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewSecBridgeServiceClient(cc grpc.ClientConnInterface) SecBridgeServiceClient {
-	return &secBridgeServiceClient{cc}
+func NewBridgeAuthServiceClient(cc grpc.ClientConnInterface) BridgeAuthServiceClient {
+	return &bridgeAuthServiceClient{cc}
 }
 
-func (c *secBridgeServiceClient) DoPairing(ctx context.Context, opts ...grpc.CallOption) (SecBridgeService_DoPairingClient, error) {
-	stream, err := c.cc.NewStream(ctx, &SecBridgeService_ServiceDesc.Streams[0], "/woodhouse.api.SecBridgeService/DoPairing", opts...)
+func (c *bridgeAuthServiceClient) Pair(ctx context.Context, opts ...grpc.CallOption) (BridgeAuthService_PairClient, error) {
+	stream, err := c.cc.NewStream(ctx, &BridgeAuthService_ServiceDesc.Streams[0], "/woodhouse.api.BridgeAuthService/Pair", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &secBridgeServiceDoPairingClient{stream}
+	x := &bridgeAuthServicePairClient{stream}
 	return x, nil
 }
 
-type SecBridgeService_DoPairingClient interface {
-	Send(*DoPairingRequest) error
-	Recv() (*DoPairingResponse, error)
+type BridgeAuthService_PairClient interface {
+	Send(*BridgePairRequest) error
+	Recv() (*BridgePairResponse, error)
 	grpc.ClientStream
 }
 
-type secBridgeServiceDoPairingClient struct {
+type bridgeAuthServicePairClient struct {
 	grpc.ClientStream
 }
 
-func (x *secBridgeServiceDoPairingClient) Send(m *DoPairingRequest) error {
+func (x *bridgeAuthServicePairClient) Send(m *BridgePairRequest) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *secBridgeServiceDoPairingClient) Recv() (*DoPairingResponse, error) {
-	m := new(DoPairingResponse)
+func (x *bridgeAuthServicePairClient) Recv() (*BridgePairResponse, error) {
+	m := new(BridgePairResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-// SecBridgeServiceServer is the server API for SecBridgeService service.
-// All implementations must embed UnimplementedSecBridgeServiceServer
+func (c *bridgeAuthServiceClient) Refresh(ctx context.Context, in *BridgeRefreshRequest, opts ...grpc.CallOption) (*BridgeRefreshResponse, error) {
+	out := new(BridgeRefreshResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.BridgeAuthService/Refresh", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bridgeAuthServiceClient) Logout(ctx context.Context, in *BridgeLogoutRequest, opts ...grpc.CallOption) (*BridgeLogoutResponse, error) {
+	out := new(BridgeLogoutResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.BridgeAuthService/Logout", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// BridgeAuthServiceServer is the server API for BridgeAuthService service.
+// All implementations must embed UnimplementedBridgeAuthServiceServer
 // for forward compatibility
-type SecBridgeServiceServer interface {
-	// Only available through the insecure service.
-	// 1. Client sends client_id to server.
-	// 2. Server sends pending response to client every second until either:
-	// 2a. The user denies the pairing. - Pairing stops.
-	// 2b. The client goes offline (or there is another error). - Pairing stops.
-	// 2c. The user approves the pairing.
-	// 3. The server starts the PAKE handshake using the key provided by the user.
-	// 4. The server sends the first handshake blob to the client.
-	DoPairing(SecBridgeService_DoPairingServer) error
-	mustEmbedUnimplementedSecBridgeServiceServer()
+type BridgeAuthServiceServer interface {
+	// Pair with (login to) the woodhouse core server. Note that this RPC can
+	// wait in the pending state for a long time, until a user approves/denies
+	// the pairing request. The bi-directional stream is normally used in
+	// 'insecure' mode (i.e. use 'insecure skip verify' TLS option) and follows
+	// this pattern (note that the bridge is the client here):
+	//  1. The client starts the bi-directional stream by sending its client_id.
+	//  2. The server will send back the 'Pending' state every second until a
+	//     user has either accepted or denied the pairing request.
+	//  3. If the user accepts the pairing request, the server will send the
+	//     first PAKE handshake blob.
+	//  4. The client should read the handshake into their PAKE object and send
+	//     back the second PAKE handshake blob.
+	//  5. Server and client should now have the session key. The server tests
+	//     this by sending some random data to client after encrypting with
+	//     AES-256.
+	//  6. The client should then decrypt the random bytes, reverse the order,
+	//     encrypt using its session key and send it back to the server.
+	//  7. If the server is happy it will send its own certificate file in PEM
+	//     format which the client should save and use to verify future
+	//     connections.
+	//  8. The server will then generate a new refresh token (JWT) and send it to
+	//     the client. The client should save this and use it to obtain new
+	//     tokens using the `Refresh` RPC.
+	//  9. Server and client should now both finish the RPC. The client should
+	//     now call `Refresh` to obtain an access token which...
+	Pair(BridgeAuthService_PairServer) error
+	// Refresh session auth tokens. Should be called regularly before tokens
+	// expire.
+	Refresh(context.Context, *BridgeRefreshRequest) (*BridgeRefreshResponse, error)
+	// Logout the session.
+	Logout(context.Context, *BridgeLogoutRequest) (*BridgeLogoutResponse, error)
+	mustEmbedUnimplementedBridgeAuthServiceServer()
 }
 
-// UnimplementedSecBridgeServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedSecBridgeServiceServer struct {
+// UnimplementedBridgeAuthServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedBridgeAuthServiceServer struct {
 }
 
-func (UnimplementedSecBridgeServiceServer) DoPairing(SecBridgeService_DoPairingServer) error {
-	return status.Errorf(codes.Unimplemented, "method DoPairing not implemented")
+func (UnimplementedBridgeAuthServiceServer) Pair(BridgeAuthService_PairServer) error {
+	return status.Errorf(codes.Unimplemented, "method Pair not implemented")
 }
-func (UnimplementedSecBridgeServiceServer) mustEmbedUnimplementedSecBridgeServiceServer() {}
+func (UnimplementedBridgeAuthServiceServer) Refresh(context.Context, *BridgeRefreshRequest) (*BridgeRefreshResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Refresh not implemented")
+}
+func (UnimplementedBridgeAuthServiceServer) Logout(context.Context, *BridgeLogoutRequest) (*BridgeLogoutResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedBridgeAuthServiceServer) mustEmbedUnimplementedBridgeAuthServiceServer() {}
 
-// UnsafeSecBridgeServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to SecBridgeServiceServer will
+// UnsafeBridgeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to BridgeAuthServiceServer will
 // result in compilation errors.
-type UnsafeSecBridgeServiceServer interface {
-	mustEmbedUnimplementedSecBridgeServiceServer()
+type UnsafeBridgeAuthServiceServer interface {
+	mustEmbedUnimplementedBridgeAuthServiceServer()
 }
 
-func RegisterSecBridgeServiceServer(s grpc.ServiceRegistrar, srv SecBridgeServiceServer) {
-	s.RegisterService(&SecBridgeService_ServiceDesc, srv)
+func RegisterBridgeAuthServiceServer(s grpc.ServiceRegistrar, srv BridgeAuthServiceServer) {
+	s.RegisterService(&BridgeAuthService_ServiceDesc, srv)
 }
 
-func _SecBridgeService_DoPairing_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(SecBridgeServiceServer).DoPairing(&secBridgeServiceDoPairingServer{stream})
+func _BridgeAuthService_Pair_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BridgeAuthServiceServer).Pair(&bridgeAuthServicePairServer{stream})
 }
 
-type SecBridgeService_DoPairingServer interface {
-	Send(*DoPairingResponse) error
-	Recv() (*DoPairingRequest, error)
+type BridgeAuthService_PairServer interface {
+	Send(*BridgePairResponse) error
+	Recv() (*BridgePairRequest, error)
 	grpc.ServerStream
 }
 
-type secBridgeServiceDoPairingServer struct {
+type bridgeAuthServicePairServer struct {
 	grpc.ServerStream
 }
 
-func (x *secBridgeServiceDoPairingServer) Send(m *DoPairingResponse) error {
+func (x *bridgeAuthServicePairServer) Send(m *BridgePairResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *secBridgeServiceDoPairingServer) Recv() (*DoPairingRequest, error) {
-	m := new(DoPairingRequest)
+func (x *bridgeAuthServicePairServer) Recv() (*BridgePairRequest, error) {
+	m := new(BridgePairRequest)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-// SecBridgeService_ServiceDesc is the grpc.ServiceDesc for SecBridgeService service.
+func _BridgeAuthService_Refresh_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BridgeRefreshRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BridgeAuthServiceServer).Refresh(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.BridgeAuthService/Refresh",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BridgeAuthServiceServer).Refresh(ctx, req.(*BridgeRefreshRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BridgeAuthService_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BridgeLogoutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BridgeAuthServiceServer).Logout(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.BridgeAuthService/Logout",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BridgeAuthServiceServer).Logout(ctx, req.(*BridgeLogoutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// BridgeAuthService_ServiceDesc is the grpc.ServiceDesc for BridgeAuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var SecBridgeService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "woodhouse.api.SecBridgeService",
-	HandlerType: (*SecBridgeServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
+var BridgeAuthService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "woodhouse.api.BridgeAuthService",
+	HandlerType: (*BridgeAuthServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Refresh",
+			Handler:    _BridgeAuthService_Refresh_Handler,
+		},
+		{
+			MethodName: "Logout",
+			Handler:    _BridgeAuthService_Logout_Handler,
+		},
+	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "DoPairing",
-			Handler:       _SecBridgeService_DoPairing_Handler,
+			StreamName:    "Pair",
+			Handler:       _BridgeAuthService_Pair_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
