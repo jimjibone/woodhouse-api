@@ -23,3 +23,16 @@ tasks:
       - mkdir -p ./go
       - protoc --plugin=.bin/protoc-gen-go -I. --go_out=./go --go_opt=module=github.com/jimjibone/woodhouse-4/api/go ./*.proto
       - protoc --plugin=.bin/protoc-gen-go-grpc -I. --go-grpc_out=./go --go-grpc_opt=module=github.com/jimjibone/woodhouse-4/api/go ./*_service.proto
+
+  proto-go-v1:
+    run: when_changed
+    deps:
+      - proto-go-plugins
+    sources:
+      - ./v1/*/*.proto
+    generates:
+      - ./go/v1/*/*.pb.go
+    cmds:
+      - mkdir -p ./go/v1
+      - protoc --plugin=.bin/protoc-gen-go -I./v1 --go_out=./go/v1 --go_opt=module=github.com/jimjibone/woodhouse-4/api/go/v1 ./v1/*/*.proto
+      - protoc --plugin=.bin/protoc-gen-go-grpc -I./v1 --go-grpc_out=./go/v1 --go-grpc_opt=module=github.com/jimjibone/woodhouse-4/api/go/v1 ./v1/*/*_service.proto
