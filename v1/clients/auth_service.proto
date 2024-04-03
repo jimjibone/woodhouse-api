@@ -58,8 +58,7 @@ message PairResponse {
 }
 
 message RefreshRequest {
-    string refresh_token   = 1;
-    uint32 renew_threshold = 2; // Days remaining before expiry to cause the refresh token to be renewed. Set to zero to always renew.
+    string refresh_token = 1;
 }
 
 message RefreshResponse {
