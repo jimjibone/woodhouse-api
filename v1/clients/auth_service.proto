@@ -37,6 +37,9 @@ service AuthService {
 
     // Logout the session.
     rpc Logout (LogoutRequest) returns (LogoutResponse);
+
+    // A simple ping of the server.
+    rpc Ping (PingRequest) returns (PingResponse);
 }
 
 message PairRequest {
@@ -69,3 +72,6 @@ message LogoutRequest {
 }
 
 message LogoutResponse {}
+
+message PingRequest {}
+message PingResponse {}
