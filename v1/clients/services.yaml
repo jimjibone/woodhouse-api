@@ -1,0 +1,79 @@
+attributes:
+  - { name: on,            perms: rw, type: bool }
+  - { name: brightness,    perms: rw, type: int,      min: 0, max: 100, step: 1, unit: percentage }
+  - { name: saturation,    perms: rw, type: int,      min: 0, max: 100, step: 1, unit: percentage }
+  - { name: hue,           perms: rw, type: float,    min: 0, max: 360, step: 1, unit: arc degrees }
+  - { name: transition,    perms: wo, type: duration, min: 0, max: 300, step: 1, unit: seconds }
+  - { name: heating_state, perms: rw, type: bool }
+
+services:
+  - name: info
+    description: Contains (normally) static information about a device.
+    required_attributes:
+      - { name: name, perms: rw, type: string, desc: "Name of the device." }
+    optional_attributes:
+      - { name: model,            perms: ro, type: string, desc: "Model name of this device." }
+      - { name: manufacturer,     perms: ro, type: string, desc: "Manufacturer of this device." }
+      - { name: serial_number,    perms: ro, type: string, desc: "Serial number of this device." }
+      - { name: firmware_version, perms: ro, type: string, desc: "Firmware version running on this device." }
+      - { name: web_url,          perms: ro, type: string, desc: "Device URL for direct access (eg. a device's web interface)." }
+
+  - name: generic
+    description: "Can contain any attributes."
+    required_attributes:
+    optional_attributes:
+
+  - name: online
+    description: "Indicates if the device is online and when it was last seen."
+    required_attributes:
+      - { name: online,    perms: ro, type: bool }
+      - { name: last_seen, perms: ro, type: time }
+
+  - name: update
+    description: Device update information and control.
+    required_attributes:
+      - { name: updates_available, perms: ro, type: bool }
+      - { name: current_version, perms: ro, type: string }
+      - { name: update_version, perms: ro, type: string }
+      - { name: start_update, perms: wo, type: bool }
+    optional_attributes:
+      - { name: update_progress, perms: ro, type: int, min: 0, max: 100, step: 1, unit: percentage }
+
+  - name: identify
+    description: Allows a device to make itself identifyable (typically flashing a light).
+    required_attributes:
+      - { name: identify, perms: rw, type: bool }
+
+  - name: switch
+    description: Represents a switch which can be pressed/toggled.
+    required_attributes:
+      - { name: on, perms: ro, type: bool }
+
+  - name: relay
+    description: A controllable relay with optional power monitoring.
+    required_attributes:
+      - { name: on, perms: rw, type: bool }
+    optional_attributes:
+      - { name: voltage,     perms: ro, type: float, unit: volts }
+      - { name: current,     perms: ro, type: float, unit: amps }
+      - { name: power,       perms: ro, type: float, unit: watts }
+      - { name: temperature, perms: ro, type: float, unit: celsius } # TODO: break out into "device_temperature" service?
+
+  - name: lightbulb
+    description: A light/lightbulb with optional brightness and color control.
+    required_attributes:
+      - { name: on, perms: rw, type: bool }
+    optional_attributes:
+      - { name: brightness,    perms: rw, type: int,      min: 0, max: 100, step: 1, unit: percentage }
+      - { name: saturation,    perms: rw, type: int,      min: 0, max: 100, step: 1, unit: percentage }
+      - { name: hue,           perms: rw, type: float,    min: 0, max: 360, step: 1, unit: arc degrees }
+      - { name: transition,    perms: wo, type: duration, min: 0, max: 300, step: 1, unit: seconds }
+
+  - name: thermostat
+    description: A heating thermostat.
+    required_attributes:
+      - { name: on,                  perms: rw, type: bool }
+      - { name: target_temperature,  perms: rw, type: float, min: 0, max: 36, step: 0.5, unit: celsius }
+      - { name: current_temperature, perms: rw, type: float, min: 0, max: 36, step: 0.5, unit: celsius }
+    optional_attributes:
+      - { name: heating_state,       perms: ro, type: bool }

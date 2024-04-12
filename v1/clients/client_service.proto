@@ -1,0 +1,237 @@
+syntax = "proto3";
+
+package woodhouse.api.v1.clients;
+option go_package = "github.com/jimjibone/woodhouse-4/api/go/v1/clients;clientsapi";
+
+service ClientService {
+    // StatusStream allows the client to stream StatusUpdate to the server. The
+    // first StatusUpdate should contain the whole state of the client and any
+    // subsequent update should only contain diffs.
+    rpc StatusStream (stream StatusUpdate) returns (Empty);
+
+    // ActionStream allows the client to receive ActionRequests from the server
+    // (when they are created by users or automations). The client must
+    // eventually respond to all ActionRequests by sending an ActionResponse
+    // with the same ID and the current status of the action (this allows for
+    // reactive user interfaces and automations to implement retries, etc).
+    rpc ActionStream (stream ActionResponse) returns (stream ActionRequest);
+}
+
+// Empty message is intentionally empty - i.e. it will never contain any data.
+message Empty {}
+
+message StatusUpdate {
+    ClientInfo client_info = 1;
+    repeated Device device_info = 2;
+}
+
+message ActionRequest {
+    string   id           = 1;
+    string   device_id    = 2;
+    string   service_id   = 3;
+    repeated Value values = 4;
+}
+
+message ActionResponse {
+    enum ActionStatus {
+        UNDEFINED    = 0;  // No status defined.
+        QUEUED       = 1;  // The action is queued for transmission to the device.
+        SENT         = 2;  // The action has been sent to the device.
+        COMPLETE     = 3;  // The action was completed by the device.
+        TIMEOUT      = 4;  // The action was not acknowledged by the device before the timeout.
+        ERR          = 5;  // The action failed due to an error. See details.
+        ERR_READONLY = 6;  // The action contained a write to a read only attribute.
+    }
+
+    string       id      = 1;
+    ActionStatus status  = 2;
+    string       details = 3;
+}
+
+message ClientInfo {
+    string id          = 1; // The client ID (e.g. "zigbee").
+    string name        = 2; // Name of the client (e.g. "Zigbee").
+    string description = 3; // Description of the client (e.g. "Provides support for Zigbee devices via zigbee2mqtt").
+    uint64 boot_time   = 4; // Boot time of this client in seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z.
+}
+
+//********************************* Devices *********************************//
+
+message Device {
+    enum DeviceType {
+        UNDEFINED  = 0;
+        BRIDGE     = 1;
+        REACTOR    = 2;
+        GENERIC    = 3;
+        SWITCH     = 4;
+        RELAY      = 5;
+        LIGHTBULB  = 6;
+        THERMOSTAT = 7;
+    }
+
+    string           id          = 1; // The universally unique device ID (typically a hardware address or other static and unique identifier, e.g. "00158d00045c089f").
+    bool             full_update = 2; // True to indicate that this message contains the entire state of the device.
+    DeviceType       typ         = 3; // The general type of this device (helps with classification in user interfaces).
+    repeated Service services    = 4; // The services supported by the device and their states.
+}
+
+//********************************* Services *********************************//
+
+message Service {
+    enum ServiceType {
+        UNDEFINED  = 0;
+        INFO       = 1;
+        ONLINE     = 2;
+        GENERIC    = 3;
+        SWITCH     = 4;
+        RELAY      = 5;
+        LIGHTBULB  = 6;
+        THERMOSTAT = 7;
+    }
+
+    string      id              = 1; // The service ID (typically the name of the service type, e.g. "info").
+    ServiceType typ             = 2; // The type of the service.
+    string      alias           = 3; // Optional alias, sometimes used to differentiate between multiple services of the same type on a single device.
+    repeated    Attribute attrs = 4; // The attributes that make up this service.
+}
+
+message Attribute {
+    string id = 1; // ID or name of the attribute.
+    oneof attr {
+        BoolAttribute     bool     = 2;
+        IntAttribute      int      = 3;
+        FloatAttribute    float    = 4;
+        TextAttribute     text     = 5;
+        ActionAttribute   action   = 6;
+        DurationAttribute duration = 7;
+        TimeAttribute     time     = 8;
+    }
+}
+
+message Value {
+    string id = 1; // ID or name of the attribute.
+    oneof val {
+        BoolValue     bool     = 2;
+        IntValue      int      = 3;
+        FloatValue    float    = 4;
+        TextValue     text     = 5;
+        ActionValue   action   = 6;
+        DurationValue duration = 7;
+        TimeValue     time     = 8;
+    }
+}
+
+//************************** Attributes and Values **************************//
+
+enum Permissions {
+    PERM_UNDEFINED = 0;
+    PERM_READONLY  = 1;
+    PERM_WRITEONLY = 2;
+    PERM_READWRITE = 3;
+}
+
+enum Unit {
+    UNIT_UNDEFINED                  = 0;
+    UNIT_PERCENTAGE                 = 1;   // %
+    UNIT_ARC_DEGREES                = 2;   // °
+    UNIT_CELSIUS                    = 3;   // °C
+    UNIT_LUX                        = 4;   // lux
+    UNIT_SECONDS                    = 5;   // seconds
+    UNIT_PPM                        = 6;   // ppm
+    UNIT_MICROGRAMS_PER_CUBIC_METER = 7;   // micrograms/m^3
+    UNIT_VOLTS                      = 8;   // volts
+    UNIT_AMPS                       = 9;   // amps
+    UNIT_WATTS                      = 10;  // watts
+}
+
+message BoolAttribute {
+    bool        value = 1;
+    Permissions perms = 2;
+}
+
+message BoolValue {
+    bool value = 1;
+}
+
+message IntAttribute {
+    sint64      value = 1;
+    sint64      min   = 2;
+    sint64      max   = 3;
+    uint64      step  = 4;
+    Unit        unit  = 5;
+    Permissions perms = 6;
+}
+
+message IntValue {
+    sint64 value = 1;
+}
+
+message FloatAttribute {
+    double      value = 1;
+    double      min   = 2;
+    double      max   = 3;
+    double      step  = 4;
+    Unit        unit  = 5;
+    Permissions perms = 6;
+}
+
+message FloatValue {
+    double value = 1;
+}
+
+message TextAttribute {
+    string      value = 1;
+    Permissions perms = 2;
+}
+
+message TextValue {
+    string value = 1;
+}
+
+message ActionAttribute {
+    string      name        = 1; // Name of the action.
+    string      description = 2; // Optional description of the action.
+    Permissions perms       = 3;
+}
+
+message ActionValue {}
+
+message DurationAttribute {
+    sint64      value = 1; // nanos.
+    sint64      min   = 2; // nanos.
+    sint64      max   = 3; // nanos.
+    uint64      step  = 4; // nanos.
+    Permissions perms = 5;
+}
+
+message DurationValue {
+    sint64 value = 1; // nanos.
+}
+
+message TimeAttribute {
+    // Represents seconds of UTC time since Unix epoch
+    // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+    // 9999-12-31T23:59:59Z inclusive.
+    sint64 seconds = 1;
+
+    // Non-negative fractions of a second at nanosecond resolution. Negative
+    // second values with fractions must still have non-negative nanos values
+    // that count forward in time. Must be from 0 to 999,999,999
+    // inclusive.
+    sint32 nanos = 2;
+
+    Permissions perms = 3;
+}
+
+message TimeValue {
+    // Represents seconds of UTC time since Unix epoch
+    // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+    // 9999-12-31T23:59:59Z inclusive.
+    sint64 seconds = 1;
+
+    // Non-negative fractions of a second at nanosecond resolution. Negative
+    // second values with fractions must still have non-negative nanos values
+    // that count forward in time. Must be from 0 to 999,999,999
+    // inclusive.
+    sint32 nanos = 2;
+}
