@@ -69,10 +69,10 @@ message Device {
         THERMOSTAT = 7;
     }
 
-    string           id          = 1; // The universally unique device ID (typically a hardware address or other static and unique identifier, e.g. "00158d00045c089f").
-    bool             full_update = 2; // True to indicate that this message contains the entire state of the device.
-    DeviceType       typ         = 3; // The general type of this device (helps with classification in user interfaces).
-    repeated Service services    = 4; // The services supported by the device and their states.
+    string           id         = 1; // The universally unique device ID (typically a hardware address or other static and unique identifier, e.g. "00158d00045c089f").
+    bool             full_state = 2; // Indicates that this message contains the entire state of the device.
+    DeviceType       typ        = 3; // The general type of this device (helps with classification in user interfaces).
+    repeated Service services   = 4; // The services supported by the device and their states.
 }
 
 //********************************* Services *********************************//
