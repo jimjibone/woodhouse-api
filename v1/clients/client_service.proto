@@ -3,8 +3,10 @@ syntax = "proto3";
 package woodhouse.api.v1.clients;
 option go_package = "github.com/jimjibone/woodhouse-4/api/go/v1/clients;clientsapi";
 
+//****************************** Client Service ******************************//
+
 service ClientService {
-    // StatusStream allows the client to stream StatusUpdate to the server. The
+    // StatusStream allows the client to stream StatusUpdates to the server. The
     // first StatusUpdate should contain the whole state of the client and any
     // subsequent update should only contain diffs.
     rpc StatusStream (stream StatusUpdate) returns (Empty);
@@ -97,28 +99,30 @@ message Service {
 
 message Attribute {
     string id = 1; // ID or name of the attribute.
-    oneof attr {
-        BoolAttribute     bool     = 2;
-        IntAttribute      int      = 3;
-        FloatAttribute    float    = 4;
-        TextAttribute     text     = 5;
-        ActionAttribute   action   = 6;
-        DurationAttribute duration = 7;
-        TimeAttribute     time     = 8;
-    }
+
+    // Only one of these must be set per attribute!
+
+    BoolAttribute     bool     = 2;
+    IntAttribute      int      = 3;
+    FloatAttribute    float    = 4;
+    TextAttribute     text     = 5;
+    ActionAttribute   action   = 6;
+    DurationAttribute duration = 7;
+    TimeAttribute     time     = 8;
 }
 
 message Value {
     string id = 1; // ID or name of the attribute.
-    oneof val {
-        BoolValue     bool     = 2;
-        IntValue      int      = 3;
-        FloatValue    float    = 4;
-        TextValue     text     = 5;
-        ActionValue   action   = 6;
-        DurationValue duration = 7;
-        TimeValue     time     = 8;
-    }
+
+    // Only one of these must be set per attribute!
+
+    BoolValue     bool     = 2;
+    IntValue      int      = 3;
+    FloatValue    float    = 4;
+    TextValue     text     = 5;
+    ActionValue   action   = 6;
+    DurationValue duration = 7;
+    TimeValue     time     = 8;
 }
 
 //************************** Attributes and Values **************************//
