@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package woodhouse.api.v1.clients;
+option go_package = "github.com/jimjibone/woodhouse-4/api/go/v1/clients;clientsapi";
+
+import "clients/client_service.proto";
+
+service UserService {
+    rpc GetDevices(GetDevicesRequest) returns (stream Device);
+
+    rpc SendAction(ActionRequest) returns (stream ActionResponse);
+}
+
+message GetDevicesRequest {}

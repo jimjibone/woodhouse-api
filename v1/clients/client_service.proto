@@ -28,10 +28,10 @@ message StatusUpdate {
 }
 
 message ActionRequest {
-    string   id           = 1;
-    string   device_id    = 2;
-    string   service_id   = 3;
-    repeated Value values = 4;
+    string         action_id  = 1; // Set by the server.
+    string         device_id  = 2; // ID of the device to send the action to.
+    string         service_id = 3; // ID of the service to control.
+    repeated Value values     = 4; // List of values to control (see attributes).
 }
 
 message ActionResponse {
@@ -39,15 +39,18 @@ message ActionResponse {
         UNDEFINED    = 0;  // No status defined.
         QUEUED       = 1;  // The action is queued for transmission to the device.
         SENT         = 2;  // The action has been sent to the device.
+
+        // Note all enums beyond this point indicate a final response.
         COMPLETE     = 3;  // The action was completed by the device.
         TIMEOUT      = 4;  // The action was not acknowledged by the device before the timeout.
-        ERR          = 5;  // The action failed due to an error. See details.
-        ERR_READONLY = 6;  // The action contained a write to a read only attribute.
+        CANCELED     = 5;  // The action was canceled before a final response was received.
+        ERROR        = 6;  // The action failed due to an error. See details.
+        ERR_READONLY = 7;  // The action contained a write to a read only attribute.
     }
 
-    string       id      = 1;
-    ActionStatus status  = 2;
-    string       details = 3;
+    string       action_id = 1;
+    ActionStatus status    = 2;
+    string       details   = 3;
 }
 
 message ClientInfo {
@@ -106,7 +109,7 @@ message Attribute {
     IntAttribute      int      = 3;
     FloatAttribute    float    = 4;
     TextAttribute     text     = 5;
-    ActionAttribute   action   = 6;
+    // ActionAttribute   action   = 6;
     DurationAttribute duration = 7;
     TimeAttribute     time     = 8;
 }
@@ -120,7 +123,7 @@ message Value {
     IntValue      int      = 3;
     FloatValue    float    = 4;
     TextValue     text     = 5;
-    ActionValue   action   = 6;
+    // ActionValue   action   = 6;
     DurationValue duration = 7;
     TimeValue     time     = 8;
 }
@@ -192,13 +195,13 @@ message TextValue {
     string value = 1;
 }
 
-message ActionAttribute {
-    string      name        = 1; // Name of the action.
-    string      description = 2; // Optional description of the action.
-    Permissions perms       = 3;
-}
+// message ActionAttribute {
+//     string      name        = 1; // Name of the action.
+//     string      description = 2; // Optional description of the action.
+//     Permissions perms       = 3;
+// }
 
-message ActionValue {}
+// message ActionValue {}
 
 message DurationAttribute {
     sint64      value = 1; // nanos.
