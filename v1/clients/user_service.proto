@@ -8,7 +8,11 @@ import "clients/client_service.proto";
 service UserService {
     rpc GetDevices(GetDevicesRequest) returns (stream Device);
 
+    rpc DevicesStream (DevicesStreamRequest) returns (stream Device);
+
     rpc SendAction(ActionRequest) returns (stream ActionResponse);
 }
 
 message GetDevicesRequest {}
+
+message DevicesStreamRequest {}

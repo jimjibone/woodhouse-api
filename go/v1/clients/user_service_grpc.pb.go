@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
 	GetDevices(ctx context.Context, in *GetDevicesRequest, opts ...grpc.CallOption) (UserService_GetDevicesClient, error)
+	DevicesStream(ctx context.Context, in *DevicesStreamRequest, opts ...grpc.CallOption) (UserService_DevicesStreamClient, error)
 	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error)
 }
 
@@ -66,8 +67,40 @@ func (x *userServiceGetDevicesClient) Recv() (*Device, error) {
 	return m, nil
 }
 
+func (c *userServiceClient) DevicesStream(ctx context.Context, in *DevicesStreamRequest, opts ...grpc.CallOption) (UserService_DevicesStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[1], "/woodhouse.api.v1.clients.UserService/DevicesStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &userServiceDevicesStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type UserService_DevicesStreamClient interface {
+	Recv() (*Device, error)
+	grpc.ClientStream
+}
+
+type userServiceDevicesStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *userServiceDevicesStreamClient) Recv() (*Device, error) {
+	m := new(Device)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *userServiceClient) SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[1], "/woodhouse.api.v1.clients.UserService/SendAction", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[2], "/woodhouse.api.v1.clients.UserService/SendAction", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -103,6 +136,7 @@ func (x *userServiceSendActionClient) Recv() (*ActionResponse, error) {
 // for forward compatibility
 type UserServiceServer interface {
 	GetDevices(*GetDevicesRequest, UserService_GetDevicesServer) error
+	DevicesStream(*DevicesStreamRequest, UserService_DevicesStreamServer) error
 	SendAction(*ActionRequest, UserService_SendActionServer) error
 	mustEmbedUnimplementedUserServiceServer()
 }
@@ -113,6 +147,9 @@ type UnimplementedUserServiceServer struct {
 
 func (UnimplementedUserServiceServer) GetDevices(*GetDevicesRequest, UserService_GetDevicesServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetDevices not implemented")
+}
+func (UnimplementedUserServiceServer) DevicesStream(*DevicesStreamRequest, UserService_DevicesStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method DevicesStream not implemented")
 }
 func (UnimplementedUserServiceServer) SendAction(*ActionRequest, UserService_SendActionServer) error {
 	return status.Errorf(codes.Unimplemented, "method SendAction not implemented")
@@ -151,6 +188,27 @@ func (x *userServiceGetDevicesServer) Send(m *Device) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _UserService_DevicesStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(DevicesStreamRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UserServiceServer).DevicesStream(m, &userServiceDevicesStreamServer{stream})
+}
+
+type UserService_DevicesStreamServer interface {
+	Send(*Device) error
+	grpc.ServerStream
+}
+
+type userServiceDevicesStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *userServiceDevicesStreamServer) Send(m *Device) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 func _UserService_SendAction_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(ActionRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -183,6 +241,11 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "GetDevices",
 			Handler:       _UserService_GetDevices_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "DevicesStream",
+			Handler:       _UserService_DevicesStream_Handler,
 			ServerStreams: true,
 		},
 		{
