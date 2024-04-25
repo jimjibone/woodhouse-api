@@ -7,8 +7,10 @@ option go_package = "github.com/jimjibone/woodhouse-4/api/go/v1/clients;clientsa
 
 service ClientService {
     // StatusStream allows the client to stream StatusUpdates to the server. The
-    // first StatusUpdate should contain the whole state of the client and any
-    // subsequent update should only contain diffs.
+    // first StatusUpdate should contain the full state of the client and any
+    // subsequent update should only contain diffs - i.e. include the
+    // client_info and all devices. See the Device type for what to include in a
+    // full state update.
     rpc StatusStream (stream StatusUpdate) returns (Empty);
 
     // ActionStream allows the client to receive ActionRequests from the server
@@ -62,6 +64,10 @@ message ClientInfo {
 
 //********************************* Devices *********************************//
 
+// Device contains either the full or partial (update) state of a device. The id
+// field must always be set. All devices are required to implement the Info and
+// Online services, so if full_state is set to true these services must be
+// included.
 message Device {
     enum DeviceType {
         UNDEFINED  = 0;

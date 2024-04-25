@@ -23,8 +23,10 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ClientServiceClient interface {
 	// StatusStream allows the client to stream StatusUpdates to the server. The
-	// first StatusUpdate should contain the whole state of the client and any
-	// subsequent update should only contain diffs.
+	// first StatusUpdate should contain the full state of the client and any
+	// subsequent update should only contain diffs - i.e. include the
+	// client_info and all devices. See the Device type for what to include in a
+	// full state update.
 	StatusStream(ctx context.Context, opts ...grpc.CallOption) (ClientService_StatusStreamClient, error)
 	// ActionStream allows the client to receive ActionRequests from the server
 	// (when they are created by users or automations). The client must
@@ -112,8 +114,10 @@ func (x *clientServiceActionStreamClient) Recv() (*ActionRequest, error) {
 // for forward compatibility
 type ClientServiceServer interface {
 	// StatusStream allows the client to stream StatusUpdates to the server. The
-	// first StatusUpdate should contain the whole state of the client and any
-	// subsequent update should only contain diffs.
+	// first StatusUpdate should contain the full state of the client and any
+	// subsequent update should only contain diffs - i.e. include the
+	// client_info and all devices. See the Device type for what to include in a
+	// full state update.
 	StatusStream(ClientService_StatusStreamServer) error
 	// ActionStream allows the client to receive ActionRequests from the server
 	// (when they are created by users or automations). The client must
