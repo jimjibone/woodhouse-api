@@ -15,4 +15,6 @@ service UserService {
 
 message GetDevicesRequest {}
 
-message DevicesStreamRequest {}
+message DevicesStreamRequest {
+    repeated string include_device_ids = 1; // A list of device IDs to include in the steam. Sends all devices if empty.
+}
