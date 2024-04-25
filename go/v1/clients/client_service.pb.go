@@ -1448,10 +1448,10 @@ type DurationAttribute struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Value int64       `protobuf:"zigzag64,1,opt,name=value,proto3" json:"value,omitempty"` // nanos.
-	Min   int64       `protobuf:"zigzag64,2,opt,name=min,proto3" json:"min,omitempty"`     // nanos.
-	Max   int64       `protobuf:"zigzag64,3,opt,name=max,proto3" json:"max,omitempty"`     // nanos.
-	Step  uint64      `protobuf:"varint,4,opt,name=step,proto3" json:"step,omitempty"`     // nanos.
+	Value int64       `protobuf:"zigzag64,1,opt,name=value,proto3" json:"value,omitempty"` // millis.
+	Min   int64       `protobuf:"zigzag64,2,opt,name=min,proto3" json:"min,omitempty"`     // millis.
+	Max   int64       `protobuf:"zigzag64,3,opt,name=max,proto3" json:"max,omitempty"`     // millis.
+	Step  uint64      `protobuf:"varint,4,opt,name=step,proto3" json:"step,omitempty"`     // millis.
 	Perms Permissions `protobuf:"varint,5,opt,name=perms,proto3,enum=woodhouse.api.v1.clients.Permissions" json:"perms,omitempty"`
 }
 
@@ -1527,7 +1527,7 @@ type DurationValue struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Value int64 `protobuf:"zigzag64,1,opt,name=value,proto3" json:"value,omitempty"` // nanos.
+	Value int64 `protobuf:"zigzag64,1,opt,name=value,proto3" json:"value,omitempty"` // millis.
 }
 
 func (x *DurationValue) Reset() {

@@ -204,15 +204,15 @@ message TextValue {
 // message ActionValue {}
 
 message DurationAttribute {
-    sint64      value = 1; // nanos.
-    sint64      min   = 2; // nanos.
-    sint64      max   = 3; // nanos.
-    uint64      step  = 4; // nanos.
+    sint64      value = 1; // millis.
+    sint64      min   = 2; // millis.
+    sint64      max   = 3; // millis.
+    uint64      step  = 4; // millis.
     Permissions perms = 5;
 }
 
 message DurationValue {
-    sint64 value = 1; // nanos.
+    sint64 value = 1; // millis.
 }
 
 message TimeAttribute {
