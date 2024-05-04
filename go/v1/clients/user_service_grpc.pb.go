@@ -23,6 +23,10 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
 	GetDevices(ctx context.Context, in *GetDevicesRequest, opts ...grpc.CallOption) (UserService_GetDevicesClient, error)
+	// Get a stream of Device updates. The first batch of replies will be the
+	// current state of the devices, followed by updates when they occur. The
+	// stream also includes a 10 second heartbeat (an empty Device) which should
+	// be ignored, but can be used to monitor the stream for disconnects.
 	DevicesStream(ctx context.Context, in *DevicesStreamRequest, opts ...grpc.CallOption) (UserService_DevicesStreamClient, error)
 	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error)
 }
@@ -136,6 +140,10 @@ func (x *userServiceSendActionClient) Recv() (*ActionResponse, error) {
 // for forward compatibility
 type UserServiceServer interface {
 	GetDevices(*GetDevicesRequest, UserService_GetDevicesServer) error
+	// Get a stream of Device updates. The first batch of replies will be the
+	// current state of the devices, followed by updates when they occur. The
+	// stream also includes a 10 second heartbeat (an empty Device) which should
+	// be ignored, but can be used to monitor the stream for disconnects.
 	DevicesStream(*DevicesStreamRequest, UserService_DevicesStreamServer) error
 	SendAction(*ActionRequest, UserService_SendActionServer) error
 	mustEmbedUnimplementedUserServiceServer()

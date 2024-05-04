@@ -63,7 +63,8 @@ type DevicesStreamRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	IncludeDeviceIds []string `protobuf:"bytes,1,rep,name=include_device_ids,json=includeDeviceIds,proto3" json:"include_device_ids,omitempty"` // A list of device IDs to include in the steam. Sends all devices if empty.
+	// A list of device IDs to include in the steam. Sends all devices if empty.
+	IncludeDeviceIds []string `protobuf:"bytes,1,rep,name=include_device_ids,json=includeDeviceIds,proto3" json:"include_device_ids,omitempty"`
 }
 
 func (x *DevicesStreamRequest) Reset() {

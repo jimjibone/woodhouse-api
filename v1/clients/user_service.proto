@@ -8,6 +8,10 @@ import "clients/client_service.proto";
 service UserService {
     rpc GetDevices(GetDevicesRequest) returns (stream Device);
 
+    // Get a stream of Device updates. The first batch of replies will be the
+    // current state of the devices, followed by updates when they occur. The
+    // stream also includes a 10 second heartbeat (an empty Device) which should
+    // be ignored, but can be used to monitor the stream for disconnects.
     rpc DevicesStream (DevicesStreamRequest) returns (stream Device);
 
     rpc SendAction(ActionRequest) returns (stream ActionResponse);
@@ -16,5 +20,6 @@ service UserService {
 message GetDevicesRequest {}
 
 message DevicesStreamRequest {
-    repeated string include_device_ids = 1; // A list of device IDs to include in the steam. Sends all devices if empty.
+    // A list of device IDs to include in the steam. Sends all devices if empty.
+    repeated string include_device_ids = 1;
 }
