@@ -74,7 +74,7 @@ message Device {
         BRIDGE     = 1;
         REACTOR    = 2;
         GENERIC    = 3;
-        SWITCH     = 4;
+        INPUT      = 4;
         RELAY      = 5;
         LIGHTBULB  = 6;
         THERMOSTAT = 7;
@@ -94,7 +94,7 @@ message Service {
         INFO       = 1;
         ONLINE     = 2;
         GENERIC    = 3;
-        SWITCH     = 4;
+        INPUT      = 4;
         RELAY      = 5;
         LIGHTBULB  = 6;
         THERMOSTAT = 7;

@@ -1,11 +1,29 @@
-attributes:
-  - { name: on,            perms: rw, type: bool }
-  - { name: brightness,    perms: rw, type: int,      min: 0, max: 100, step: 1, unit: percentage }
-  - { name: saturation,    perms: rw, type: int,      min: 0, max: 100, step: 1, unit: percentage }
-  - { name: hue,           perms: rw, type: float,    min: 0, max: 360, step: 1, unit: arc degrees }
-  - { name: transition,    perms: wo, type: duration, min: 0, max: 300, step: 1, unit: seconds }
-  - { name: heating_state, perms: rw, type: bool }
+# When creating/editing attribute types, make sure to update the following locations:
+# - /api/v1/clients/client_service.proto (Attribute and Value messages)
+# - /wh/v1/devices/attributes/*
+# - /webapp2/src/routes/devices/*
 
+# When creating/editing services, make sure to update the following locations:
+# - /wh/v1/devices/services/*
+# - /webapp2/src/routes/devices/*
+
+# Device types and the services associated with them.
+devices:
+  - name: relay
+    required_services:
+      - info
+      - online
+      - identify
+      - relay
+
+  - name: lightbulb
+    required_services:
+      - info
+      - online
+      - identify
+      - lightbulb
+
+# Service types and the attributes associated with them.
 services:
   - name: info
     description: Contains (normally) static information about a device.
@@ -44,8 +62,8 @@ services:
     required_attributes:
       - { name: identify, perms: rw, type: bool }
 
-  - name: switch
-    description: Represents a switch which can be pressed/toggled.
+  - name: input
+    description: Represents a binary signal which could represent a button press/toggle.
     required_attributes:
       - { name: on, perms: ro, type: bool }
 
