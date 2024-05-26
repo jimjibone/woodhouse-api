@@ -111,13 +111,15 @@ message Attribute {
 
     // Only one of these must be set per attribute!
 
-    BoolAttribute     bool     = 2;
-    IntAttribute      int      = 3;
-    FloatAttribute    float    = 4;
-    TextAttribute     text     = 5;
-    // ActionAttribute   action   = 6;
-    DurationAttribute duration = 7;
-    TimeAttribute     time     = 8;
+    BoolAttribute      bool       = 2;
+    IntAttribute       int        = 3;
+    FloatAttribute     float      = 4;
+    TextAttribute      text       = 5;
+    // ActionAttribute action     = 6;
+    DurationAttribute  duration   = 7;
+    TimeAttribute      time       = 8;
+    // ColorModeAttribute color_mode = 9;
+    ColorAttribute     color      = 10;
 }
 
 message Value {
@@ -125,13 +127,15 @@ message Value {
 
     // Only one of these must be set per attribute!
 
-    BoolValue     bool     = 2;
-    IntValue      int      = 3;
-    FloatValue    float    = 4;
-    TextValue     text     = 5;
-    // ActionValue   action   = 6;
-    DurationValue duration = 7;
-    TimeValue     time     = 8;
+    BoolValue      bool       = 2;
+    IntValue       int        = 3;
+    FloatValue     float      = 4;
+    TextValue      text       = 5;
+    // ActionValue action     = 6;
+    DurationValue  duration   = 7;
+    TimeValue      time       = 8;
+    // ColorModeValue color_mode = 9;
+    ColorValue     color      = 10;
 }
 
 //************************** Attributes and Values **************************//
@@ -155,6 +159,7 @@ enum Unit {
     UNIT_VOLTS                      = 8;   // volts
     UNIT_AMPS                       = 9;   // amps
     UNIT_WATTS                      = 10;  // watts
+    UNIT_MIREDS                     = 11;  // mireds
 }
 
 message BoolAttribute {
@@ -247,4 +252,27 @@ message TimeValue {
     // that count forward in time. Must be from 0 to 999,999,999
     // inclusive.
     sint32 nanos = 2;
+}
+
+message ColorAttribute {
+    ColorHueSat hue_sat = 1;
+    ColorXY     xy      = 2; 
+    Permissions perms   = 3;
+}
+
+message ColorValue {
+    ColorHueSat hue_sat = 1;
+    ColorXY     xy      = 2;
+}
+
+// Color expressed as hue/saturation.
+message ColorHueSat {
+    double hue = 1;
+    double sat = 2;
+}
+
+// Color expressed in the CIE 1931 color space (x/y).
+message ColorXY {
+    double x = 1;
+    double y = 2;
 }

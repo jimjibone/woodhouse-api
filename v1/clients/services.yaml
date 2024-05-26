@@ -63,7 +63,7 @@ services:
       - { name: identify, perms: rw, type: bool }
 
   - name: input
-    description: Represents a binary signal which could represent a button press/toggle.
+    description: A binary signal which could represent a button press/toggle.
     required_attributes:
       - { name: on, perms: ro, type: bool }
 
@@ -77,6 +77,25 @@ services:
       - { name: power,       perms: ro, type: float, unit: watts }
       - { name: temperature, perms: ro, type: float, unit: celsius } # TODO: break out into "device_temperature" service?
 
+  - name: dimmer
+    description: A controllable dimmer.
+    required_attributes:
+      - { name: on,         perms: rw, type: bool }
+      - { name: brightness, perms: rw, type: int, min: 0, max: 100, step: 1, unit: percentage }
+
+  - name: power_monitor
+    description: Power monitoring.
+    optional_attributes:
+      - { name: voltage,     perms: ro, type: float, unit: volts }
+      - { name: current,     perms: ro, type: float, unit: amps }
+      - { name: power,       perms: ro, type: float, unit: watts }
+      - { name: temperature, perms: ro, type: float, unit: celsius } # TODO: break out into "device_temperature" service?
+
+  - name: device_temp
+    description: Allows a device to self report its temperature.
+    required_attributes:
+      - { name: temperature, perms: ro, type: float, unit: celsius }
+
   - name: lightbulb
     description: A light/lightbulb with optional brightness and color control.
     required_attributes:
@@ -85,7 +104,9 @@ services:
       - { name: brightness,    perms: rw, type: int,      min: 0, max: 100, step: 1, unit: percentage }
       - { name: saturation,    perms: rw, type: int,      min: 0, max: 100, step: 1, unit: percentage }
       - { name: hue,           perms: rw, type: float,    min: 0, max: 360, step: 1, unit: arc degrees }
+      - { name: color_temp,    perms: rw, type: float,    min: 0, max: 360, step: 1, unit: mireds }
       - { name: transition,    perms: wo, type: duration, min: 0, max: 300, step: 1, unit: seconds }
+      - { name: color,         perms: rw, type: color }
 
   - name: thermostat
     description: A heating thermostat.
@@ -95,3 +116,21 @@ services:
       - { name: current_temperature, perms: rw, type: float, min: 0, max: 36, step: 0.5, unit: celsius }
     optional_attributes:
       - { name: heating_state,       perms: ro, type: bool }
+
+# Attribute types
+attributes:
+  - name: boolean
+  - name: int
+  - name: float
+  - name: text
+  - name: duration
+  - name: time
+  - name: color_mode
+  - name: color
+    values:
+      # Color expressed in the CIE 1931 color space (x/y)
+      - x: float
+      - y: float
+      # Color expressed as hue/saturation
+      - hue: float
+      - sat: float
