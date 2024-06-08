@@ -34,6 +34,13 @@ type ClientServiceClient interface {
 	// with the same ID and the current status of the action (this allows for
 	// reactive user interfaces and automations to implement retries, etc).
 	ActionStream(ctx context.Context, opts ...grpc.CallOption) (ClientService_ActionStreamClient, error)
+	// Get a stream of Device updates. The first batch of replies will be the
+	// current state of the devices, followed by updates when they occur. The
+	// stream also includes a 10 second heartbeat (an empty Device) which should
+	// be ignored, but can be used to monitor the stream for disconnects.
+	DeviceStream(ctx context.Context, in *DeviceStreamRequest, opts ...grpc.CallOption) (ClientService_DeviceStreamClient, error)
+	// Send an action to a device service.
+	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (ClientService_SendActionClient, error)
 }
 
 type clientServiceClient struct {
@@ -109,6 +116,70 @@ func (x *clientServiceActionStreamClient) Recv() (*ActionRequest, error) {
 	return m, nil
 }
 
+func (c *clientServiceClient) DeviceStream(ctx context.Context, in *DeviceStreamRequest, opts ...grpc.CallOption) (ClientService_DeviceStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ClientService_ServiceDesc.Streams[2], "/woodhouse.api.v1.clients.ClientService/DeviceStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &clientServiceDeviceStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type ClientService_DeviceStreamClient interface {
+	Recv() (*Device, error)
+	grpc.ClientStream
+}
+
+type clientServiceDeviceStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *clientServiceDeviceStreamClient) Recv() (*Device, error) {
+	m := new(Device)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *clientServiceClient) SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (ClientService_SendActionClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ClientService_ServiceDesc.Streams[3], "/woodhouse.api.v1.clients.ClientService/SendAction", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &clientServiceSendActionClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type ClientService_SendActionClient interface {
+	Recv() (*ActionResponse, error)
+	grpc.ClientStream
+}
+
+type clientServiceSendActionClient struct {
+	grpc.ClientStream
+}
+
+func (x *clientServiceSendActionClient) Recv() (*ActionResponse, error) {
+	m := new(ActionResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // ClientServiceServer is the server API for ClientService service.
 // All implementations must embed UnimplementedClientServiceServer
 // for forward compatibility
@@ -125,6 +196,13 @@ type ClientServiceServer interface {
 	// with the same ID and the current status of the action (this allows for
 	// reactive user interfaces and automations to implement retries, etc).
 	ActionStream(ClientService_ActionStreamServer) error
+	// Get a stream of Device updates. The first batch of replies will be the
+	// current state of the devices, followed by updates when they occur. The
+	// stream also includes a 10 second heartbeat (an empty Device) which should
+	// be ignored, but can be used to monitor the stream for disconnects.
+	DeviceStream(*DeviceStreamRequest, ClientService_DeviceStreamServer) error
+	// Send an action to a device service.
+	SendAction(*ActionRequest, ClientService_SendActionServer) error
 	mustEmbedUnimplementedClientServiceServer()
 }
 
@@ -137,6 +215,12 @@ func (UnimplementedClientServiceServer) StatusStream(ClientService_StatusStreamS
 }
 func (UnimplementedClientServiceServer) ActionStream(ClientService_ActionStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method ActionStream not implemented")
+}
+func (UnimplementedClientServiceServer) DeviceStream(*DeviceStreamRequest, ClientService_DeviceStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method DeviceStream not implemented")
+}
+func (UnimplementedClientServiceServer) SendAction(*ActionRequest, ClientService_SendActionServer) error {
+	return status.Errorf(codes.Unimplemented, "method SendAction not implemented")
 }
 func (UnimplementedClientServiceServer) mustEmbedUnimplementedClientServiceServer() {}
 
@@ -203,6 +287,48 @@ func (x *clientServiceActionStreamServer) Recv() (*ActionResponse, error) {
 	return m, nil
 }
 
+func _ClientService_DeviceStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(DeviceStreamRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ClientServiceServer).DeviceStream(m, &clientServiceDeviceStreamServer{stream})
+}
+
+type ClientService_DeviceStreamServer interface {
+	Send(*Device) error
+	grpc.ServerStream
+}
+
+type clientServiceDeviceStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *clientServiceDeviceStreamServer) Send(m *Device) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _ClientService_SendAction_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ActionRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ClientServiceServer).SendAction(m, &clientServiceSendActionServer{stream})
+}
+
+type ClientService_SendActionServer interface {
+	Send(*ActionResponse) error
+	grpc.ServerStream
+}
+
+type clientServiceSendActionServer struct {
+	grpc.ServerStream
+}
+
+func (x *clientServiceSendActionServer) Send(m *ActionResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // ClientService_ServiceDesc is the grpc.ServiceDesc for ClientService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -221,6 +347,16 @@ var ClientService_ServiceDesc = grpc.ServiceDesc{
 			Handler:       _ClientService_ActionStream_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
+		},
+		{
+			StreamName:    "DeviceStream",
+			Handler:       _ClientService_DeviceStream_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "SendAction",
+			Handler:       _ClientService_SendAction_Handler,
+			ServerStreams: true,
 		},
 	},
 	Metadata: "clients/client_service.proto",
