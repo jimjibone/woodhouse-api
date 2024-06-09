@@ -112,6 +112,7 @@ message Service {
         RELAY      = 5;
         LIGHTBULB  = 6;
         CLIMATE    = 7;
+        BATTERY    = 8;
     }
 
     string      id              = 1; // The service ID (typically the name of the service type, e.g. "info").

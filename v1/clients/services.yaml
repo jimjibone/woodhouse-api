@@ -47,6 +47,11 @@ services:
       - { name: online,    perms: ro, type: bool }
       - { name: last_seen, perms: ro, type: time }
 
+  - name: battery
+    description: "Indicates the battery level of a device."
+    required_attributes:
+      - { name: level, perms: ro, type: int, min: 0, max: 100, step: 1, unit: percentage }
+
   - name: update
     description: Device update information and control.
     required_attributes:
