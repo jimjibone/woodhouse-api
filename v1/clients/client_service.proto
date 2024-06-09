@@ -91,7 +91,7 @@ message Device {
         INPUT      = 4;
         RELAY      = 5;
         LIGHTBULB  = 6;
-        THERMOSTAT = 7;
+        CLIMATE    = 7;
     }
 
     string           id         = 1; // The universally unique device ID (typically a hardware address or other static and unique identifier, e.g. "00158d00045c089f").
@@ -111,7 +111,7 @@ message Service {
         INPUT      = 4;
         RELAY      = 5;
         LIGHTBULB  = 6;
-        THERMOSTAT = 7;
+        CLIMATE    = 7;
     }
 
     string      id              = 1; // The service ID (typically the name of the service type, e.g. "info").

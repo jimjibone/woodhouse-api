@@ -108,14 +108,14 @@ services:
       - { name: transition,    perms: wo, type: duration, min: 0, max: 300, step: 1, unit: seconds }
       - { name: color,         perms: rw, type: color }
 
-  - name: thermostat
-    description: A heating thermostat.
+  - name: climate
+    description: A climate control device providing heating and possibly cooling to an area.
     required_attributes:
-      - { name: on,                  perms: rw, type: bool }
-      - { name: target_temperature,  perms: rw, type: float, min: 0, max: 36, step: 0.5, unit: celsius }
-      - { name: current_temperature, perms: rw, type: float, min: 0, max: 36, step: 0.5, unit: celsius }
+      - { name: heating_setpoint, perms: rw, type: float, min: 5, max: 30, step: 0.5, unit: celsius }
+      - { name: local_temperature, perms: ro, type: float, unit: celsius }
     optional_attributes:
-      - { name: heating_state,       perms: ro, type: bool }
+      - { name: cooling_setpoint, perms: rw, type: float, min: 5, max: 30, step: 0.5, unit: celsius }
+      - { name: pi_heating_demand, perms: ro, type: int, min: 0, max: 100, step: 1, unit: percentage }
 
 # Attribute types
 attributes:
