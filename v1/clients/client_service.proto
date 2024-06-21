@@ -104,16 +104,17 @@ message Device {
 
 message Service {
     enum ServiceType {
-        UNDEFINED = 0;
-        INFO      = 1;
-        ONLINE    = 2;
-        GENERIC   = 3;
-        INPUT     = 4;
-        RELAY     = 5;
-        LIGHTBULB = 6;
-        CLIMATE   = 7;
-        BATTERY   = 8;
-        BUTTON    = 9;
+        UNDEFINED   = 0;
+        INFO        = 1;
+        ONLINE      = 2;
+        GENERIC     = 3;
+        INPUT       = 4;
+        RELAY       = 5;
+        LIGHTBULB   = 6;
+        CLIMATE     = 7;
+        BATTERY     = 8;
+        BUTTON      = 9;
+        ENVIRONMENT = 10;
     }
 
     string      id              = 1; // The service ID (typically the name of the service type, e.g. "info").
@@ -178,6 +179,7 @@ enum Unit {
     UNIT_AMPS                       = 9;   // amps
     UNIT_WATTS                      = 10;  // watts
     UNIT_MIREDS                     = 11;  // mireds
+    UNIT_HECTOPASCAL                = 12;  // hPa
 }
 
 message BoolAttribute {

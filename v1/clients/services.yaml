@@ -127,6 +127,13 @@ services:
     required_attributes:
       - { name: state, perms: ro, type: enum }
 
+  - name: environment
+    description: A sensor monitoring conditions of the local environment.
+    optional_attributes:
+      - { name: temperature, perms: ro, type: float, unit: celsius }
+      - { name: humidity, perms: ro, type: float, unit: % }
+      - { name: pressure, perms: ro, type: float, unit: % }
+
 # Attribute types
 attributes:
   - name: boolean
