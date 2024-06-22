@@ -72,6 +72,11 @@ services:
     required_attributes:
       - { name: on, perms: ro, type: bool }
 
+  - name: contact
+    description: A binary signal which represents that a contact sensor is closed (e.g. a door or window).
+    required_attributes:
+      - { name: contact, perms: ro, type: bool }
+
   - name: relay
     description: A controllable relay with optional power monitoring.
     required_attributes:

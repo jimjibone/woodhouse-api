@@ -115,6 +115,7 @@ message Service {
         BATTERY     = 8;
         BUTTON      = 9;
         ENVIRONMENT = 10;
+        CONTACT     = 11;
     }
 
     string      id              = 1; // The service ID (typically the name of the service type, e.g. "info").
