@@ -55,11 +55,11 @@ services:
   - name: update
     description: Device update information and control.
     required_attributes:
-      - { name: updates_available, perms: ro, type: bool }
+      - { name: available, perms: ro, type: bool }
+    optional_attributes:
       - { name: current_version, perms: ro, type: string }
       - { name: update_version, perms: ro, type: string }
       - { name: start_update, perms: wo, type: bool }
-    optional_attributes:
       - { name: update_progress, perms: ro, type: int, min: 0, max: 100, step: 1, unit: percentage }
 
   - name: identify
