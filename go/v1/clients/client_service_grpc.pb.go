@@ -34,6 +34,7 @@ type ClientServiceClient interface {
 	// with the same ID and the current status of the action (this allows for
 	// reactive user interfaces and automations to implement retries, etc).
 	ActionStream(ctx context.Context, opts ...grpc.CallOption) (ClientService_ActionStreamClient, error)
+	ImageStream(ctx context.Context, opts ...grpc.CallOption) (ClientService_ImageStreamClient, error)
 	// Get a stream of Device updates. The first batch of replies will be the
 	// current state of the devices, followed by updates when they occur. The
 	// stream also includes a 10 second heartbeat (an empty Device) which should
@@ -41,6 +42,8 @@ type ClientServiceClient interface {
 	DeviceStream(ctx context.Context, in *DeviceStreamRequest, opts ...grpc.CallOption) (ClientService_DeviceStreamClient, error)
 	// Send an action to a device service.
 	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (ClientService_SendActionClient, error)
+	// Send an image request to a device service.
+	SendImageRequest(ctx context.Context, in *ImageRequest, opts ...grpc.CallOption) (ClientService_SendImageRequestClient, error)
 }
 
 type clientServiceClient struct {
@@ -116,8 +119,39 @@ func (x *clientServiceActionStreamClient) Recv() (*ActionRequest, error) {
 	return m, nil
 }
 
+func (c *clientServiceClient) ImageStream(ctx context.Context, opts ...grpc.CallOption) (ClientService_ImageStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ClientService_ServiceDesc.Streams[2], "/woodhouse.api.v1.clients.ClientService/ImageStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &clientServiceImageStreamClient{stream}
+	return x, nil
+}
+
+type ClientService_ImageStreamClient interface {
+	Send(*ImageResponse) error
+	Recv() (*ImageRequest, error)
+	grpc.ClientStream
+}
+
+type clientServiceImageStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *clientServiceImageStreamClient) Send(m *ImageResponse) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *clientServiceImageStreamClient) Recv() (*ImageRequest, error) {
+	m := new(ImageRequest)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *clientServiceClient) DeviceStream(ctx context.Context, in *DeviceStreamRequest, opts ...grpc.CallOption) (ClientService_DeviceStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ClientService_ServiceDesc.Streams[2], "/woodhouse.api.v1.clients.ClientService/DeviceStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &ClientService_ServiceDesc.Streams[3], "/woodhouse.api.v1.clients.ClientService/DeviceStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +183,7 @@ func (x *clientServiceDeviceStreamClient) Recv() (*Device, error) {
 }
 
 func (c *clientServiceClient) SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (ClientService_SendActionClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ClientService_ServiceDesc.Streams[3], "/woodhouse.api.v1.clients.ClientService/SendAction", opts...)
+	stream, err := c.cc.NewStream(ctx, &ClientService_ServiceDesc.Streams[4], "/woodhouse.api.v1.clients.ClientService/SendAction", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -180,6 +214,38 @@ func (x *clientServiceSendActionClient) Recv() (*ActionResponse, error) {
 	return m, nil
 }
 
+func (c *clientServiceClient) SendImageRequest(ctx context.Context, in *ImageRequest, opts ...grpc.CallOption) (ClientService_SendImageRequestClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ClientService_ServiceDesc.Streams[5], "/woodhouse.api.v1.clients.ClientService/SendImageRequest", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &clientServiceSendImageRequestClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type ClientService_SendImageRequestClient interface {
+	Recv() (*ImageResponse, error)
+	grpc.ClientStream
+}
+
+type clientServiceSendImageRequestClient struct {
+	grpc.ClientStream
+}
+
+func (x *clientServiceSendImageRequestClient) Recv() (*ImageResponse, error) {
+	m := new(ImageResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // ClientServiceServer is the server API for ClientService service.
 // All implementations must embed UnimplementedClientServiceServer
 // for forward compatibility
@@ -196,6 +262,7 @@ type ClientServiceServer interface {
 	// with the same ID and the current status of the action (this allows for
 	// reactive user interfaces and automations to implement retries, etc).
 	ActionStream(ClientService_ActionStreamServer) error
+	ImageStream(ClientService_ImageStreamServer) error
 	// Get a stream of Device updates. The first batch of replies will be the
 	// current state of the devices, followed by updates when they occur. The
 	// stream also includes a 10 second heartbeat (an empty Device) which should
@@ -203,6 +270,8 @@ type ClientServiceServer interface {
 	DeviceStream(*DeviceStreamRequest, ClientService_DeviceStreamServer) error
 	// Send an action to a device service.
 	SendAction(*ActionRequest, ClientService_SendActionServer) error
+	// Send an image request to a device service.
+	SendImageRequest(*ImageRequest, ClientService_SendImageRequestServer) error
 	mustEmbedUnimplementedClientServiceServer()
 }
 
@@ -216,11 +285,17 @@ func (UnimplementedClientServiceServer) StatusStream(ClientService_StatusStreamS
 func (UnimplementedClientServiceServer) ActionStream(ClientService_ActionStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method ActionStream not implemented")
 }
+func (UnimplementedClientServiceServer) ImageStream(ClientService_ImageStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method ImageStream not implemented")
+}
 func (UnimplementedClientServiceServer) DeviceStream(*DeviceStreamRequest, ClientService_DeviceStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method DeviceStream not implemented")
 }
 func (UnimplementedClientServiceServer) SendAction(*ActionRequest, ClientService_SendActionServer) error {
 	return status.Errorf(codes.Unimplemented, "method SendAction not implemented")
+}
+func (UnimplementedClientServiceServer) SendImageRequest(*ImageRequest, ClientService_SendImageRequestServer) error {
+	return status.Errorf(codes.Unimplemented, "method SendImageRequest not implemented")
 }
 func (UnimplementedClientServiceServer) mustEmbedUnimplementedClientServiceServer() {}
 
@@ -287,6 +362,32 @@ func (x *clientServiceActionStreamServer) Recv() (*ActionResponse, error) {
 	return m, nil
 }
 
+func _ClientService_ImageStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ClientServiceServer).ImageStream(&clientServiceImageStreamServer{stream})
+}
+
+type ClientService_ImageStreamServer interface {
+	Send(*ImageRequest) error
+	Recv() (*ImageResponse, error)
+	grpc.ServerStream
+}
+
+type clientServiceImageStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *clientServiceImageStreamServer) Send(m *ImageRequest) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *clientServiceImageStreamServer) Recv() (*ImageResponse, error) {
+	m := new(ImageResponse)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func _ClientService_DeviceStream_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(DeviceStreamRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -329,6 +430,27 @@ func (x *clientServiceSendActionServer) Send(m *ActionResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _ClientService_SendImageRequest_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ImageRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ClientServiceServer).SendImageRequest(m, &clientServiceSendImageRequestServer{stream})
+}
+
+type ClientService_SendImageRequestServer interface {
+	Send(*ImageResponse) error
+	grpc.ServerStream
+}
+
+type clientServiceSendImageRequestServer struct {
+	grpc.ServerStream
+}
+
+func (x *clientServiceSendImageRequestServer) Send(m *ImageResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // ClientService_ServiceDesc is the grpc.ServiceDesc for ClientService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -349,6 +471,12 @@ var ClientService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 		{
+			StreamName:    "ImageStream",
+			Handler:       _ClientService_ImageStream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
 			StreamName:    "DeviceStream",
 			Handler:       _ClientService_DeviceStream_Handler,
 			ServerStreams: true,
@@ -356,6 +484,11 @@ var ClientService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "SendAction",
 			Handler:       _ClientService_SendAction_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "SendImageRequest",
+			Handler:       _ClientService_SendImageRequest_Handler,
 			ServerStreams: true,
 		},
 	},

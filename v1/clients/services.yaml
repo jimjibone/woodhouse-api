@@ -139,6 +139,13 @@ services:
       - { name: humidity, perms: ro, type: float, unit: % }
       - { name: pressure, perms: ro, type: float, unit: % }
 
+  - name: camera
+    required_attributes:
+      - { name: motion, perms: ro, type: bool }
+      - { name: detection, perms: ro, type: bool }
+      - { name: detection_type, perms: ro, type: enum }
+      - { name: detection_type, perms: ro, type: enum }
+
 # Attribute types
 attributes:
   - name: boolean
