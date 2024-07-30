@@ -117,6 +117,14 @@ message Service {
         ENVIRONMENT = 10;
         CONTACT     = 11;
         UPDATE      = 12;
+        BOOL        = 13;
+        INT         = 14;
+        FLOAT       = 15;
+        TEXT        = 16;
+        DURATION    = 17;
+        TIME        = 18;
+        COLOR       = 19;
+        ENUM        = 20;
     }
 
     string      id              = 1; // The service ID (typically the name of the service type, e.g. "info").
