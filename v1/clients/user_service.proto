@@ -14,7 +14,11 @@ service UserService {
     // be ignored, but can be used to monitor the stream for disconnects.
     rpc DevicesStream (DevicesStreamRequest) returns (stream Device);
 
+    // Send an action to a device service.
     rpc SendAction(ActionRequest) returns (stream ActionResponse);
+
+    // Send an image request to a device service.
+    rpc SendImageRequest(ImageRequest) returns (stream ImageResponse);
 }
 
 message GetDevicesRequest {}

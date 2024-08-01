@@ -28,7 +28,10 @@ type UserServiceClient interface {
 	// stream also includes a 10 second heartbeat (an empty Device) which should
 	// be ignored, but can be used to monitor the stream for disconnects.
 	DevicesStream(ctx context.Context, in *DevicesStreamRequest, opts ...grpc.CallOption) (UserService_DevicesStreamClient, error)
+	// Send an action to a device service.
 	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error)
+	// Send an image request to a device service.
+	SendImageRequest(ctx context.Context, in *ImageRequest, opts ...grpc.CallOption) (UserService_SendImageRequestClient, error)
 }
 
 type userServiceClient struct {
@@ -135,6 +138,38 @@ func (x *userServiceSendActionClient) Recv() (*ActionResponse, error) {
 	return m, nil
 }
 
+func (c *userServiceClient) SendImageRequest(ctx context.Context, in *ImageRequest, opts ...grpc.CallOption) (UserService_SendImageRequestClient, error) {
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[3], "/woodhouse.api.v1.clients.UserService/SendImageRequest", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &userServiceSendImageRequestClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type UserService_SendImageRequestClient interface {
+	Recv() (*ImageResponse, error)
+	grpc.ClientStream
+}
+
+type userServiceSendImageRequestClient struct {
+	grpc.ClientStream
+}
+
+func (x *userServiceSendImageRequestClient) Recv() (*ImageResponse, error) {
+	m := new(ImageResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -145,7 +180,10 @@ type UserServiceServer interface {
 	// stream also includes a 10 second heartbeat (an empty Device) which should
 	// be ignored, but can be used to monitor the stream for disconnects.
 	DevicesStream(*DevicesStreamRequest, UserService_DevicesStreamServer) error
+	// Send an action to a device service.
 	SendAction(*ActionRequest, UserService_SendActionServer) error
+	// Send an image request to a device service.
+	SendImageRequest(*ImageRequest, UserService_SendImageRequestServer) error
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -161,6 +199,9 @@ func (UnimplementedUserServiceServer) DevicesStream(*DevicesStreamRequest, UserS
 }
 func (UnimplementedUserServiceServer) SendAction(*ActionRequest, UserService_SendActionServer) error {
 	return status.Errorf(codes.Unimplemented, "method SendAction not implemented")
+}
+func (UnimplementedUserServiceServer) SendImageRequest(*ImageRequest, UserService_SendImageRequestServer) error {
+	return status.Errorf(codes.Unimplemented, "method SendImageRequest not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -238,6 +279,27 @@ func (x *userServiceSendActionServer) Send(m *ActionResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _UserService_SendImageRequest_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ImageRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UserServiceServer).SendImageRequest(m, &userServiceSendImageRequestServer{stream})
+}
+
+type UserService_SendImageRequestServer interface {
+	Send(*ImageResponse) error
+	grpc.ServerStream
+}
+
+type userServiceSendImageRequestServer struct {
+	grpc.ServerStream
+}
+
+func (x *userServiceSendImageRequestServer) Send(m *ImageResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -259,6 +321,11 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "SendAction",
 			Handler:       _UserService_SendAction_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "SendImageRequest",
+			Handler:       _UserService_SendImageRequest_Handler,
 			ServerStreams: true,
 		},
 	},
