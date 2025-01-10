@@ -11,19 +11,6 @@ tasks:
       - go build -o .bin/protoc-gen-go google.golang.org/protobuf/cmd/protoc-gen-go
       - go build -o .bin/protoc-gen-go-grpc google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
-  proto-go:
-    run: when_changed
-    deps:
-      - proto-go-plugins
-    sources:
-      - ./*.proto
-    generates:
-      - ./go/*.pb.go
-    cmds:
-      - mkdir -p ./go
-      - protoc --plugin=.bin/protoc-gen-go -I. --go_out=./go --go_opt=module=github.com/jimjibone/woodhouse-4/api/go ./*.proto
-      - protoc --plugin=.bin/protoc-gen-go-grpc -I. --go-grpc_out=./go --go-grpc_opt=module=github.com/jimjibone/woodhouse-4/api/go ./*_service.proto
-
   proto-go-v1:
     run: when_changed
     deps:

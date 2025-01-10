@@ -1099,7 +1099,7 @@ type Attribute struct {
 	// ColorModeAttribute color_mode = 9;
 	Color *ColorAttribute `protobuf:"bytes,10,opt,name=color,proto3" json:"color,omitempty"`
 	Enum  *EnumAttribute  `protobuf:"bytes,11,opt,name=enum,proto3" json:"enum,omitempty"`
-	Image *ImageAttribute `protobuf:"bytes,12,opt,name=image,proto3" json:"image,omitempty"`
+	Image *ImageAttribute `protobuf:"bytes,12,opt,name=image,proto3" json:"image,omitempty"` // NumberScheduleAttribute number_schedule = 13;
 }
 
 func (x *Attribute) Reset() {
@@ -1220,7 +1220,7 @@ type Value struct {
 	// ColorModeValue color_mode = 9;
 	Color *ColorValue `protobuf:"bytes,10,opt,name=color,proto3" json:"color,omitempty"`
 	Enum  *EnumValue  `protobuf:"bytes,11,opt,name=enum,proto3" json:"enum,omitempty"`
-	Image *ImageValue `protobuf:"bytes,12,opt,name=image,proto3" json:"image,omitempty"`
+	Image *ImageValue `protobuf:"bytes,12,opt,name=image,proto3" json:"image,omitempty"` // NumberScheduleValue number_schedule = 13;
 }
 
 func (x *Value) Reset() {
