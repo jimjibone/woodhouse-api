@@ -14,6 +14,16 @@ service UserService {
     // be ignored, but can be used to monitor the stream for disconnects.
     rpc DevicesStream (DevicesStreamRequest) returns (stream Device);
 
+    // Get a stream of DeviceService updates for favorites. The first batch of
+    // replies will be the current state of the favorites, followed by updates
+    // when they occur. The stream also includes a 10 second heartbeat (an empty
+    // response) which should be ignored, but can be used to monitor the stream
+    // for disconnects.
+    rpc FavoritesStream (FavoritesStreamRequest) returns (stream FavoritesStreamResponse);
+
+    rpc AddFavorite (AddFavoriteRequest) returns (AddFavoriteResponse);
+    rpc RemoveFavorite (RemoveFavoriteRequest) returns (RemoveFavoriteResponse);
+
     // Send an action to a device service.
     rpc SendAction(ActionRequest) returns (stream ActionResponse);
 
@@ -27,3 +37,36 @@ message DevicesStreamRequest {
     // A list of device IDs to include in the steam. Sends all devices if empty.
     repeated string include_device_ids = 1;
 }
+
+message DeviceService {
+    string key = 1; // The key is a combined version of the device and service IDs.
+
+    string device_id  = 2; // The universally unique device ID (typically a hardware address or other static and unique identifier, e.g. "00158d00045c089f").
+    bool   full_state = 3; // Indicates that this message contains the entire state of the device.
+
+    bool   has_device_name = 4; // True if the device_name value is set. May be false if the device_name value has not changed and full_state is false.
+    string device_name     = 5; // The device name from the info service.
+
+    bool has_online = 6; // True if the online value is set. May be false if the online value has not changed and full_state is false.
+    bool online     = 7; // The device online state from the online service.
+
+    Service service = 8; // A service belonging to the device.
+}
+
+message FavoritesStreamRequest {}
+message FavoritesStreamResponse {
+    DeviceService device_service = 1; // Optional: A DeviceService update, possibly containing the full state.
+    string        key_removed    = 2; // Optional: Indicates the key of a DeviceService that was was removed.
+}
+
+message AddFavoriteRequest {
+    string device_id = 1;
+    string service_id = 2;
+}
+message AddFavoriteResponse {}
+
+message RemoveFavoriteRequest {
+    string device_id = 1;
+    string service_id = 2;
+}
+message RemoveFavoriteResponse {}

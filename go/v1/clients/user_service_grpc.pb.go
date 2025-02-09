@@ -28,6 +28,14 @@ type UserServiceClient interface {
 	// stream also includes a 10 second heartbeat (an empty Device) which should
 	// be ignored, but can be used to monitor the stream for disconnects.
 	DevicesStream(ctx context.Context, in *DevicesStreamRequest, opts ...grpc.CallOption) (UserService_DevicesStreamClient, error)
+	// Get a stream of DeviceService updates for favorites. The first batch of
+	// replies will be the current state of the favorites, followed by updates
+	// when they occur. The stream also includes a 10 second heartbeat (an empty
+	// response) which should be ignored, but can be used to monitor the stream
+	// for disconnects.
+	FavoritesStream(ctx context.Context, in *FavoritesStreamRequest, opts ...grpc.CallOption) (UserService_FavoritesStreamClient, error)
+	AddFavorite(ctx context.Context, in *AddFavoriteRequest, opts ...grpc.CallOption) (*AddFavoriteResponse, error)
+	RemoveFavorite(ctx context.Context, in *RemoveFavoriteRequest, opts ...grpc.CallOption) (*RemoveFavoriteResponse, error)
 	// Send an action to a device service.
 	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error)
 	// Send an image request to a device service.
@@ -106,8 +114,58 @@ func (x *userServiceDevicesStreamClient) Recv() (*Device, error) {
 	return m, nil
 }
 
+func (c *userServiceClient) FavoritesStream(ctx context.Context, in *FavoritesStreamRequest, opts ...grpc.CallOption) (UserService_FavoritesStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[2], "/woodhouse.api.v1.clients.UserService/FavoritesStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &userServiceFavoritesStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type UserService_FavoritesStreamClient interface {
+	Recv() (*FavoritesStreamResponse, error)
+	grpc.ClientStream
+}
+
+type userServiceFavoritesStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *userServiceFavoritesStreamClient) Recv() (*FavoritesStreamResponse, error) {
+	m := new(FavoritesStreamResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *userServiceClient) AddFavorite(ctx context.Context, in *AddFavoriteRequest, opts ...grpc.CallOption) (*AddFavoriteResponse, error) {
+	out := new(AddFavoriteResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/AddFavorite", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) RemoveFavorite(ctx context.Context, in *RemoveFavoriteRequest, opts ...grpc.CallOption) (*RemoveFavoriteResponse, error) {
+	out := new(RemoveFavoriteResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/RemoveFavorite", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[2], "/woodhouse.api.v1.clients.UserService/SendAction", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[3], "/woodhouse.api.v1.clients.UserService/SendAction", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +197,7 @@ func (x *userServiceSendActionClient) Recv() (*ActionResponse, error) {
 }
 
 func (c *userServiceClient) SendImageRequest(ctx context.Context, in *ImageRequest, opts ...grpc.CallOption) (UserService_SendImageRequestClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[3], "/woodhouse.api.v1.clients.UserService/SendImageRequest", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[4], "/woodhouse.api.v1.clients.UserService/SendImageRequest", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -180,6 +238,14 @@ type UserServiceServer interface {
 	// stream also includes a 10 second heartbeat (an empty Device) which should
 	// be ignored, but can be used to monitor the stream for disconnects.
 	DevicesStream(*DevicesStreamRequest, UserService_DevicesStreamServer) error
+	// Get a stream of DeviceService updates for favorites. The first batch of
+	// replies will be the current state of the favorites, followed by updates
+	// when they occur. The stream also includes a 10 second heartbeat (an empty
+	// response) which should be ignored, but can be used to monitor the stream
+	// for disconnects.
+	FavoritesStream(*FavoritesStreamRequest, UserService_FavoritesStreamServer) error
+	AddFavorite(context.Context, *AddFavoriteRequest) (*AddFavoriteResponse, error)
+	RemoveFavorite(context.Context, *RemoveFavoriteRequest) (*RemoveFavoriteResponse, error)
 	// Send an action to a device service.
 	SendAction(*ActionRequest, UserService_SendActionServer) error
 	// Send an image request to a device service.
@@ -196,6 +262,15 @@ func (UnimplementedUserServiceServer) GetDevices(*GetDevicesRequest, UserService
 }
 func (UnimplementedUserServiceServer) DevicesStream(*DevicesStreamRequest, UserService_DevicesStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method DevicesStream not implemented")
+}
+func (UnimplementedUserServiceServer) FavoritesStream(*FavoritesStreamRequest, UserService_FavoritesStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method FavoritesStream not implemented")
+}
+func (UnimplementedUserServiceServer) AddFavorite(context.Context, *AddFavoriteRequest) (*AddFavoriteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddFavorite not implemented")
+}
+func (UnimplementedUserServiceServer) RemoveFavorite(context.Context, *RemoveFavoriteRequest) (*RemoveFavoriteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveFavorite not implemented")
 }
 func (UnimplementedUserServiceServer) SendAction(*ActionRequest, UserService_SendActionServer) error {
 	return status.Errorf(codes.Unimplemented, "method SendAction not implemented")
@@ -258,6 +333,63 @@ func (x *userServiceDevicesStreamServer) Send(m *Device) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _UserService_FavoritesStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(FavoritesStreamRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UserServiceServer).FavoritesStream(m, &userServiceFavoritesStreamServer{stream})
+}
+
+type UserService_FavoritesStreamServer interface {
+	Send(*FavoritesStreamResponse) error
+	grpc.ServerStream
+}
+
+type userServiceFavoritesStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *userServiceFavoritesStreamServer) Send(m *FavoritesStreamResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _UserService_AddFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddFavoriteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AddFavorite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/AddFavorite",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AddFavorite(ctx, req.(*AddFavoriteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_RemoveFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveFavoriteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RemoveFavorite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/RemoveFavorite",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RemoveFavorite(ctx, req.(*RemoveFavoriteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_SendAction_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(ActionRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -306,7 +438,16 @@ func (x *userServiceSendImageRequestServer) Send(m *ImageResponse) error {
 var UserService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "woodhouse.api.v1.clients.UserService",
 	HandlerType: (*UserServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "AddFavorite",
+			Handler:    _UserService_AddFavorite_Handler,
+		},
+		{
+			MethodName: "RemoveFavorite",
+			Handler:    _UserService_RemoveFavorite_Handler,
+		},
+	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "GetDevices",
@@ -316,6 +457,11 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "DevicesStream",
 			Handler:       _UserService_DevicesStream_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "FavoritesStream",
+			Handler:       _UserService_FavoritesStream_Handler,
 			ServerStreams: true,
 		},
 		{
