@@ -163,6 +163,7 @@ message Service {
     ServiceType typ             = 2; // The type of the service.
     string      alias           = 3; // Optional alias, sometimes used to differentiate between multiple services of the same type on a single device.
     repeated    Attribute attrs = 4; // The attributes that make up this service.
+    bool        favorite        = 5; // Indicates if this service is a favorite.
 }
 
 message Attribute {
@@ -181,6 +182,7 @@ message Attribute {
     ColorAttribute     color      = 10;
     EnumAttribute      enum       = 11;
     ImageAttribute     image      = 12;
+    // NumberScheduleAttribute number_schedule = 13;
 }
 
 message Value {
@@ -199,6 +201,7 @@ message Value {
     ColorValue     color      = 10;
     EnumValue      enum       = 11;
     ImageValue     image      = 12;
+    // NumberScheduleValue number_schedule = 13;
 }
 
 //************************** Attributes and Values **************************//
@@ -356,3 +359,44 @@ message ImageAttribute {
 
 message ImageValue {
 }
+
+// message NumberScheduleAttribute {
+//     message Entry {
+//         EntryTime time_point = 1;
+//         double value = 2;
+//     }
+
+//     message EntryTime {
+//         oneof time {
+//             TimePoint time_point = 1;
+//             SunPosition sun_position = 2;
+//         }
+//         sint64 offset = 3; // millis.
+//         repeated DayOfWeek days = 4;
+//     }
+
+//     message TimePoint {
+//         uint32 hour = 1;
+//         uint32 minute = 2;
+//         uint32 second = 3;
+//     }
+
+//     message SunPosition {
+
+//     }
+
+//     enum DayOfWeek {
+//         SUNDAY = 0;
+//         MONDAY = 1;
+//         TUESDAY = 2;
+//         WEDNESDAY = 3;
+//         THURSDAY = 4;
+//         FRIDAY = 5;
+//         SATURDAY = 6;
+//     }
+
+//     repeated Entry entires = 1;
+// }
+
+// message NumberScheduleValue {
+// }
