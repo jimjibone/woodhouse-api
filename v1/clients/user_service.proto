@@ -44,13 +44,22 @@ message DeviceService {
     string device_id  = 2; // The universally unique device ID (typically a hardware address or other static and unique identifier, e.g. "00158d00045c089f").
     bool   full_state = 3; // Indicates that this message contains the entire state of the device.
 
-    bool   has_device_name = 4; // True if the device_name value is set. May be false if the device_name value has not changed and full_state is false.
-    string device_name     = 5; // The device name from the info service.
+    // The device name from the info service. May not be set if the value has not changed and full_state is false.
+    optional string device_name = 5;
 
-    bool has_online = 6; // True if the online value is set. May be false if the online value has not changed and full_state is false.
-    bool online     = 7; // The device online state from the online service.
+    // The device online state from the online service. May not be set if the value has not changed and full_state is
+    // false.
+    optional bool online     = 7;
 
-    Service service = 8; // A service belonging to the device.
+    // The device last seen time from the online service. May not be set if the last_seen value has not changed and
+    // full_state is false.
+    optional TimeValue last_seen = 9;
+
+    // The device battery level state from the battery service. May not be set if the battery_level value has not
+    // changed and full_state is false, or if the device does not have the battery service.
+    optional int64 battery_level = 11;
+
+    Service service = 12; // A service belonging to the device.
 }
 
 message FavoritesStreamRequest {}
