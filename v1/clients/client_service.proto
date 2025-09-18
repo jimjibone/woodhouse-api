@@ -157,6 +157,7 @@ message Service {
         COLOR       = 19;
         ENUM        = 20;
         CAMERA      = 21;
+        COVER       = 22;
     }
 
     string      id              = 1; // The service ID (typically the name of the service type, e.g. "info").
