@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package woodhouse.api.v1.clients;
+option go_package = "github.com/jimjibone/woodhouse-4/api/go/v1/clients;clientsapi";
+
+service UserAuthService {
+    rpc Login(UserLoginRequest) returns (UserLoginResponse) {};
+    rpc Refresh(UserRefreshRequest) returns (UserRefreshResponse) {};
+    rpc Logout(UserLogoutRequest) returns (UserLogoutResponse) {};
+}
+
+message UserLoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message UserLoginResponse {
+    string refresh_token = 1;
+    string access_token = 2;
+}
+
+message UserRefreshRequest {
+    string refresh_token = 1;
+    uint32 renew_threshold = 2; // Days remaining before expiry to cause the refresh token to be renewed. Set to zero to always renew.
+}
+
+message UserRefreshResponse {
+    string refresh_token = 1;
+    string access_token = 2;
+}
+
+message UserLogoutRequest {
+    string refresh_token = 1;
+}
+
+message UserLogoutResponse {}

@@ -6,6 +6,9 @@ option go_package = "github.com/jimjibone/woodhouse-4/api/go/v1/clients;clientsa
 import "clients/client_service.proto";
 
 service UserService {
+    // Get the current device states. This returns a stream of devices which
+    // will close once all devices are sent. Use DevicesStream method to get a
+    // stream of current device states and updates.
     rpc GetDevices(GetDevicesRequest) returns (stream Device);
 
     // Get a stream of Device updates. The first batch of replies will be the
