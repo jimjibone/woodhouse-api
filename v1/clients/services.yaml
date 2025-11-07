@@ -60,7 +60,9 @@ services:
       - { name: current_version, perms: ro, type: string }
       - { name: update_version, perms: ro, type: string }
       - { name: start_update, perms: wo, type: bool }
-      - { name: update_progress, perms: ro, type: int, min: 0, max: 100, step: 1, unit: percentage }
+      - { name: updating, perms: ro, type: bool }
+      - { name: progress, perms: ro, type: int, min: 0, max: 100, step: 1, unit: percentage }
+      - { name: remaining, perms: ro, type: duration, min: 0, max: 3600, step: 1, unit: seconds }
 
   - name: identify
     description: Allows a device to make itself identifyable (typically flashing a light).
