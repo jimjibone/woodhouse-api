@@ -32,6 +32,16 @@ service UserService {
 
     // Send an image request to a device service.
     rpc SendImageRequest(ImageRequest) returns (stream ImageResponse);
+
+    // Get a stream of User updates. The first batch of replies will be the
+    // current state of the users, followed by updates when they occur. The
+    // stream also includes a 10 second heartbeat (an empty User) which should
+    // be ignored, but can be used to monitor the stream for disconnects.
+    rpc UsersStream (UsersStreamRequest) returns (stream UsersStreamResponse);
+
+    rpc AddUser (AddUserRequest) returns (AddUserResponse);
+    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
+    rpc RemoveUser (RemoveUserRequest) returns (RemoveUserResponse);
 }
 
 message GetDevicesRequest {}
@@ -72,13 +82,52 @@ message FavoritesStreamResponse {
 }
 
 message AddFavoriteRequest {
-    string device_id = 1;
+    string device_id  = 1;
     string service_id = 2;
 }
 message AddFavoriteResponse {}
 
 message RemoveFavoriteRequest {
-    string device_id = 1;
+    string device_id  = 1;
     string service_id = 2;
 }
 message RemoveFavoriteResponse {}
+
+message UsersStreamRequest {}
+message UsersStreamResponse {
+    User   user         = 1; // Optional: A User update, possibly containing the full state.
+    string user_removed = 2; // Optional: Indicates the key of a User that was removed.
+}
+
+message AddUserRequest {
+    string   username         = 1;
+    string   fullname        = 2;
+    UserRole role             = 3;
+    string   initial_password = 4;
+}
+message AddUserResponse {}
+
+message UpdateUserRequest {
+    string            username  = 1;
+    optional string   fullname = 2;
+    optional UserRole role      = 3;
+    optional string   password  = 4;
+}
+message UpdateUserResponse {}
+
+message RemoveUserRequest {
+    string username = 1;
+}
+message RemoveUserResponse {}
+
+message User {
+    string   username  = 1;
+    string   fullname = 2;
+    UserRole role      = 3;
+}
+
+enum UserRole {
+    USER_ROLE_UNDEFINED = 0;
+    USER_ROLE_ADMIN     = 1;
+    USER_ROLE_USER      = 2;
+}

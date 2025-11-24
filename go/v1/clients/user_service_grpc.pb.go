@@ -43,6 +43,14 @@ type UserServiceClient interface {
 	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error)
 	// Send an image request to a device service.
 	SendImageRequest(ctx context.Context, in *ImageRequest, opts ...grpc.CallOption) (UserService_SendImageRequestClient, error)
+	// Get a stream of User updates. The first batch of replies will be the
+	// current state of the users, followed by updates when they occur. The
+	// stream also includes a 10 second heartbeat (an empty User) which should
+	// be ignored, but can be used to monitor the stream for disconnects.
+	UsersStream(ctx context.Context, in *UsersStreamRequest, opts ...grpc.CallOption) (UserService_UsersStreamClient, error)
+	AddUser(ctx context.Context, in *AddUserRequest, opts ...grpc.CallOption) (*AddUserResponse, error)
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
+	RemoveUser(ctx context.Context, in *RemoveUserRequest, opts ...grpc.CallOption) (*RemoveUserResponse, error)
 }
 
 type userServiceClient struct {
@@ -231,6 +239,65 @@ func (x *userServiceSendImageRequestClient) Recv() (*ImageResponse, error) {
 	return m, nil
 }
 
+func (c *userServiceClient) UsersStream(ctx context.Context, in *UsersStreamRequest, opts ...grpc.CallOption) (UserService_UsersStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[5], "/woodhouse.api.v1.clients.UserService/UsersStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &userServiceUsersStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type UserService_UsersStreamClient interface {
+	Recv() (*UsersStreamResponse, error)
+	grpc.ClientStream
+}
+
+type userServiceUsersStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *userServiceUsersStreamClient) Recv() (*UsersStreamResponse, error) {
+	m := new(UsersStreamResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *userServiceClient) AddUser(ctx context.Context, in *AddUserRequest, opts ...grpc.CallOption) (*AddUserResponse, error) {
+	out := new(AddUserResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/AddUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
+	out := new(UpdateUserResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/UpdateUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) RemoveUser(ctx context.Context, in *RemoveUserRequest, opts ...grpc.CallOption) (*RemoveUserResponse, error) {
+	out := new(RemoveUserResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/RemoveUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -256,6 +323,14 @@ type UserServiceServer interface {
 	SendAction(*ActionRequest, UserService_SendActionServer) error
 	// Send an image request to a device service.
 	SendImageRequest(*ImageRequest, UserService_SendImageRequestServer) error
+	// Get a stream of User updates. The first batch of replies will be the
+	// current state of the users, followed by updates when they occur. The
+	// stream also includes a 10 second heartbeat (an empty User) which should
+	// be ignored, but can be used to monitor the stream for disconnects.
+	UsersStream(*UsersStreamRequest, UserService_UsersStreamServer) error
+	AddUser(context.Context, *AddUserRequest) (*AddUserResponse, error)
+	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
+	RemoveUser(context.Context, *RemoveUserRequest) (*RemoveUserResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -283,6 +358,18 @@ func (UnimplementedUserServiceServer) SendAction(*ActionRequest, UserService_Sen
 }
 func (UnimplementedUserServiceServer) SendImageRequest(*ImageRequest, UserService_SendImageRequestServer) error {
 	return status.Errorf(codes.Unimplemented, "method SendImageRequest not implemented")
+}
+func (UnimplementedUserServiceServer) UsersStream(*UsersStreamRequest, UserService_UsersStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method UsersStream not implemented")
+}
+func (UnimplementedUserServiceServer) AddUser(context.Context, *AddUserRequest) (*AddUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddUser not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+}
+func (UnimplementedUserServiceServer) RemoveUser(context.Context, *RemoveUserRequest) (*RemoveUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -438,6 +525,81 @@ func (x *userServiceSendImageRequestServer) Send(m *ImageResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _UserService_UsersStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(UsersStreamRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UserServiceServer).UsersStream(m, &userServiceUsersStreamServer{stream})
+}
+
+type UserService_UsersStreamServer interface {
+	Send(*UsersStreamResponse) error
+	grpc.ServerStream
+}
+
+type userServiceUsersStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *userServiceUsersStreamServer) Send(m *UsersStreamResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _UserService_AddUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AddUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/AddUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AddUser(ctx, req.(*AddUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/UpdateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateUser(ctx, req.(*UpdateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_RemoveUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RemoveUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/RemoveUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RemoveUser(ctx, req.(*RemoveUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -452,6 +614,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveFavorite",
 			Handler:    _UserService_RemoveFavorite_Handler,
+		},
+		{
+			MethodName: "AddUser",
+			Handler:    _UserService_AddUser_Handler,
+		},
+		{
+			MethodName: "UpdateUser",
+			Handler:    _UserService_UpdateUser_Handler,
+		},
+		{
+			MethodName: "RemoveUser",
+			Handler:    _UserService_RemoveUser_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
@@ -478,6 +652,11 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "SendImageRequest",
 			Handler:       _UserService_SendImageRequest_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "UsersStream",
+			Handler:       _UserService_UsersStream_Handler,
 			ServerStreams: true,
 		},
 	},
