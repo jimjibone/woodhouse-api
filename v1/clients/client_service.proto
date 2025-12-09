@@ -129,6 +129,7 @@ message Device {
     bool             full_state = 2; // Indicates that this message contains the entire state of the device.
     DeviceType       typ        = 3; // The general type of this device (helps with classification in user interfaces).
     repeated Service services   = 4; // The services supported by the device and their states.
+    string           client_id  = 5; // The ID of the client that provides this device. This is set by the core.
 }
 
 //********************************* Services *********************************//
