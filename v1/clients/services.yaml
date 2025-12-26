@@ -144,8 +144,8 @@ services:
     description: A sensor monitoring conditions of the local environment.
     optional_attributes:
       - { name: temperature, perms: ro, type: float, unit: celsius }
-      - { name: humidity, perms: ro, type: float, unit: % }
-      - { name: pressure, perms: ro, type: float, unit: % }
+      - { name: humidity, perms: ro, type: float, unit: '%' }
+      - { name: pressure, perms: ro, type: float, unit: '%' }
 
   - name: camera
     required_attributes:
@@ -153,6 +153,18 @@ services:
       - { name: detection, perms: ro, type: bool }
       - { name: detection_type, perms: ro, type: enum }
       - { name: detection_type, perms: ro, type: enum }
+
+  - name: motion
+    description: A sensor which detects motion, typically via PIR.
+    required_attributes:
+      - { name: motion, perms: ro, type: bool }
+
+  - name: presence
+    description: A sensor which detects the presence of objects.
+    required_attributes:
+      - { name: motion,   perms: ro, type: bool, desc: 'Motion was detected recently.' }
+      - { name: presence, perms: ro, type: bool, desc: 'Something is within the detection area (may not be moving).' }
+      - { name: distance, perms: ro, type: float, unit: meters, desc: 'The distance to the detected target.' }
 
 # Attribute types
 attributes:

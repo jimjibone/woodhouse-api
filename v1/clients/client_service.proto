@@ -26,7 +26,7 @@ service ClientService {
     // current state of the devices, followed by updates when they occur. The
     // stream also includes a 10 second heartbeat (an empty Device) which should
     // be ignored, but can be used to monitor the stream for disconnects.
-    rpc DeviceStream (DeviceStreamRequest) returns (stream Device);
+    rpc DeviceStream (stream DeviceStreamRequest) returns (stream Device);
 
     // Send an action to a device service.
     rpc SendAction(ActionRequest) returns (stream ActionResponse);
@@ -78,7 +78,13 @@ message ClientInfo {
 
 message DeviceStreamRequest {
     // A list of device IDs to include in the steam. Sends all devices if empty.
-    repeated string include_device_ids = 1;
+    // repeated string include_device_ids = 1;
+
+    // Optional request for a full device state to be sent on the stream. Useful
+    // where a device state was previously ignored but is now required, without
+    // having to restart the stream. The requested device state may not be sent
+    // immediately but will be sent when the server is ready.
+    string get_device_id = 1;
 }
 
 message ImageRequest {
@@ -159,6 +165,8 @@ message Service {
         ENUM        = 20;
         CAMERA      = 21;
         COVER       = 22;
+        MOTION      = 23;
+        PRESENCE    = 24;
     }
 
     string      id              = 1; // The service ID (typically the name of the service type, e.g. "info").
@@ -229,6 +237,7 @@ enum Unit {
     UNIT_WATTS                      = 10;  // watts
     UNIT_MIREDS                     = 11;  // mireds
     UNIT_HECTOPASCAL                = 12;  // hPa
+    UNIT_METERS                     = 13;  // meters
 }
 
 message BoolAttribute {
