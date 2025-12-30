@@ -755,8 +755,11 @@ type DeviceStreamRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// A list of device IDs to include in the steam. Sends all devices if empty.
-	IncludeDeviceIds []string `protobuf:"bytes,1,rep,name=include_device_ids,json=includeDeviceIds,proto3" json:"include_device_ids,omitempty"`
+	// Optional request for a full device state to be sent on the stream. Useful
+	// where a device state was previously ignored but is now required, without
+	// having to restart the stream. The requested device state may not be sent
+	// immediately but will be sent when the server is ready.
+	GetDeviceId string `protobuf:"bytes,1,opt,name=get_device_id,json=getDeviceId,proto3" json:"get_device_id,omitempty"`
 }
 
 func (x *DeviceStreamRequest) Reset() {
@@ -791,11 +794,11 @@ func (*DeviceStreamRequest) Descriptor() ([]byte, []int) {
 	return file_clients_client_service_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *DeviceStreamRequest) GetIncludeDeviceIds() []string {
+func (x *DeviceStreamRequest) GetGetDeviceId() string {
 	if x != nil {
-		return x.IncludeDeviceIds
+		return x.GetDeviceId
 	}
-	return nil
+	return ""
 }
 
 type ImageRequest struct {

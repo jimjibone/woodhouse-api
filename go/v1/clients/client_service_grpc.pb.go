@@ -39,7 +39,7 @@ type ClientServiceClient interface {
 	// current state of the devices, followed by updates when they occur. The
 	// stream also includes a 10 second heartbeat (an empty Device) which should
 	// be ignored, but can be used to monitor the stream for disconnects.
-	DeviceStream(ctx context.Context, in *DeviceStreamRequest, opts ...grpc.CallOption) (ClientService_DeviceStreamClient, error)
+	DeviceStream(ctx context.Context, opts ...grpc.CallOption) (ClientService_DeviceStreamClient, error)
 	// Send an action to a device service.
 	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (ClientService_SendActionClient, error)
 	// Send an image request to a device service.
@@ -150,28 +150,27 @@ func (x *clientServiceImageStreamClient) Recv() (*ImageRequest, error) {
 	return m, nil
 }
 
-func (c *clientServiceClient) DeviceStream(ctx context.Context, in *DeviceStreamRequest, opts ...grpc.CallOption) (ClientService_DeviceStreamClient, error) {
+func (c *clientServiceClient) DeviceStream(ctx context.Context, opts ...grpc.CallOption) (ClientService_DeviceStreamClient, error) {
 	stream, err := c.cc.NewStream(ctx, &ClientService_ServiceDesc.Streams[3], "/woodhouse.api.v1.clients.ClientService/DeviceStream", opts...)
 	if err != nil {
 		return nil, err
 	}
 	x := &clientServiceDeviceStreamClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
 	return x, nil
 }
 
 type ClientService_DeviceStreamClient interface {
+	Send(*DeviceStreamRequest) error
 	Recv() (*Device, error)
 	grpc.ClientStream
 }
 
 type clientServiceDeviceStreamClient struct {
 	grpc.ClientStream
+}
+
+func (x *clientServiceDeviceStreamClient) Send(m *DeviceStreamRequest) error {
+	return x.ClientStream.SendMsg(m)
 }
 
 func (x *clientServiceDeviceStreamClient) Recv() (*Device, error) {
@@ -267,7 +266,7 @@ type ClientServiceServer interface {
 	// current state of the devices, followed by updates when they occur. The
 	// stream also includes a 10 second heartbeat (an empty Device) which should
 	// be ignored, but can be used to monitor the stream for disconnects.
-	DeviceStream(*DeviceStreamRequest, ClientService_DeviceStreamServer) error
+	DeviceStream(ClientService_DeviceStreamServer) error
 	// Send an action to a device service.
 	SendAction(*ActionRequest, ClientService_SendActionServer) error
 	// Send an image request to a device service.
@@ -288,7 +287,7 @@ func (UnimplementedClientServiceServer) ActionStream(ClientService_ActionStreamS
 func (UnimplementedClientServiceServer) ImageStream(ClientService_ImageStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method ImageStream not implemented")
 }
-func (UnimplementedClientServiceServer) DeviceStream(*DeviceStreamRequest, ClientService_DeviceStreamServer) error {
+func (UnimplementedClientServiceServer) DeviceStream(ClientService_DeviceStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method DeviceStream not implemented")
 }
 func (UnimplementedClientServiceServer) SendAction(*ActionRequest, ClientService_SendActionServer) error {
@@ -389,15 +388,12 @@ func (x *clientServiceImageStreamServer) Recv() (*ImageResponse, error) {
 }
 
 func _ClientService_DeviceStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(DeviceStreamRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(ClientServiceServer).DeviceStream(m, &clientServiceDeviceStreamServer{stream})
+	return srv.(ClientServiceServer).DeviceStream(&clientServiceDeviceStreamServer{stream})
 }
 
 type ClientService_DeviceStreamServer interface {
 	Send(*Device) error
+	Recv() (*DeviceStreamRequest, error)
 	grpc.ServerStream
 }
 
@@ -407,6 +403,14 @@ type clientServiceDeviceStreamServer struct {
 
 func (x *clientServiceDeviceStreamServer) Send(m *Device) error {
 	return x.ServerStream.SendMsg(m)
+}
+
+func (x *clientServiceDeviceStreamServer) Recv() (*DeviceStreamRequest, error) {
+	m := new(DeviceStreamRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 func _ClientService_SendAction_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -480,6 +484,7 @@ var ClientService_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "DeviceStream",
 			Handler:       _ClientService_DeviceStream_Handler,
 			ServerStreams: true,
+			ClientStreams: true,
 		},
 		{
 			StreamName:    "SendAction",
