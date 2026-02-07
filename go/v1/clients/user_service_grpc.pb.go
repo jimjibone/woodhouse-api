@@ -22,6 +22,15 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
+	// Get the current Client states. This returns a stream of Clients which
+	// will close once all Clients are sent. Use ClientsStream method to get a
+	// stream of current Client states and updates.
+	GetClients(ctx context.Context, in *GetClientsRequest, opts ...grpc.CallOption) (UserService_GetClientsClient, error)
+	// Get a stream of Client updates. The first batch of replies will be the
+	// current state of the clients, followed by updates when they occur. The
+	// stream also includes a 10 second heartbeat (an empty Client) which should
+	// be ignored, but can be used to monitor the stream for disconnects.
+	ClientsStream(ctx context.Context, in *ClientsStreamRequest, opts ...grpc.CallOption) (UserService_ClientsStreamClient, error)
 	// Get the current device states. This returns a stream of devices which
 	// will close once all devices are sent. Use DevicesStream method to get a
 	// stream of current device states and updates.
@@ -61,8 +70,72 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
+func (c *userServiceClient) GetClients(ctx context.Context, in *GetClientsRequest, opts ...grpc.CallOption) (UserService_GetClientsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[0], "/woodhouse.api.v1.clients.UserService/GetClients", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &userServiceGetClientsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type UserService_GetClientsClient interface {
+	Recv() (*Client, error)
+	grpc.ClientStream
+}
+
+type userServiceGetClientsClient struct {
+	grpc.ClientStream
+}
+
+func (x *userServiceGetClientsClient) Recv() (*Client, error) {
+	m := new(Client)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *userServiceClient) ClientsStream(ctx context.Context, in *ClientsStreamRequest, opts ...grpc.CallOption) (UserService_ClientsStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[1], "/woodhouse.api.v1.clients.UserService/ClientsStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &userServiceClientsStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type UserService_ClientsStreamClient interface {
+	Recv() (*Client, error)
+	grpc.ClientStream
+}
+
+type userServiceClientsStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *userServiceClientsStreamClient) Recv() (*Client, error) {
+	m := new(Client)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *userServiceClient) GetDevices(ctx context.Context, in *GetDevicesRequest, opts ...grpc.CallOption) (UserService_GetDevicesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[0], "/woodhouse.api.v1.clients.UserService/GetDevices", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[2], "/woodhouse.api.v1.clients.UserService/GetDevices", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +167,7 @@ func (x *userServiceGetDevicesClient) Recv() (*Device, error) {
 }
 
 func (c *userServiceClient) DevicesStream(ctx context.Context, in *DevicesStreamRequest, opts ...grpc.CallOption) (UserService_DevicesStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[1], "/woodhouse.api.v1.clients.UserService/DevicesStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[3], "/woodhouse.api.v1.clients.UserService/DevicesStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +199,7 @@ func (x *userServiceDevicesStreamClient) Recv() (*Device, error) {
 }
 
 func (c *userServiceClient) FavoritesStream(ctx context.Context, in *FavoritesStreamRequest, opts ...grpc.CallOption) (UserService_FavoritesStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[2], "/woodhouse.api.v1.clients.UserService/FavoritesStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[4], "/woodhouse.api.v1.clients.UserService/FavoritesStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +249,7 @@ func (c *userServiceClient) RemoveFavorite(ctx context.Context, in *RemoveFavori
 }
 
 func (c *userServiceClient) SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[3], "/woodhouse.api.v1.clients.UserService/SendAction", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[5], "/woodhouse.api.v1.clients.UserService/SendAction", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -208,7 +281,7 @@ func (x *userServiceSendActionClient) Recv() (*ActionResponse, error) {
 }
 
 func (c *userServiceClient) SendImageRequest(ctx context.Context, in *ImageRequest, opts ...grpc.CallOption) (UserService_SendImageRequestClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[4], "/woodhouse.api.v1.clients.UserService/SendImageRequest", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[6], "/woodhouse.api.v1.clients.UserService/SendImageRequest", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +313,7 @@ func (x *userServiceSendImageRequestClient) Recv() (*ImageResponse, error) {
 }
 
 func (c *userServiceClient) UsersStream(ctx context.Context, in *UsersStreamRequest, opts ...grpc.CallOption) (UserService_UsersStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[5], "/woodhouse.api.v1.clients.UserService/UsersStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[7], "/woodhouse.api.v1.clients.UserService/UsersStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -302,6 +375,15 @@ func (c *userServiceClient) RemoveUser(ctx context.Context, in *RemoveUserReques
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
+	// Get the current Client states. This returns a stream of Clients which
+	// will close once all Clients are sent. Use ClientsStream method to get a
+	// stream of current Client states and updates.
+	GetClients(*GetClientsRequest, UserService_GetClientsServer) error
+	// Get a stream of Client updates. The first batch of replies will be the
+	// current state of the clients, followed by updates when they occur. The
+	// stream also includes a 10 second heartbeat (an empty Client) which should
+	// be ignored, but can be used to monitor the stream for disconnects.
+	ClientsStream(*ClientsStreamRequest, UserService_ClientsStreamServer) error
 	// Get the current device states. This returns a stream of devices which
 	// will close once all devices are sent. Use DevicesStream method to get a
 	// stream of current device states and updates.
@@ -338,6 +420,12 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
+func (UnimplementedUserServiceServer) GetClients(*GetClientsRequest, UserService_GetClientsServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetClients not implemented")
+}
+func (UnimplementedUserServiceServer) ClientsStream(*ClientsStreamRequest, UserService_ClientsStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method ClientsStream not implemented")
+}
 func (UnimplementedUserServiceServer) GetDevices(*GetDevicesRequest, UserService_GetDevicesServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetDevices not implemented")
 }
@@ -382,6 +470,48 @@ type UnsafeUserServiceServer interface {
 
 func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 	s.RegisterService(&UserService_ServiceDesc, srv)
+}
+
+func _UserService_GetClients_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetClientsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UserServiceServer).GetClients(m, &userServiceGetClientsServer{stream})
+}
+
+type UserService_GetClientsServer interface {
+	Send(*Client) error
+	grpc.ServerStream
+}
+
+type userServiceGetClientsServer struct {
+	grpc.ServerStream
+}
+
+func (x *userServiceGetClientsServer) Send(m *Client) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _UserService_ClientsStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ClientsStreamRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UserServiceServer).ClientsStream(m, &userServiceClientsStreamServer{stream})
+}
+
+type UserService_ClientsStreamServer interface {
+	Send(*Client) error
+	grpc.ServerStream
+}
+
+type userServiceClientsStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *userServiceClientsStreamServer) Send(m *Client) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 func _UserService_GetDevices_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -629,6 +759,16 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "GetClients",
+			Handler:       _UserService_GetClients_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "ClientsStream",
+			Handler:       _UserService_ClientsStream_Handler,
+			ServerStreams: true,
+		},
 		{
 			StreamName:    "GetDevices",
 			Handler:       _UserService_GetDevices_Handler,

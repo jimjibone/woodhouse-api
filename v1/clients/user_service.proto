@@ -3,9 +3,21 @@ syntax = "proto3";
 package woodhouse.api.v1.clients;
 option go_package = "github.com/jimjibone/woodhouse-4/api/go/v1/clients;clientsapi";
 
+import "clients/client.proto";
 import "clients/client_service.proto";
 
 service UserService {
+    // Get the current Client states. This returns a stream of Clients which
+    // will close once all Clients are sent. Use ClientsStream method to get a
+    // stream of current Client states and updates.
+    rpc GetClients(GetClientsRequest) returns (stream Client);
+
+    // Get a stream of Client updates. The first batch of replies will be the
+    // current state of the clients, followed by updates when they occur. The
+    // stream also includes a 10 second heartbeat (an empty Client) which should
+    // be ignored, but can be used to monitor the stream for disconnects.
+    rpc ClientsStream(ClientsStreamRequest) returns (stream Client);
+
     // Get the current device states. This returns a stream of devices which
     // will close once all devices are sent. Use DevicesStream method to get a
     // stream of current device states and updates.
@@ -43,6 +55,9 @@ service UserService {
     rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
     rpc RemoveUser (RemoveUserRequest) returns (RemoveUserResponse);
 }
+
+message GetClientsRequest {}
+message ClientsStreamRequest {}
 
 message GetDevicesRequest {}
 
