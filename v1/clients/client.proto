@@ -4,7 +4,21 @@ package woodhouse.api.v1.clients;
 option go_package = "github.com/jimjibone/woodhouse-4/api/go/v1/clients;clientsapi";
 
 message Client {
-    string id     = 1;
-    string name   = 2;
-    bool   online = 3;
+    string id = 1;
+    string name = 2;
+    string description = 3;
+
+    bool paired = 4;
+    bool blocked = 5;
+    bool online = 6;
+
+    uint64 first_seen = 7; // Seconds since Unix epoch 1970-01-01T00:00:00Z.
+    uint64 last_seen = 8; // Seconds since Unix epoch 1970-01-01T00:00:00Z.
+}
+
+message PairingRequest {
+    string client_id = 1;
+    string name = 2;
+    string description = 3;
+    uint64 requested_at = 4; // Seconds since Unix epoch 1970-01-01T00:00:00Z.
 }

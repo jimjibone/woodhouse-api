@@ -31,6 +31,21 @@ type UserServiceClient interface {
 	// stream also includes a 10 second heartbeat (an empty Client) which should
 	// be ignored, but can be used to monitor the stream for disconnects.
 	ClientsStream(ctx context.Context, in *ClientsStreamRequest, opts ...grpc.CallOption) (UserService_ClientsStreamClient, error)
+	// Get a stream of pending pairing requests and updates. The first batch of
+	// replies will be the current set, followed by updates when they occur. The
+	// stream also includes a 10 second heartbeat (an empty response) which should
+	// be ignored, but can be used to monitor the stream for disconnects.
+	PairingRequestsStream(ctx context.Context, in *PairingRequestsStreamRequest, opts ...grpc.CallOption) (UserService_PairingRequestsStreamClient, error)
+	// Approve a pairing request.
+	ApprovePairing(ctx context.Context, in *ApprovePairingRequest, opts ...grpc.CallOption) (*ApprovePairingResponse, error)
+	// Deny a pairing request.
+	DenyPairing(ctx context.Context, in *DenyPairingRequest, opts ...grpc.CallOption) (*DenyPairingResponse, error)
+	// Unpair a client and invalidate auth tokens.
+	UnpairClient(ctx context.Context, in *UnpairClientRequest, opts ...grpc.CallOption) (*UnpairClientResponse, error)
+	// Block a client (unpairs the client and blocks future pairing requests).
+	BlockClient(ctx context.Context, in *BlockClientRequest, opts ...grpc.CallOption) (*BlockClientResponse, error)
+	// Unblock a client (allows pairing for previously blocked clients).
+	UnblockClient(ctx context.Context, in *UnblockClientRequest, opts ...grpc.CallOption) (*UnblockClientResponse, error)
 	// Get the current device states. This returns a stream of devices which
 	// will close once all devices are sent. Use DevicesStream method to get a
 	// stream of current device states and updates.
@@ -134,8 +149,85 @@ func (x *userServiceClientsStreamClient) Recv() (*Client, error) {
 	return m, nil
 }
 
+func (c *userServiceClient) PairingRequestsStream(ctx context.Context, in *PairingRequestsStreamRequest, opts ...grpc.CallOption) (UserService_PairingRequestsStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[2], "/woodhouse.api.v1.clients.UserService/PairingRequestsStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &userServicePairingRequestsStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type UserService_PairingRequestsStreamClient interface {
+	Recv() (*PairingRequestsStreamResponse, error)
+	grpc.ClientStream
+}
+
+type userServicePairingRequestsStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *userServicePairingRequestsStreamClient) Recv() (*PairingRequestsStreamResponse, error) {
+	m := new(PairingRequestsStreamResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *userServiceClient) ApprovePairing(ctx context.Context, in *ApprovePairingRequest, opts ...grpc.CallOption) (*ApprovePairingResponse, error) {
+	out := new(ApprovePairingResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/ApprovePairing", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) DenyPairing(ctx context.Context, in *DenyPairingRequest, opts ...grpc.CallOption) (*DenyPairingResponse, error) {
+	out := new(DenyPairingResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/DenyPairing", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UnpairClient(ctx context.Context, in *UnpairClientRequest, opts ...grpc.CallOption) (*UnpairClientResponse, error) {
+	out := new(UnpairClientResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/UnpairClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) BlockClient(ctx context.Context, in *BlockClientRequest, opts ...grpc.CallOption) (*BlockClientResponse, error) {
+	out := new(BlockClientResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/BlockClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UnblockClient(ctx context.Context, in *UnblockClientRequest, opts ...grpc.CallOption) (*UnblockClientResponse, error) {
+	out := new(UnblockClientResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/UnblockClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) GetDevices(ctx context.Context, in *GetDevicesRequest, opts ...grpc.CallOption) (UserService_GetDevicesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[2], "/woodhouse.api.v1.clients.UserService/GetDevices", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[3], "/woodhouse.api.v1.clients.UserService/GetDevices", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +259,7 @@ func (x *userServiceGetDevicesClient) Recv() (*Device, error) {
 }
 
 func (c *userServiceClient) DevicesStream(ctx context.Context, in *DevicesStreamRequest, opts ...grpc.CallOption) (UserService_DevicesStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[3], "/woodhouse.api.v1.clients.UserService/DevicesStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[4], "/woodhouse.api.v1.clients.UserService/DevicesStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -199,7 +291,7 @@ func (x *userServiceDevicesStreamClient) Recv() (*Device, error) {
 }
 
 func (c *userServiceClient) FavoritesStream(ctx context.Context, in *FavoritesStreamRequest, opts ...grpc.CallOption) (UserService_FavoritesStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[4], "/woodhouse.api.v1.clients.UserService/FavoritesStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[5], "/woodhouse.api.v1.clients.UserService/FavoritesStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -249,7 +341,7 @@ func (c *userServiceClient) RemoveFavorite(ctx context.Context, in *RemoveFavori
 }
 
 func (c *userServiceClient) SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[5], "/woodhouse.api.v1.clients.UserService/SendAction", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[6], "/woodhouse.api.v1.clients.UserService/SendAction", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +373,7 @@ func (x *userServiceSendActionClient) Recv() (*ActionResponse, error) {
 }
 
 func (c *userServiceClient) SendImageRequest(ctx context.Context, in *ImageRequest, opts ...grpc.CallOption) (UserService_SendImageRequestClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[6], "/woodhouse.api.v1.clients.UserService/SendImageRequest", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[7], "/woodhouse.api.v1.clients.UserService/SendImageRequest", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -313,7 +405,7 @@ func (x *userServiceSendImageRequestClient) Recv() (*ImageResponse, error) {
 }
 
 func (c *userServiceClient) UsersStream(ctx context.Context, in *UsersStreamRequest, opts ...grpc.CallOption) (UserService_UsersStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[7], "/woodhouse.api.v1.clients.UserService/UsersStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[8], "/woodhouse.api.v1.clients.UserService/UsersStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -384,6 +476,21 @@ type UserServiceServer interface {
 	// stream also includes a 10 second heartbeat (an empty Client) which should
 	// be ignored, but can be used to monitor the stream for disconnects.
 	ClientsStream(*ClientsStreamRequest, UserService_ClientsStreamServer) error
+	// Get a stream of pending pairing requests and updates. The first batch of
+	// replies will be the current set, followed by updates when they occur. The
+	// stream also includes a 10 second heartbeat (an empty response) which should
+	// be ignored, but can be used to monitor the stream for disconnects.
+	PairingRequestsStream(*PairingRequestsStreamRequest, UserService_PairingRequestsStreamServer) error
+	// Approve a pairing request.
+	ApprovePairing(context.Context, *ApprovePairingRequest) (*ApprovePairingResponse, error)
+	// Deny a pairing request.
+	DenyPairing(context.Context, *DenyPairingRequest) (*DenyPairingResponse, error)
+	// Unpair a client and invalidate auth tokens.
+	UnpairClient(context.Context, *UnpairClientRequest) (*UnpairClientResponse, error)
+	// Block a client (unpairs the client and blocks future pairing requests).
+	BlockClient(context.Context, *BlockClientRequest) (*BlockClientResponse, error)
+	// Unblock a client (allows pairing for previously blocked clients).
+	UnblockClient(context.Context, *UnblockClientRequest) (*UnblockClientResponse, error)
 	// Get the current device states. This returns a stream of devices which
 	// will close once all devices are sent. Use DevicesStream method to get a
 	// stream of current device states and updates.
@@ -425,6 +532,24 @@ func (UnimplementedUserServiceServer) GetClients(*GetClientsRequest, UserService
 }
 func (UnimplementedUserServiceServer) ClientsStream(*ClientsStreamRequest, UserService_ClientsStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method ClientsStream not implemented")
+}
+func (UnimplementedUserServiceServer) PairingRequestsStream(*PairingRequestsStreamRequest, UserService_PairingRequestsStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method PairingRequestsStream not implemented")
+}
+func (UnimplementedUserServiceServer) ApprovePairing(context.Context, *ApprovePairingRequest) (*ApprovePairingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ApprovePairing not implemented")
+}
+func (UnimplementedUserServiceServer) DenyPairing(context.Context, *DenyPairingRequest) (*DenyPairingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DenyPairing not implemented")
+}
+func (UnimplementedUserServiceServer) UnpairClient(context.Context, *UnpairClientRequest) (*UnpairClientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnpairClient not implemented")
+}
+func (UnimplementedUserServiceServer) BlockClient(context.Context, *BlockClientRequest) (*BlockClientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BlockClient not implemented")
+}
+func (UnimplementedUserServiceServer) UnblockClient(context.Context, *UnblockClientRequest) (*UnblockClientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnblockClient not implemented")
 }
 func (UnimplementedUserServiceServer) GetDevices(*GetDevicesRequest, UserService_GetDevicesServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetDevices not implemented")
@@ -512,6 +637,117 @@ type userServiceClientsStreamServer struct {
 
 func (x *userServiceClientsStreamServer) Send(m *Client) error {
 	return x.ServerStream.SendMsg(m)
+}
+
+func _UserService_PairingRequestsStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(PairingRequestsStreamRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UserServiceServer).PairingRequestsStream(m, &userServicePairingRequestsStreamServer{stream})
+}
+
+type UserService_PairingRequestsStreamServer interface {
+	Send(*PairingRequestsStreamResponse) error
+	grpc.ServerStream
+}
+
+type userServicePairingRequestsStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *userServicePairingRequestsStreamServer) Send(m *PairingRequestsStreamResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _UserService_ApprovePairing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApprovePairingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ApprovePairing(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/ApprovePairing",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ApprovePairing(ctx, req.(*ApprovePairingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_DenyPairing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DenyPairingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).DenyPairing(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/DenyPairing",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).DenyPairing(ctx, req.(*DenyPairingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UnpairClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnpairClientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UnpairClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/UnpairClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UnpairClient(ctx, req.(*UnpairClientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_BlockClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockClientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).BlockClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/BlockClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).BlockClient(ctx, req.(*BlockClientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UnblockClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnblockClientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UnblockClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/UnblockClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UnblockClient(ctx, req.(*UnblockClientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_GetDevices_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -738,6 +974,26 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "ApprovePairing",
+			Handler:    _UserService_ApprovePairing_Handler,
+		},
+		{
+			MethodName: "DenyPairing",
+			Handler:    _UserService_DenyPairing_Handler,
+		},
+		{
+			MethodName: "UnpairClient",
+			Handler:    _UserService_UnpairClient_Handler,
+		},
+		{
+			MethodName: "BlockClient",
+			Handler:    _UserService_BlockClient_Handler,
+		},
+		{
+			MethodName: "UnblockClient",
+			Handler:    _UserService_UnblockClient_Handler,
+		},
+		{
 			MethodName: "AddFavorite",
 			Handler:    _UserService_AddFavorite_Handler,
 		},
@@ -767,6 +1023,11 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "ClientsStream",
 			Handler:       _UserService_ClientsStream_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "PairingRequestsStream",
+			Handler:       _UserService_PairingRequestsStream_Handler,
 			ServerStreams: true,
 		},
 		{
