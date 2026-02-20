@@ -128,6 +128,7 @@ services:
     optional_attributes:
       - { name: cooling_setpoint, perms: rw, type: float, min: 5, max: 30, step: 0.5, unit: celsius }
       - { name: pi_heating_demand, perms: ro, type: int, min: 0, max: 100, step: 1, unit: percentage }
+      - { name: heating_demand, perms: ro, type: bool }
 
   - name: cover
     description: A cover control device, such as a motor to control the position of a window blind.

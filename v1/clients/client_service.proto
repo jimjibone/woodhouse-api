@@ -73,7 +73,7 @@ message ClientInfo {
     string id          = 1; // The client ID (e.g. "zigbee").
     string name        = 2; // Name of the client (e.g. "Zigbee").
     string description = 3; // Description of the client (e.g. "Provides support for Zigbee devices via zigbee2mqtt").
-    uint64 boot_time   = 4; // Boot time of this client in seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z.
+    string version     = 4; // Version of the client (e.g. "0.1.0").
 }
 
 message DeviceStreamRequest {

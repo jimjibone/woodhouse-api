@@ -69,6 +69,578 @@ func (UserRole) EnumDescriptor() ([]byte, []int) {
 	return file_clients_user_service_proto_rawDescGZIP(), []int{0}
 }
 
+type GetClientsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *GetClientsRequest) Reset() {
+	*x = GetClientsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetClientsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetClientsRequest) ProtoMessage() {}
+
+func (x *GetClientsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetClientsRequest.ProtoReflect.Descriptor instead.
+func (*GetClientsRequest) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{0}
+}
+
+type ClientsStreamRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ClientsStreamRequest) Reset() {
+	*x = ClientsStreamRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ClientsStreamRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClientsStreamRequest) ProtoMessage() {}
+
+func (x *ClientsStreamRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClientsStreamRequest.ProtoReflect.Descriptor instead.
+func (*ClientsStreamRequest) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{1}
+}
+
+type ClientsStreamResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Client        *Client `protobuf:"bytes,1,opt,name=client,proto3" json:"client,omitempty"`                                    // Optional: A client update, possibly containing the full state.
+	ClientRemoved string  `protobuf:"bytes,2,opt,name=client_removed,json=clientRemoved,proto3" json:"client_removed,omitempty"` // Optional: Indicates the client_id of a client that was removed.
+}
+
+func (x *ClientsStreamResponse) Reset() {
+	*x = ClientsStreamResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ClientsStreamResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClientsStreamResponse) ProtoMessage() {}
+
+func (x *ClientsStreamResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClientsStreamResponse.ProtoReflect.Descriptor instead.
+func (*ClientsStreamResponse) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ClientsStreamResponse) GetClient() *Client {
+	if x != nil {
+		return x.Client
+	}
+	return nil
+}
+
+func (x *ClientsStreamResponse) GetClientRemoved() string {
+	if x != nil {
+		return x.ClientRemoved
+	}
+	return ""
+}
+
+type PairingRequestsStreamRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *PairingRequestsStreamRequest) Reset() {
+	*x = PairingRequestsStreamRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PairingRequestsStreamRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PairingRequestsStreamRequest) ProtoMessage() {}
+
+func (x *PairingRequestsStreamRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PairingRequestsStreamRequest.ProtoReflect.Descriptor instead.
+func (*PairingRequestsStreamRequest) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{3}
+}
+
+type PairingRequestsStreamResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PairingRequest *PairingRequest `protobuf:"bytes,1,opt,name=pairing_request,json=pairingRequest,proto3" json:"pairing_request,omitempty"` // Optional: A pairing request update, possibly containing the full state.
+	PairingRemoved string          `protobuf:"bytes,2,opt,name=pairing_removed,json=pairingRemoved,proto3" json:"pairing_removed,omitempty"` // Optional: Indicates the client_id of a pairing request that was removed.
+}
+
+func (x *PairingRequestsStreamResponse) Reset() {
+	*x = PairingRequestsStreamResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PairingRequestsStreamResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PairingRequestsStreamResponse) ProtoMessage() {}
+
+func (x *PairingRequestsStreamResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PairingRequestsStreamResponse.ProtoReflect.Descriptor instead.
+func (*PairingRequestsStreamResponse) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *PairingRequestsStreamResponse) GetPairingRequest() *PairingRequest {
+	if x != nil {
+		return x.PairingRequest
+	}
+	return nil
+}
+
+func (x *PairingRequestsStreamResponse) GetPairingRemoved() string {
+	if x != nil {
+		return x.PairingRemoved
+	}
+	return ""
+}
+
+type ApprovePairingRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ClientId    string `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	PairingCode string `protobuf:"bytes,2,opt,name=pairing_code,json=pairingCode,proto3" json:"pairing_code,omitempty"`
+}
+
+func (x *ApprovePairingRequest) Reset() {
+	*x = ApprovePairingRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ApprovePairingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ApprovePairingRequest) ProtoMessage() {}
+
+func (x *ApprovePairingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ApprovePairingRequest.ProtoReflect.Descriptor instead.
+func (*ApprovePairingRequest) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ApprovePairingRequest) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
+}
+
+func (x *ApprovePairingRequest) GetPairingCode() string {
+	if x != nil {
+		return x.PairingCode
+	}
+	return ""
+}
+
+type ApprovePairingResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ApprovePairingResponse) Reset() {
+	*x = ApprovePairingResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ApprovePairingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ApprovePairingResponse) ProtoMessage() {}
+
+func (x *ApprovePairingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ApprovePairingResponse.ProtoReflect.Descriptor instead.
+func (*ApprovePairingResponse) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{6}
+}
+
+type DenyPairingRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ClientId string `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+}
+
+func (x *DenyPairingRequest) Reset() {
+	*x = DenyPairingRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DenyPairingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DenyPairingRequest) ProtoMessage() {}
+
+func (x *DenyPairingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DenyPairingRequest.ProtoReflect.Descriptor instead.
+func (*DenyPairingRequest) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *DenyPairingRequest) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
+}
+
+type DenyPairingResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *DenyPairingResponse) Reset() {
+	*x = DenyPairingResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DenyPairingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DenyPairingResponse) ProtoMessage() {}
+
+func (x *DenyPairingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DenyPairingResponse.ProtoReflect.Descriptor instead.
+func (*DenyPairingResponse) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{8}
+}
+
+type UnpairClientRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ClientId string `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+}
+
+func (x *UnpairClientRequest) Reset() {
+	*x = UnpairClientRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UnpairClientRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnpairClientRequest) ProtoMessage() {}
+
+func (x *UnpairClientRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnpairClientRequest.ProtoReflect.Descriptor instead.
+func (*UnpairClientRequest) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *UnpairClientRequest) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
+}
+
+type UnpairClientResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *UnpairClientResponse) Reset() {
+	*x = UnpairClientResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UnpairClientResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnpairClientResponse) ProtoMessage() {}
+
+func (x *UnpairClientResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnpairClientResponse.ProtoReflect.Descriptor instead.
+func (*UnpairClientResponse) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{10}
+}
+
+type ForgetClientRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ClientId string `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+}
+
+func (x *ForgetClientRequest) Reset() {
+	*x = ForgetClientRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ForgetClientRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ForgetClientRequest) ProtoMessage() {}
+
+func (x *ForgetClientRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ForgetClientRequest.ProtoReflect.Descriptor instead.
+func (*ForgetClientRequest) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *ForgetClientRequest) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
+}
+
+type ForgetClientResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ForgetClientResponse) Reset() {
+	*x = ForgetClientResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_clients_user_service_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ForgetClientResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ForgetClientResponse) ProtoMessage() {}
+
+func (x *ForgetClientResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ForgetClientResponse.ProtoReflect.Descriptor instead.
+func (*ForgetClientResponse) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{12}
+}
+
 type GetDevicesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -78,7 +650,7 @@ type GetDevicesRequest struct {
 func (x *GetDevicesRequest) Reset() {
 	*x = GetDevicesRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[0]
+		mi := &file_clients_user_service_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -91,7 +663,7 @@ func (x *GetDevicesRequest) String() string {
 func (*GetDevicesRequest) ProtoMessage() {}
 
 func (x *GetDevicesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[0]
+	mi := &file_clients_user_service_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -104,7 +676,7 @@ func (x *GetDevicesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDevicesRequest.ProtoReflect.Descriptor instead.
 func (*GetDevicesRequest) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{0}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{13}
 }
 
 type DevicesStreamRequest struct {
@@ -119,7 +691,7 @@ type DevicesStreamRequest struct {
 func (x *DevicesStreamRequest) Reset() {
 	*x = DevicesStreamRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[1]
+		mi := &file_clients_user_service_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -132,7 +704,7 @@ func (x *DevicesStreamRequest) String() string {
 func (*DevicesStreamRequest) ProtoMessage() {}
 
 func (x *DevicesStreamRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[1]
+	mi := &file_clients_user_service_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -145,7 +717,7 @@ func (x *DevicesStreamRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DevicesStreamRequest.ProtoReflect.Descriptor instead.
 func (*DevicesStreamRequest) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{1}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DevicesStreamRequest) GetIncludeDeviceIds() []string {
@@ -180,7 +752,7 @@ type DeviceService struct {
 func (x *DeviceService) Reset() {
 	*x = DeviceService{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[2]
+		mi := &file_clients_user_service_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -193,7 +765,7 @@ func (x *DeviceService) String() string {
 func (*DeviceService) ProtoMessage() {}
 
 func (x *DeviceService) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[2]
+	mi := &file_clients_user_service_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -206,7 +778,7 @@ func (x *DeviceService) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceService.ProtoReflect.Descriptor instead.
 func (*DeviceService) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{2}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *DeviceService) GetKey() string {
@@ -274,7 +846,7 @@ type FavoritesStreamRequest struct {
 func (x *FavoritesStreamRequest) Reset() {
 	*x = FavoritesStreamRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[3]
+		mi := &file_clients_user_service_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -287,7 +859,7 @@ func (x *FavoritesStreamRequest) String() string {
 func (*FavoritesStreamRequest) ProtoMessage() {}
 
 func (x *FavoritesStreamRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[3]
+	mi := &file_clients_user_service_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -300,7 +872,7 @@ func (x *FavoritesStreamRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FavoritesStreamRequest.ProtoReflect.Descriptor instead.
 func (*FavoritesStreamRequest) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{3}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{16}
 }
 
 type FavoritesStreamResponse struct {
@@ -315,7 +887,7 @@ type FavoritesStreamResponse struct {
 func (x *FavoritesStreamResponse) Reset() {
 	*x = FavoritesStreamResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[4]
+		mi := &file_clients_user_service_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -328,7 +900,7 @@ func (x *FavoritesStreamResponse) String() string {
 func (*FavoritesStreamResponse) ProtoMessage() {}
 
 func (x *FavoritesStreamResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[4]
+	mi := &file_clients_user_service_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -341,7 +913,7 @@ func (x *FavoritesStreamResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FavoritesStreamResponse.ProtoReflect.Descriptor instead.
 func (*FavoritesStreamResponse) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{4}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *FavoritesStreamResponse) GetDeviceService() *DeviceService {
@@ -370,7 +942,7 @@ type AddFavoriteRequest struct {
 func (x *AddFavoriteRequest) Reset() {
 	*x = AddFavoriteRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[5]
+		mi := &file_clients_user_service_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -383,7 +955,7 @@ func (x *AddFavoriteRequest) String() string {
 func (*AddFavoriteRequest) ProtoMessage() {}
 
 func (x *AddFavoriteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[5]
+	mi := &file_clients_user_service_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -396,7 +968,7 @@ func (x *AddFavoriteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddFavoriteRequest.ProtoReflect.Descriptor instead.
 func (*AddFavoriteRequest) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{5}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *AddFavoriteRequest) GetDeviceId() string {
@@ -422,7 +994,7 @@ type AddFavoriteResponse struct {
 func (x *AddFavoriteResponse) Reset() {
 	*x = AddFavoriteResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[6]
+		mi := &file_clients_user_service_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -435,7 +1007,7 @@ func (x *AddFavoriteResponse) String() string {
 func (*AddFavoriteResponse) ProtoMessage() {}
 
 func (x *AddFavoriteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[6]
+	mi := &file_clients_user_service_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -448,7 +1020,7 @@ func (x *AddFavoriteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddFavoriteResponse.ProtoReflect.Descriptor instead.
 func (*AddFavoriteResponse) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{6}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{19}
 }
 
 type RemoveFavoriteRequest struct {
@@ -463,7 +1035,7 @@ type RemoveFavoriteRequest struct {
 func (x *RemoveFavoriteRequest) Reset() {
 	*x = RemoveFavoriteRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[7]
+		mi := &file_clients_user_service_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -476,7 +1048,7 @@ func (x *RemoveFavoriteRequest) String() string {
 func (*RemoveFavoriteRequest) ProtoMessage() {}
 
 func (x *RemoveFavoriteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[7]
+	mi := &file_clients_user_service_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -489,7 +1061,7 @@ func (x *RemoveFavoriteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveFavoriteRequest.ProtoReflect.Descriptor instead.
 func (*RemoveFavoriteRequest) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{7}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *RemoveFavoriteRequest) GetDeviceId() string {
@@ -515,7 +1087,7 @@ type RemoveFavoriteResponse struct {
 func (x *RemoveFavoriteResponse) Reset() {
 	*x = RemoveFavoriteResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[8]
+		mi := &file_clients_user_service_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -528,7 +1100,7 @@ func (x *RemoveFavoriteResponse) String() string {
 func (*RemoveFavoriteResponse) ProtoMessage() {}
 
 func (x *RemoveFavoriteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[8]
+	mi := &file_clients_user_service_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -541,7 +1113,7 @@ func (x *RemoveFavoriteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveFavoriteResponse.ProtoReflect.Descriptor instead.
 func (*RemoveFavoriteResponse) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{8}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{21}
 }
 
 type UsersStreamRequest struct {
@@ -553,7 +1125,7 @@ type UsersStreamRequest struct {
 func (x *UsersStreamRequest) Reset() {
 	*x = UsersStreamRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[9]
+		mi := &file_clients_user_service_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -566,7 +1138,7 @@ func (x *UsersStreamRequest) String() string {
 func (*UsersStreamRequest) ProtoMessage() {}
 
 func (x *UsersStreamRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[9]
+	mi := &file_clients_user_service_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -579,7 +1151,7 @@ func (x *UsersStreamRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UsersStreamRequest.ProtoReflect.Descriptor instead.
 func (*UsersStreamRequest) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{9}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{22}
 }
 
 type UsersStreamResponse struct {
@@ -594,7 +1166,7 @@ type UsersStreamResponse struct {
 func (x *UsersStreamResponse) Reset() {
 	*x = UsersStreamResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[10]
+		mi := &file_clients_user_service_proto_msgTypes[23]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -607,7 +1179,7 @@ func (x *UsersStreamResponse) String() string {
 func (*UsersStreamResponse) ProtoMessage() {}
 
 func (x *UsersStreamResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[10]
+	mi := &file_clients_user_service_proto_msgTypes[23]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -620,7 +1192,7 @@ func (x *UsersStreamResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UsersStreamResponse.ProtoReflect.Descriptor instead.
 func (*UsersStreamResponse) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{10}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *UsersStreamResponse) GetUser() *User {
@@ -651,7 +1223,7 @@ type AddUserRequest struct {
 func (x *AddUserRequest) Reset() {
 	*x = AddUserRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[11]
+		mi := &file_clients_user_service_proto_msgTypes[24]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -664,7 +1236,7 @@ func (x *AddUserRequest) String() string {
 func (*AddUserRequest) ProtoMessage() {}
 
 func (x *AddUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[11]
+	mi := &file_clients_user_service_proto_msgTypes[24]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -677,7 +1249,7 @@ func (x *AddUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddUserRequest.ProtoReflect.Descriptor instead.
 func (*AddUserRequest) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{11}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *AddUserRequest) GetUsername() string {
@@ -717,7 +1289,7 @@ type AddUserResponse struct {
 func (x *AddUserResponse) Reset() {
 	*x = AddUserResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[12]
+		mi := &file_clients_user_service_proto_msgTypes[25]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -730,7 +1302,7 @@ func (x *AddUserResponse) String() string {
 func (*AddUserResponse) ProtoMessage() {}
 
 func (x *AddUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[12]
+	mi := &file_clients_user_service_proto_msgTypes[25]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -743,7 +1315,7 @@ func (x *AddUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddUserResponse.ProtoReflect.Descriptor instead.
 func (*AddUserResponse) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{12}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{25}
 }
 
 type UpdateUserRequest struct {
@@ -760,7 +1332,7 @@ type UpdateUserRequest struct {
 func (x *UpdateUserRequest) Reset() {
 	*x = UpdateUserRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[13]
+		mi := &file_clients_user_service_proto_msgTypes[26]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -773,7 +1345,7 @@ func (x *UpdateUserRequest) String() string {
 func (*UpdateUserRequest) ProtoMessage() {}
 
 func (x *UpdateUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[13]
+	mi := &file_clients_user_service_proto_msgTypes[26]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -786,7 +1358,7 @@ func (x *UpdateUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateUserRequest.ProtoReflect.Descriptor instead.
 func (*UpdateUserRequest) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{13}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *UpdateUserRequest) GetUsername() string {
@@ -826,7 +1398,7 @@ type UpdateUserResponse struct {
 func (x *UpdateUserResponse) Reset() {
 	*x = UpdateUserResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[14]
+		mi := &file_clients_user_service_proto_msgTypes[27]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -839,7 +1411,7 @@ func (x *UpdateUserResponse) String() string {
 func (*UpdateUserResponse) ProtoMessage() {}
 
 func (x *UpdateUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[14]
+	mi := &file_clients_user_service_proto_msgTypes[27]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -852,7 +1424,7 @@ func (x *UpdateUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateUserResponse.ProtoReflect.Descriptor instead.
 func (*UpdateUserResponse) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{14}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{27}
 }
 
 type RemoveUserRequest struct {
@@ -866,7 +1438,7 @@ type RemoveUserRequest struct {
 func (x *RemoveUserRequest) Reset() {
 	*x = RemoveUserRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[15]
+		mi := &file_clients_user_service_proto_msgTypes[28]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -879,7 +1451,7 @@ func (x *RemoveUserRequest) String() string {
 func (*RemoveUserRequest) ProtoMessage() {}
 
 func (x *RemoveUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[15]
+	mi := &file_clients_user_service_proto_msgTypes[28]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -892,7 +1464,7 @@ func (x *RemoveUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveUserRequest.ProtoReflect.Descriptor instead.
 func (*RemoveUserRequest) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{15}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *RemoveUserRequest) GetUsername() string {
@@ -911,7 +1483,7 @@ type RemoveUserResponse struct {
 func (x *RemoveUserResponse) Reset() {
 	*x = RemoveUserResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[16]
+		mi := &file_clients_user_service_proto_msgTypes[29]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -924,7 +1496,7 @@ func (x *RemoveUserResponse) String() string {
 func (*RemoveUserResponse) ProtoMessage() {}
 
 func (x *RemoveUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[16]
+	mi := &file_clients_user_service_proto_msgTypes[29]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -937,7 +1509,7 @@ func (x *RemoveUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveUserResponse.ProtoReflect.Descriptor instead.
 func (*RemoveUserResponse) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{16}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{29}
 }
 
 type User struct {
@@ -953,7 +1525,7 @@ type User struct {
 func (x *User) Reset() {
 	*x = User{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_clients_user_service_proto_msgTypes[17]
+		mi := &file_clients_user_service_proto_msgTypes[30]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -966,7 +1538,7 @@ func (x *User) String() string {
 func (*User) ProtoMessage() {}
 
 func (x *User) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_user_service_proto_msgTypes[17]
+	mi := &file_clients_user_service_proto_msgTypes[30]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -979,7 +1551,7 @@ func (x *User) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use User.ProtoReflect.Descriptor instead.
 func (*User) Descriptor() ([]byte, []int) {
-	return file_clients_user_service_proto_rawDescGZIP(), []int{17}
+	return file_clients_user_service_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *User) GetUsername() string {
@@ -1009,9 +1581,54 @@ var file_clients_user_service_proto_rawDesc = []byte{
 	0x0a, 0x1a, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2f, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x73,
 	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x18, 0x77, 0x6f,
 	0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63,
-	0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x1a, 0x1c, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2f,
-	0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x22, 0x13, 0x0a, 0x11, 0x47, 0x65, 0x74, 0x44, 0x65, 0x76, 0x69, 0x63,
+	0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x1a, 0x14, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2f,
+	0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x63, 0x6c,
+	0x69, 0x65, 0x6e, 0x74, 0x73, 0x2f, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x73, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x13, 0x0a, 0x11, 0x47, 0x65,
+	0x74, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22,
+	0x16, 0x0a, 0x14, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x78, 0x0a, 0x15, 0x43, 0x6c, 0x69, 0x65, 0x6e,
+	0x74, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x38, 0x0a, 0x06, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x20, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x43, 0x6c, 0x69, 0x65,
+	0x6e, 0x74, 0x52, 0x06, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6c,
+	0x69, 0x65, 0x6e, 0x74, 0x5f, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0d, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65,
+	0x64, 0x22, 0x1e, 0x0a, 0x1c, 0x50, 0x61, 0x69, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x22, 0x9b, 0x01, 0x0a, 0x1d, 0x50, 0x61, 0x69, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x0f, 0x70, 0x61, 0x69, 0x72, 0x69, 0x6e, 0x67, 0x5f, 0x72,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x28, 0x2e, 0x77,
+	0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e,
+	0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x50, 0x61, 0x69, 0x72, 0x69, 0x6e, 0x67, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0e, 0x70, 0x61, 0x69, 0x72, 0x69, 0x6e, 0x67, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x27, 0x0a, 0x0f, 0x70, 0x61, 0x69, 0x72, 0x69, 0x6e,
+	0x67, 0x5f, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0e, 0x70, 0x61, 0x69, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x22,
+	0x57, 0x0a, 0x15, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x50, 0x61, 0x69, 0x72, 0x69, 0x6e,
+	0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1b, 0x0a, 0x09, 0x63, 0x6c, 0x69, 0x65,
+	0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x6c, 0x69,
+	0x65, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x21, 0x0a, 0x0c, 0x70, 0x61, 0x69, 0x72, 0x69, 0x6e, 0x67,
+	0x5f, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x70, 0x61, 0x69,
+	0x72, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x64, 0x65, 0x22, 0x18, 0x0a, 0x16, 0x41, 0x70, 0x70, 0x72,
+	0x6f, 0x76, 0x65, 0x50, 0x61, 0x69, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x31, 0x0a, 0x12, 0x44, 0x65, 0x6e, 0x79, 0x50, 0x61, 0x69, 0x72, 0x69, 0x6e,
+	0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1b, 0x0a, 0x09, 0x63, 0x6c, 0x69, 0x65,
+	0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x6c, 0x69,
+	0x65, 0x6e, 0x74, 0x49, 0x64, 0x22, 0x15, 0x0a, 0x13, 0x44, 0x65, 0x6e, 0x79, 0x50, 0x61, 0x69,
+	0x72, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x32, 0x0a, 0x13,
+	0x55, 0x6e, 0x70, 0x61, 0x69, 0x72, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x12, 0x1b, 0x0a, 0x09, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x49, 0x64,
+	0x22, 0x16, 0x0a, 0x14, 0x55, 0x6e, 0x70, 0x61, 0x69, 0x72, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x32, 0x0a, 0x13, 0x46, 0x6f, 0x72, 0x67,
+	0x65, 0x74, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x1b, 0x0a, 0x09, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x08, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x22, 0x16, 0x0a, 0x14,
+	0x46, 0x6f, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x13, 0x0a, 0x11, 0x47, 0x65, 0x74, 0x44, 0x65, 0x76, 0x69, 0x63,
 	0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x44, 0x0a, 0x14, 0x44, 0x65, 0x76,
 	0x69, 0x63, 0x65, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
 	0x74, 0x12, 0x2c, 0x0a, 0x12, 0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x5f, 0x64, 0x65, 0x76,
@@ -1117,85 +1734,135 @@ var file_clients_user_service_proto_rawDesc = []byte{
 	0x45, 0x5f, 0x55, 0x4e, 0x44, 0x45, 0x46, 0x49, 0x4e, 0x45, 0x44, 0x10, 0x00, 0x12, 0x13, 0x0a,
 	0x0f, 0x55, 0x53, 0x45, 0x52, 0x5f, 0x52, 0x4f, 0x4c, 0x45, 0x5f, 0x41, 0x44, 0x4d, 0x49, 0x4e,
 	0x10, 0x01, 0x12, 0x12, 0x0a, 0x0e, 0x55, 0x53, 0x45, 0x52, 0x5f, 0x52, 0x4f, 0x4c, 0x45, 0x5f,
-	0x55, 0x53, 0x45, 0x52, 0x10, 0x02, 0x32, 0x96, 0x09, 0x0a, 0x0b, 0x55, 0x73, 0x65, 0x72, 0x53,
-	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x5d, 0x0a, 0x0a, 0x47, 0x65, 0x74, 0x44, 0x65, 0x76,
-	0x69, 0x63, 0x65, 0x73, 0x12, 0x2b, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65,
+	0x55, 0x53, 0x45, 0x52, 0x10, 0x02, 0x32, 0xb5, 0x0f, 0x0a, 0x0b, 0x55, 0x73, 0x65, 0x72, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x5d, 0x0a, 0x0a, 0x47, 0x65, 0x74, 0x43, 0x6c, 0x69,
+	0x65, 0x6e, 0x74, 0x73, 0x12, 0x2b, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65,
 	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e,
-	0x47, 0x65, 0x74, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x47, 0x65, 0x74, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
 	0x74, 0x1a, 0x20, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70,
-	0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x44, 0x65, 0x76,
-	0x69, 0x63, 0x65, 0x30, 0x01, 0x12, 0x63, 0x0a, 0x0d, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x73,
+	0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x43, 0x6c, 0x69,
+	0x65, 0x6e, 0x74, 0x30, 0x01, 0x12, 0x72, 0x0a, 0x0d, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73,
 	0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x2e, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75,
 	0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74,
-	0x73, 0x2e, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75,
+	0x73, 0x2e, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2f, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75,
 	0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74,
-	0x73, 0x2e, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x30, 0x01, 0x12, 0x78, 0x0a, 0x0f, 0x46, 0x61,
-	0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x30, 0x2e,
-	0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31,
-	0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74,
-	0x65, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x31, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x46, 0x61, 0x76, 0x6f, 0x72,
-	0x69, 0x74, 0x65, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x30, 0x01, 0x12, 0x6a, 0x0a, 0x0b, 0x41, 0x64, 0x64, 0x46, 0x61, 0x76, 0x6f, 0x72,
-	0x69, 0x74, 0x65, 0x12, 0x2c, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e,
-	0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x41,
-	0x64, 0x64, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x2d, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70,
-	0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x41, 0x64, 0x64,
-	0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x73, 0x0a, 0x0e, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69,
-	0x74, 0x65, 0x12, 0x2f, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61,
-	0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65,
-	0x6d, 0x6f, 0x76, 0x65, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x30, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e,
-	0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x52,
-	0x65, 0x6d, 0x6f, 0x76, 0x65, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x61, 0x0a, 0x0a, 0x53, 0x65, 0x6e, 0x64, 0x41, 0x63, 0x74,
-	0x69, 0x6f, 0x6e, 0x12, 0x27, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e,
-	0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x41,
-	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x77,
-	0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e,
-	0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x12, 0x65, 0x0a, 0x10, 0x53, 0x65, 0x6e, 0x64,
-	0x49, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x26, 0x2e, 0x77,
-	0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e,
-	0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65,
-	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e,
-	0x49, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x12,
-	0x6c, 0x0a, 0x0b, 0x55, 0x73, 0x65, 0x72, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x2c,
-	0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76,
-	0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x73, 0x53,
-	0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2d, 0x2e, 0x77,
-	0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e,
-	0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x73, 0x53, 0x74, 0x72,
-	0x65, 0x61, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x12, 0x5e, 0x0a,
-	0x07, 0x41, 0x64, 0x64, 0x55, 0x73, 0x65, 0x72, 0x12, 0x28, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68,
-	0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65,
-	0x6e, 0x74, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x29, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61,
-	0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x41, 0x64,
-	0x64, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x67, 0x0a,
-	0x0a, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x12, 0x2b, 0x2e, 0x77, 0x6f,
+	0x73, 0x2e, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x12, 0x8a, 0x01, 0x0a, 0x15, 0x50, 0x61,
+	0x69, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x73, 0x53, 0x74, 0x72,
+	0x65, 0x61, 0x6d, 0x12, 0x36, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x50,
+	0x61, 0x69, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x73, 0x53, 0x74,
+	0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x37, 0x2e, 0x77, 0x6f,
 	0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63,
-	0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65,
-	0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68,
+	0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x50, 0x61, 0x69, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x12, 0x73, 0x0a, 0x0e, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76,
+	0x65, 0x50, 0x61, 0x69, 0x72, 0x69, 0x6e, 0x67, 0x12, 0x2f, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68,
 	0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65,
-	0x6e, 0x74, 0x73, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x67, 0x0a, 0x0a, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65,
-	0x55, 0x73, 0x65, 0x72, 0x12, 0x2b, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65,
-	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e,
-	0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x2c, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70,
+	0x6e, 0x74, 0x73, 0x2e, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x50, 0x61, 0x69, 0x72, 0x69,
+	0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x30, 0x2e, 0x77, 0x6f, 0x6f, 0x64,
+	0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69,
+	0x65, 0x6e, 0x74, 0x73, 0x2e, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x50, 0x61, 0x69, 0x72,
+	0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6a, 0x0a, 0x0b, 0x44,
+	0x65, 0x6e, 0x79, 0x50, 0x61, 0x69, 0x72, 0x69, 0x6e, 0x67, 0x12, 0x2c, 0x2e, 0x77, 0x6f, 0x6f,
+	0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c,
+	0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x44, 0x65, 0x6e, 0x79, 0x50, 0x61, 0x69, 0x72, 0x69, 0x6e,
+	0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2d, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68,
+	0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65,
+	0x6e, 0x74, 0x73, 0x2e, 0x44, 0x65, 0x6e, 0x79, 0x50, 0x61, 0x69, 0x72, 0x69, 0x6e, 0x67, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6d, 0x0a, 0x0c, 0x55, 0x6e, 0x70, 0x61, 0x69,
+	0x72, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x2d, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f,
+	0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e,
+	0x74, 0x73, 0x2e, 0x55, 0x6e, 0x70, 0x61, 0x69, 0x72, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75,
+	0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74,
+	0x73, 0x2e, 0x55, 0x6e, 0x70, 0x61, 0x69, 0x72, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6d, 0x0a, 0x0c, 0x46, 0x6f, 0x72, 0x67, 0x65, 0x74,
+	0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x2d, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75,
+	0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74,
+	0x73, 0x2e, 0x46, 0x6f, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73,
+	0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73,
+	0x2e, 0x46, 0x6f, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0a, 0x47, 0x65, 0x74, 0x44, 0x65, 0x76, 0x69,
+	0x63, 0x65, 0x73, 0x12, 0x2b, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x47,
+	0x65, 0x74, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x20, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x44, 0x65, 0x76, 0x69,
+	0x63, 0x65, 0x30, 0x01, 0x12, 0x63, 0x0a, 0x0d, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x73, 0x53,
+	0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x2e, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73,
+	0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73,
+	0x2e, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73,
+	0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73,
+	0x2e, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x30, 0x01, 0x12, 0x78, 0x0a, 0x0f, 0x46, 0x61, 0x76,
+	0x6f, 0x72, 0x69, 0x74, 0x65, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x30, 0x2e, 0x77,
+	0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e,
+	0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65,
+	0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x31,
+	0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76,
+	0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69,
+	0x74, 0x65, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x30, 0x01, 0x12, 0x6a, 0x0a, 0x0b, 0x41, 0x64, 0x64, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69,
+	0x74, 0x65, 0x12, 0x2c, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x41, 0x64,
+	0x64, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x2d, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x46,
+	0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x73, 0x0a, 0x0e, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74,
+	0x65, 0x12, 0x2f, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70,
 	0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x6d,
-	0x6f, 0x76, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42,
-	0x3f, 0x5a, 0x3d, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6a, 0x69,
-	0x6d, 0x6a, 0x69, 0x62, 0x6f, 0x6e, 0x65, 0x2f, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73,
-	0x65, 0x2d, 0x34, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x67, 0x6f, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6c,
-	0x69, 0x65, 0x6e, 0x74, 0x73, 0x3b, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x61, 0x70, 0x69,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x76, 0x65, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x30, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65,
+	0x6d, 0x6f, 0x76, 0x65, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x61, 0x0a, 0x0a, 0x53, 0x65, 0x6e, 0x64, 0x41, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x27, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x41, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x77, 0x6f,
+	0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63,
+	0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x12, 0x65, 0x0a, 0x10, 0x53, 0x65, 0x6e, 0x64, 0x49,
+	0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x26, 0x2e, 0x77, 0x6f,
+	0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63,
+	0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x49,
+	0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x12, 0x6c,
+	0x0a, 0x0b, 0x55, 0x73, 0x65, 0x72, 0x73, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x2c, 0x2e,
+	0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31,
+	0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x73, 0x53, 0x74,
+	0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2d, 0x2e, 0x77, 0x6f,
+	0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63,
+	0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x73, 0x53, 0x74, 0x72, 0x65,
+	0x61, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x12, 0x5e, 0x0a, 0x07,
+	0x41, 0x64, 0x64, 0x55, 0x73, 0x65, 0x72, 0x12, 0x28, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f,
+	0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e,
+	0x74, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x29, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x41, 0x64, 0x64,
+	0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x67, 0x0a, 0x0a,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x12, 0x2b, 0x2e, 0x77, 0x6f, 0x6f,
+	0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c,
+	0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f,
+	0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e,
+	0x74, 0x73, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x67, 0x0a, 0x0a, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x55,
+	0x73, 0x65, 0x72, 0x12, 0x2b, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x52,
+	0x65, 0x6d, 0x6f, 0x76, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x2c, 0x2e, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x76, 0x31, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x6d, 0x6f,
+	0x76, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x3f,
+	0x5a, 0x3d, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6a, 0x69, 0x6d,
+	0x6a, 0x69, 0x62, 0x6f, 0x6e, 0x65, 0x2f, 0x77, 0x6f, 0x6f, 0x64, 0x68, 0x6f, 0x75, 0x73, 0x65,
+	0x2d, 0x34, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x67, 0x6f, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6c, 0x69,
+	0x65, 0x6e, 0x74, 0x73, 0x3b, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x61, 0x70, 0x69, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1211,70 +1878,101 @@ func file_clients_user_service_proto_rawDescGZIP() []byte {
 }
 
 var file_clients_user_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_clients_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_clients_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
 var file_clients_user_service_proto_goTypes = []interface{}{
-	(UserRole)(0),                   // 0: woodhouse.api.v1.clients.UserRole
-	(*GetDevicesRequest)(nil),       // 1: woodhouse.api.v1.clients.GetDevicesRequest
-	(*DevicesStreamRequest)(nil),    // 2: woodhouse.api.v1.clients.DevicesStreamRequest
-	(*DeviceService)(nil),           // 3: woodhouse.api.v1.clients.DeviceService
-	(*FavoritesStreamRequest)(nil),  // 4: woodhouse.api.v1.clients.FavoritesStreamRequest
-	(*FavoritesStreamResponse)(nil), // 5: woodhouse.api.v1.clients.FavoritesStreamResponse
-	(*AddFavoriteRequest)(nil),      // 6: woodhouse.api.v1.clients.AddFavoriteRequest
-	(*AddFavoriteResponse)(nil),     // 7: woodhouse.api.v1.clients.AddFavoriteResponse
-	(*RemoveFavoriteRequest)(nil),   // 8: woodhouse.api.v1.clients.RemoveFavoriteRequest
-	(*RemoveFavoriteResponse)(nil),  // 9: woodhouse.api.v1.clients.RemoveFavoriteResponse
-	(*UsersStreamRequest)(nil),      // 10: woodhouse.api.v1.clients.UsersStreamRequest
-	(*UsersStreamResponse)(nil),     // 11: woodhouse.api.v1.clients.UsersStreamResponse
-	(*AddUserRequest)(nil),          // 12: woodhouse.api.v1.clients.AddUserRequest
-	(*AddUserResponse)(nil),         // 13: woodhouse.api.v1.clients.AddUserResponse
-	(*UpdateUserRequest)(nil),       // 14: woodhouse.api.v1.clients.UpdateUserRequest
-	(*UpdateUserResponse)(nil),      // 15: woodhouse.api.v1.clients.UpdateUserResponse
-	(*RemoveUserRequest)(nil),       // 16: woodhouse.api.v1.clients.RemoveUserRequest
-	(*RemoveUserResponse)(nil),      // 17: woodhouse.api.v1.clients.RemoveUserResponse
-	(*User)(nil),                    // 18: woodhouse.api.v1.clients.User
-	(*TimeValue)(nil),               // 19: woodhouse.api.v1.clients.TimeValue
-	(*Service)(nil),                 // 20: woodhouse.api.v1.clients.Service
-	(*ActionRequest)(nil),           // 21: woodhouse.api.v1.clients.ActionRequest
-	(*ImageRequest)(nil),            // 22: woodhouse.api.v1.clients.ImageRequest
-	(*Device)(nil),                  // 23: woodhouse.api.v1.clients.Device
-	(*ActionResponse)(nil),          // 24: woodhouse.api.v1.clients.ActionResponse
-	(*ImageResponse)(nil),           // 25: woodhouse.api.v1.clients.ImageResponse
+	(UserRole)(0),                         // 0: woodhouse.api.v1.clients.UserRole
+	(*GetClientsRequest)(nil),             // 1: woodhouse.api.v1.clients.GetClientsRequest
+	(*ClientsStreamRequest)(nil),          // 2: woodhouse.api.v1.clients.ClientsStreamRequest
+	(*ClientsStreamResponse)(nil),         // 3: woodhouse.api.v1.clients.ClientsStreamResponse
+	(*PairingRequestsStreamRequest)(nil),  // 4: woodhouse.api.v1.clients.PairingRequestsStreamRequest
+	(*PairingRequestsStreamResponse)(nil), // 5: woodhouse.api.v1.clients.PairingRequestsStreamResponse
+	(*ApprovePairingRequest)(nil),         // 6: woodhouse.api.v1.clients.ApprovePairingRequest
+	(*ApprovePairingResponse)(nil),        // 7: woodhouse.api.v1.clients.ApprovePairingResponse
+	(*DenyPairingRequest)(nil),            // 8: woodhouse.api.v1.clients.DenyPairingRequest
+	(*DenyPairingResponse)(nil),           // 9: woodhouse.api.v1.clients.DenyPairingResponse
+	(*UnpairClientRequest)(nil),           // 10: woodhouse.api.v1.clients.UnpairClientRequest
+	(*UnpairClientResponse)(nil),          // 11: woodhouse.api.v1.clients.UnpairClientResponse
+	(*ForgetClientRequest)(nil),           // 12: woodhouse.api.v1.clients.ForgetClientRequest
+	(*ForgetClientResponse)(nil),          // 13: woodhouse.api.v1.clients.ForgetClientResponse
+	(*GetDevicesRequest)(nil),             // 14: woodhouse.api.v1.clients.GetDevicesRequest
+	(*DevicesStreamRequest)(nil),          // 15: woodhouse.api.v1.clients.DevicesStreamRequest
+	(*DeviceService)(nil),                 // 16: woodhouse.api.v1.clients.DeviceService
+	(*FavoritesStreamRequest)(nil),        // 17: woodhouse.api.v1.clients.FavoritesStreamRequest
+	(*FavoritesStreamResponse)(nil),       // 18: woodhouse.api.v1.clients.FavoritesStreamResponse
+	(*AddFavoriteRequest)(nil),            // 19: woodhouse.api.v1.clients.AddFavoriteRequest
+	(*AddFavoriteResponse)(nil),           // 20: woodhouse.api.v1.clients.AddFavoriteResponse
+	(*RemoveFavoriteRequest)(nil),         // 21: woodhouse.api.v1.clients.RemoveFavoriteRequest
+	(*RemoveFavoriteResponse)(nil),        // 22: woodhouse.api.v1.clients.RemoveFavoriteResponse
+	(*UsersStreamRequest)(nil),            // 23: woodhouse.api.v1.clients.UsersStreamRequest
+	(*UsersStreamResponse)(nil),           // 24: woodhouse.api.v1.clients.UsersStreamResponse
+	(*AddUserRequest)(nil),                // 25: woodhouse.api.v1.clients.AddUserRequest
+	(*AddUserResponse)(nil),               // 26: woodhouse.api.v1.clients.AddUserResponse
+	(*UpdateUserRequest)(nil),             // 27: woodhouse.api.v1.clients.UpdateUserRequest
+	(*UpdateUserResponse)(nil),            // 28: woodhouse.api.v1.clients.UpdateUserResponse
+	(*RemoveUserRequest)(nil),             // 29: woodhouse.api.v1.clients.RemoveUserRequest
+	(*RemoveUserResponse)(nil),            // 30: woodhouse.api.v1.clients.RemoveUserResponse
+	(*User)(nil),                          // 31: woodhouse.api.v1.clients.User
+	(*Client)(nil),                        // 32: woodhouse.api.v1.clients.Client
+	(*PairingRequest)(nil),                // 33: woodhouse.api.v1.clients.PairingRequest
+	(*TimeValue)(nil),                     // 34: woodhouse.api.v1.clients.TimeValue
+	(*Service)(nil),                       // 35: woodhouse.api.v1.clients.Service
+	(*ActionRequest)(nil),                 // 36: woodhouse.api.v1.clients.ActionRequest
+	(*ImageRequest)(nil),                  // 37: woodhouse.api.v1.clients.ImageRequest
+	(*Device)(nil),                        // 38: woodhouse.api.v1.clients.Device
+	(*ActionResponse)(nil),                // 39: woodhouse.api.v1.clients.ActionResponse
+	(*ImageResponse)(nil),                 // 40: woodhouse.api.v1.clients.ImageResponse
 }
 var file_clients_user_service_proto_depIdxs = []int32{
-	19, // 0: woodhouse.api.v1.clients.DeviceService.last_seen:type_name -> woodhouse.api.v1.clients.TimeValue
-	20, // 1: woodhouse.api.v1.clients.DeviceService.service:type_name -> woodhouse.api.v1.clients.Service
-	3,  // 2: woodhouse.api.v1.clients.FavoritesStreamResponse.device_service:type_name -> woodhouse.api.v1.clients.DeviceService
-	18, // 3: woodhouse.api.v1.clients.UsersStreamResponse.user:type_name -> woodhouse.api.v1.clients.User
-	0,  // 4: woodhouse.api.v1.clients.AddUserRequest.role:type_name -> woodhouse.api.v1.clients.UserRole
-	0,  // 5: woodhouse.api.v1.clients.UpdateUserRequest.role:type_name -> woodhouse.api.v1.clients.UserRole
-	0,  // 6: woodhouse.api.v1.clients.User.role:type_name -> woodhouse.api.v1.clients.UserRole
-	1,  // 7: woodhouse.api.v1.clients.UserService.GetDevices:input_type -> woodhouse.api.v1.clients.GetDevicesRequest
-	2,  // 8: woodhouse.api.v1.clients.UserService.DevicesStream:input_type -> woodhouse.api.v1.clients.DevicesStreamRequest
-	4,  // 9: woodhouse.api.v1.clients.UserService.FavoritesStream:input_type -> woodhouse.api.v1.clients.FavoritesStreamRequest
-	6,  // 10: woodhouse.api.v1.clients.UserService.AddFavorite:input_type -> woodhouse.api.v1.clients.AddFavoriteRequest
-	8,  // 11: woodhouse.api.v1.clients.UserService.RemoveFavorite:input_type -> woodhouse.api.v1.clients.RemoveFavoriteRequest
-	21, // 12: woodhouse.api.v1.clients.UserService.SendAction:input_type -> woodhouse.api.v1.clients.ActionRequest
-	22, // 13: woodhouse.api.v1.clients.UserService.SendImageRequest:input_type -> woodhouse.api.v1.clients.ImageRequest
-	10, // 14: woodhouse.api.v1.clients.UserService.UsersStream:input_type -> woodhouse.api.v1.clients.UsersStreamRequest
-	12, // 15: woodhouse.api.v1.clients.UserService.AddUser:input_type -> woodhouse.api.v1.clients.AddUserRequest
-	14, // 16: woodhouse.api.v1.clients.UserService.UpdateUser:input_type -> woodhouse.api.v1.clients.UpdateUserRequest
-	16, // 17: woodhouse.api.v1.clients.UserService.RemoveUser:input_type -> woodhouse.api.v1.clients.RemoveUserRequest
-	23, // 18: woodhouse.api.v1.clients.UserService.GetDevices:output_type -> woodhouse.api.v1.clients.Device
-	23, // 19: woodhouse.api.v1.clients.UserService.DevicesStream:output_type -> woodhouse.api.v1.clients.Device
-	5,  // 20: woodhouse.api.v1.clients.UserService.FavoritesStream:output_type -> woodhouse.api.v1.clients.FavoritesStreamResponse
-	7,  // 21: woodhouse.api.v1.clients.UserService.AddFavorite:output_type -> woodhouse.api.v1.clients.AddFavoriteResponse
-	9,  // 22: woodhouse.api.v1.clients.UserService.RemoveFavorite:output_type -> woodhouse.api.v1.clients.RemoveFavoriteResponse
-	24, // 23: woodhouse.api.v1.clients.UserService.SendAction:output_type -> woodhouse.api.v1.clients.ActionResponse
-	25, // 24: woodhouse.api.v1.clients.UserService.SendImageRequest:output_type -> woodhouse.api.v1.clients.ImageResponse
-	11, // 25: woodhouse.api.v1.clients.UserService.UsersStream:output_type -> woodhouse.api.v1.clients.UsersStreamResponse
-	13, // 26: woodhouse.api.v1.clients.UserService.AddUser:output_type -> woodhouse.api.v1.clients.AddUserResponse
-	15, // 27: woodhouse.api.v1.clients.UserService.UpdateUser:output_type -> woodhouse.api.v1.clients.UpdateUserResponse
-	17, // 28: woodhouse.api.v1.clients.UserService.RemoveUser:output_type -> woodhouse.api.v1.clients.RemoveUserResponse
-	18, // [18:29] is the sub-list for method output_type
-	7,  // [7:18] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	32, // 0: woodhouse.api.v1.clients.ClientsStreamResponse.client:type_name -> woodhouse.api.v1.clients.Client
+	33, // 1: woodhouse.api.v1.clients.PairingRequestsStreamResponse.pairing_request:type_name -> woodhouse.api.v1.clients.PairingRequest
+	34, // 2: woodhouse.api.v1.clients.DeviceService.last_seen:type_name -> woodhouse.api.v1.clients.TimeValue
+	35, // 3: woodhouse.api.v1.clients.DeviceService.service:type_name -> woodhouse.api.v1.clients.Service
+	16, // 4: woodhouse.api.v1.clients.FavoritesStreamResponse.device_service:type_name -> woodhouse.api.v1.clients.DeviceService
+	31, // 5: woodhouse.api.v1.clients.UsersStreamResponse.user:type_name -> woodhouse.api.v1.clients.User
+	0,  // 6: woodhouse.api.v1.clients.AddUserRequest.role:type_name -> woodhouse.api.v1.clients.UserRole
+	0,  // 7: woodhouse.api.v1.clients.UpdateUserRequest.role:type_name -> woodhouse.api.v1.clients.UserRole
+	0,  // 8: woodhouse.api.v1.clients.User.role:type_name -> woodhouse.api.v1.clients.UserRole
+	1,  // 9: woodhouse.api.v1.clients.UserService.GetClients:input_type -> woodhouse.api.v1.clients.GetClientsRequest
+	2,  // 10: woodhouse.api.v1.clients.UserService.ClientsStream:input_type -> woodhouse.api.v1.clients.ClientsStreamRequest
+	4,  // 11: woodhouse.api.v1.clients.UserService.PairingRequestsStream:input_type -> woodhouse.api.v1.clients.PairingRequestsStreamRequest
+	6,  // 12: woodhouse.api.v1.clients.UserService.ApprovePairing:input_type -> woodhouse.api.v1.clients.ApprovePairingRequest
+	8,  // 13: woodhouse.api.v1.clients.UserService.DenyPairing:input_type -> woodhouse.api.v1.clients.DenyPairingRequest
+	10, // 14: woodhouse.api.v1.clients.UserService.UnpairClient:input_type -> woodhouse.api.v1.clients.UnpairClientRequest
+	12, // 15: woodhouse.api.v1.clients.UserService.ForgetClient:input_type -> woodhouse.api.v1.clients.ForgetClientRequest
+	14, // 16: woodhouse.api.v1.clients.UserService.GetDevices:input_type -> woodhouse.api.v1.clients.GetDevicesRequest
+	15, // 17: woodhouse.api.v1.clients.UserService.DevicesStream:input_type -> woodhouse.api.v1.clients.DevicesStreamRequest
+	17, // 18: woodhouse.api.v1.clients.UserService.FavoritesStream:input_type -> woodhouse.api.v1.clients.FavoritesStreamRequest
+	19, // 19: woodhouse.api.v1.clients.UserService.AddFavorite:input_type -> woodhouse.api.v1.clients.AddFavoriteRequest
+	21, // 20: woodhouse.api.v1.clients.UserService.RemoveFavorite:input_type -> woodhouse.api.v1.clients.RemoveFavoriteRequest
+	36, // 21: woodhouse.api.v1.clients.UserService.SendAction:input_type -> woodhouse.api.v1.clients.ActionRequest
+	37, // 22: woodhouse.api.v1.clients.UserService.SendImageRequest:input_type -> woodhouse.api.v1.clients.ImageRequest
+	23, // 23: woodhouse.api.v1.clients.UserService.UsersStream:input_type -> woodhouse.api.v1.clients.UsersStreamRequest
+	25, // 24: woodhouse.api.v1.clients.UserService.AddUser:input_type -> woodhouse.api.v1.clients.AddUserRequest
+	27, // 25: woodhouse.api.v1.clients.UserService.UpdateUser:input_type -> woodhouse.api.v1.clients.UpdateUserRequest
+	29, // 26: woodhouse.api.v1.clients.UserService.RemoveUser:input_type -> woodhouse.api.v1.clients.RemoveUserRequest
+	32, // 27: woodhouse.api.v1.clients.UserService.GetClients:output_type -> woodhouse.api.v1.clients.Client
+	3,  // 28: woodhouse.api.v1.clients.UserService.ClientsStream:output_type -> woodhouse.api.v1.clients.ClientsStreamResponse
+	5,  // 29: woodhouse.api.v1.clients.UserService.PairingRequestsStream:output_type -> woodhouse.api.v1.clients.PairingRequestsStreamResponse
+	7,  // 30: woodhouse.api.v1.clients.UserService.ApprovePairing:output_type -> woodhouse.api.v1.clients.ApprovePairingResponse
+	9,  // 31: woodhouse.api.v1.clients.UserService.DenyPairing:output_type -> woodhouse.api.v1.clients.DenyPairingResponse
+	11, // 32: woodhouse.api.v1.clients.UserService.UnpairClient:output_type -> woodhouse.api.v1.clients.UnpairClientResponse
+	13, // 33: woodhouse.api.v1.clients.UserService.ForgetClient:output_type -> woodhouse.api.v1.clients.ForgetClientResponse
+	38, // 34: woodhouse.api.v1.clients.UserService.GetDevices:output_type -> woodhouse.api.v1.clients.Device
+	38, // 35: woodhouse.api.v1.clients.UserService.DevicesStream:output_type -> woodhouse.api.v1.clients.Device
+	18, // 36: woodhouse.api.v1.clients.UserService.FavoritesStream:output_type -> woodhouse.api.v1.clients.FavoritesStreamResponse
+	20, // 37: woodhouse.api.v1.clients.UserService.AddFavorite:output_type -> woodhouse.api.v1.clients.AddFavoriteResponse
+	22, // 38: woodhouse.api.v1.clients.UserService.RemoveFavorite:output_type -> woodhouse.api.v1.clients.RemoveFavoriteResponse
+	39, // 39: woodhouse.api.v1.clients.UserService.SendAction:output_type -> woodhouse.api.v1.clients.ActionResponse
+	40, // 40: woodhouse.api.v1.clients.UserService.SendImageRequest:output_type -> woodhouse.api.v1.clients.ImageResponse
+	24, // 41: woodhouse.api.v1.clients.UserService.UsersStream:output_type -> woodhouse.api.v1.clients.UsersStreamResponse
+	26, // 42: woodhouse.api.v1.clients.UserService.AddUser:output_type -> woodhouse.api.v1.clients.AddUserResponse
+	28, // 43: woodhouse.api.v1.clients.UserService.UpdateUser:output_type -> woodhouse.api.v1.clients.UpdateUserResponse
+	30, // 44: woodhouse.api.v1.clients.UserService.RemoveUser:output_type -> woodhouse.api.v1.clients.RemoveUserResponse
+	27, // [27:45] is the sub-list for method output_type
+	9,  // [9:27] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_clients_user_service_proto_init() }
@@ -1282,10 +1980,11 @@ func file_clients_user_service_proto_init() {
 	if File_clients_user_service_proto != nil {
 		return
 	}
+	file_clients_client_proto_init()
 	file_clients_client_service_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_clients_user_service_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetDevicesRequest); i {
+			switch v := v.(*GetClientsRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1297,7 +1996,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DevicesStreamRequest); i {
+			switch v := v.(*ClientsStreamRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1309,7 +2008,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeviceService); i {
+			switch v := v.(*ClientsStreamResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1321,7 +2020,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FavoritesStreamRequest); i {
+			switch v := v.(*PairingRequestsStreamRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1333,7 +2032,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FavoritesStreamResponse); i {
+			switch v := v.(*PairingRequestsStreamResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1345,7 +2044,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AddFavoriteRequest); i {
+			switch v := v.(*ApprovePairingRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1357,7 +2056,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AddFavoriteResponse); i {
+			switch v := v.(*ApprovePairingResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1369,7 +2068,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RemoveFavoriteRequest); i {
+			switch v := v.(*DenyPairingRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1381,7 +2080,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RemoveFavoriteResponse); i {
+			switch v := v.(*DenyPairingResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1393,7 +2092,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UsersStreamRequest); i {
+			switch v := v.(*UnpairClientRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1405,7 +2104,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UsersStreamResponse); i {
+			switch v := v.(*UnpairClientResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1417,7 +2116,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AddUserRequest); i {
+			switch v := v.(*ForgetClientRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1429,7 +2128,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AddUserResponse); i {
+			switch v := v.(*ForgetClientResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1441,7 +2140,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateUserRequest); i {
+			switch v := v.(*GetDevicesRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1453,7 +2152,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateUserResponse); i {
+			switch v := v.(*DevicesStreamRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1465,7 +2164,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RemoveUserRequest); i {
+			switch v := v.(*DeviceService); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1477,7 +2176,7 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RemoveUserResponse); i {
+			switch v := v.(*FavoritesStreamRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1489,6 +2188,162 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 		file_clients_user_service_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FavoritesStreamResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AddFavoriteRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AddFavoriteResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RemoveFavoriteRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RemoveFavoriteResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UsersStreamRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UsersStreamResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AddUserRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[25].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AddUserResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[26].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateUserRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[27].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateUserResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[28].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RemoveUserRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[29].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RemoveUserResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_clients_user_service_proto_msgTypes[30].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*User); i {
 			case 0:
 				return &v.state
@@ -1501,15 +2356,15 @@ func file_clients_user_service_proto_init() {
 			}
 		}
 	}
-	file_clients_user_service_proto_msgTypes[2].OneofWrappers = []interface{}{}
-	file_clients_user_service_proto_msgTypes[13].OneofWrappers = []interface{}{}
+	file_clients_user_service_proto_msgTypes[15].OneofWrappers = []interface{}{}
+	file_clients_user_service_proto_msgTypes[26].OneofWrappers = []interface{}{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_clients_user_service_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   18,
+			NumMessages:   31,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

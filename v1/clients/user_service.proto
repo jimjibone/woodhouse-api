@@ -3,9 +3,39 @@ syntax = "proto3";
 package woodhouse.api.v1.clients;
 option go_package = "github.com/jimjibone/woodhouse-4/api/go/v1/clients;clientsapi";
 
+import "clients/client.proto";
 import "clients/client_service.proto";
 
 service UserService {
+    // Get the current Client states. This returns a stream of Clients which
+    // will close once all Clients are sent. Use ClientsStream method to get a
+    // stream of current Client states and updates.
+    rpc GetClients(GetClientsRequest) returns (stream Client);
+
+    // Get a stream of Client updates. The first batch of replies will be the
+    // current state of the clients, followed by updates when they occur. The
+    // stream also includes a 10 second heartbeat (an empty response) which
+    // should be ignored, but can be used to monitor the stream for disconnects.
+    rpc ClientsStream(ClientsStreamRequest) returns (stream ClientsStreamResponse);
+
+    // Get a stream of pending pairing requests and updates. The first batch of
+    // replies will be the current set, followed by updates when they occur. The
+    // stream also includes a 10 second heartbeat (an empty response) which should
+    // be ignored, but can be used to monitor the stream for disconnects.
+    rpc PairingRequestsStream(PairingRequestsStreamRequest) returns (stream PairingRequestsStreamResponse);
+
+    // Approve a pairing request.
+    rpc ApprovePairing(ApprovePairingRequest) returns (ApprovePairingResponse);
+
+    // Deny a pairing request.
+    rpc DenyPairing(DenyPairingRequest) returns (DenyPairingResponse);
+
+    // Unpair a client and invalidate auth tokens.
+    rpc UnpairClient(UnpairClientRequest) returns (UnpairClientResponse);
+
+    // Forget a client (unpair then forget).
+    rpc ForgetClient(ForgetClientRequest) returns (ForgetClientResponse);
+
     // Get the current device states. This returns a stream of devices which
     // will close once all devices are sent. Use DevicesStream method to get a
     // stream of current device states and updates.
@@ -15,17 +45,17 @@ service UserService {
     // current state of the devices, followed by updates when they occur. The
     // stream also includes a 10 second heartbeat (an empty Device) which should
     // be ignored, but can be used to monitor the stream for disconnects.
-    rpc DevicesStream (DevicesStreamRequest) returns (stream Device);
+    rpc DevicesStream(DevicesStreamRequest) returns (stream Device);
 
     // Get a stream of DeviceService updates for favorites. The first batch of
     // replies will be the current state of the favorites, followed by updates
     // when they occur. The stream also includes a 10 second heartbeat (an empty
     // response) which should be ignored, but can be used to monitor the stream
     // for disconnects.
-    rpc FavoritesStream (FavoritesStreamRequest) returns (stream FavoritesStreamResponse);
+    rpc FavoritesStream(FavoritesStreamRequest) returns (stream FavoritesStreamResponse);
 
-    rpc AddFavorite (AddFavoriteRequest) returns (AddFavoriteResponse);
-    rpc RemoveFavorite (RemoveFavoriteRequest) returns (RemoveFavoriteResponse);
+    rpc AddFavorite(AddFavoriteRequest) returns (AddFavoriteResponse);
+    rpc RemoveFavorite(RemoveFavoriteRequest) returns (RemoveFavoriteResponse);
 
     // Send an action to a device service.
     rpc SendAction(ActionRequest) returns (stream ActionResponse);
@@ -37,12 +67,47 @@ service UserService {
     // current state of the users, followed by updates when they occur. The
     // stream also includes a 10 second heartbeat (an empty User) which should
     // be ignored, but can be used to monitor the stream for disconnects.
-    rpc UsersStream (UsersStreamRequest) returns (stream UsersStreamResponse);
+    rpc UsersStream(UsersStreamRequest) returns (stream UsersStreamResponse);
 
-    rpc AddUser (AddUserRequest) returns (AddUserResponse);
-    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
-    rpc RemoveUser (RemoveUserRequest) returns (RemoveUserResponse);
+    rpc AddUser(AddUserRequest) returns (AddUserResponse);
+    rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+    rpc RemoveUser(RemoveUserRequest) returns (RemoveUserResponse);
 }
+
+message GetClientsRequest {}
+
+message ClientsStreamRequest {}
+message ClientsStreamResponse {
+    Client client = 1; // Optional: A client update, possibly containing the full state.
+    string client_removed = 2; // Optional: Indicates the client_id of a client that was removed.
+}
+
+message PairingRequestsStreamRequest {}
+message PairingRequestsStreamResponse {
+    PairingRequest pairing_request = 1; // Optional: A pairing request update, possibly containing the full state.
+    string pairing_removed = 2; // Optional: Indicates the client_id of a pairing request that was removed.
+}
+
+message ApprovePairingRequest {
+    string client_id = 1;
+    string pairing_code = 2;
+}
+message ApprovePairingResponse {}
+
+message DenyPairingRequest {
+    string client_id = 1;
+}
+message DenyPairingResponse {}
+
+message UnpairClientRequest {
+    string client_id = 1;
+}
+message UnpairClientResponse {}
+
+message ForgetClientRequest {
+    string client_id = 1;
+}
+message ForgetClientResponse {}
 
 message GetDevicesRequest {}
 
@@ -62,7 +127,7 @@ message DeviceService {
 
     // The device online state from the online service. May not be set if the value has not changed and full_state is
     // false.
-    optional bool online     = 7;
+    optional bool online = 7;
 
     // The device last seen time from the online service. May not be set if the last_seen value has not changed and
     // full_state is false.
