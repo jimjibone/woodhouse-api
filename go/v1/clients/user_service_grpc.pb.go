@@ -46,6 +46,8 @@ type UserServiceClient interface {
 	BlockClient(ctx context.Context, in *BlockClientRequest, opts ...grpc.CallOption) (*BlockClientResponse, error)
 	// Unblock a client (allows pairing for previously blocked clients).
 	UnblockClient(ctx context.Context, in *UnblockClientRequest, opts ...grpc.CallOption) (*UnblockClientResponse, error)
+	// Forget a client.
+	ForgetClient(ctx context.Context, in *ForgetClientRequest, opts ...grpc.CallOption) (*ForgetClientResponse, error)
 	// Get the current device states. This returns a stream of devices which
 	// will close once all devices are sent. Use DevicesStream method to get a
 	// stream of current device states and updates.
@@ -220,6 +222,15 @@ func (c *userServiceClient) BlockClient(ctx context.Context, in *BlockClientRequ
 func (c *userServiceClient) UnblockClient(ctx context.Context, in *UnblockClientRequest, opts ...grpc.CallOption) (*UnblockClientResponse, error) {
 	out := new(UnblockClientResponse)
 	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/UnblockClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ForgetClient(ctx context.Context, in *ForgetClientRequest, opts ...grpc.CallOption) (*ForgetClientResponse, error) {
+	out := new(ForgetClientResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/ForgetClient", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -491,6 +502,8 @@ type UserServiceServer interface {
 	BlockClient(context.Context, *BlockClientRequest) (*BlockClientResponse, error)
 	// Unblock a client (allows pairing for previously blocked clients).
 	UnblockClient(context.Context, *UnblockClientRequest) (*UnblockClientResponse, error)
+	// Forget a client.
+	ForgetClient(context.Context, *ForgetClientRequest) (*ForgetClientResponse, error)
 	// Get the current device states. This returns a stream of devices which
 	// will close once all devices are sent. Use DevicesStream method to get a
 	// stream of current device states and updates.
@@ -550,6 +563,9 @@ func (UnimplementedUserServiceServer) BlockClient(context.Context, *BlockClientR
 }
 func (UnimplementedUserServiceServer) UnblockClient(context.Context, *UnblockClientRequest) (*UnblockClientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnblockClient not implemented")
+}
+func (UnimplementedUserServiceServer) ForgetClient(context.Context, *ForgetClientRequest) (*ForgetClientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ForgetClient not implemented")
 }
 func (UnimplementedUserServiceServer) GetDevices(*GetDevicesRequest, UserService_GetDevicesServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetDevices not implemented")
@@ -746,6 +762,24 @@ func _UserService_UnblockClient_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).UnblockClient(ctx, req.(*UnblockClientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ForgetClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ForgetClientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ForgetClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/ForgetClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ForgetClient(ctx, req.(*ForgetClientRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -992,6 +1026,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UnblockClient",
 			Handler:    _UserService_UnblockClient_Handler,
+		},
+		{
+			MethodName: "ForgetClient",
+			Handler:    _UserService_ForgetClient_Handler,
 		},
 		{
 			MethodName: "AddFavorite",

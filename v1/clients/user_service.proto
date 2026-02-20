@@ -39,6 +39,9 @@ service UserService {
     // Unblock a client (allows pairing for previously blocked clients).
     rpc UnblockClient(UnblockClientRequest) returns (UnblockClientResponse);
 
+    // Forget a client.
+    rpc ForgetClient(ForgetClientRequest) returns (ForgetClientResponse);
+
     // Get the current device states. This returns a stream of devices which
     // will close once all devices are sent. Use DevicesStream method to get a
     // stream of current device states and updates.
@@ -111,6 +114,11 @@ message UnblockClientRequest {
     string client_id = 1;
 }
 message UnblockClientResponse {}
+
+message ForgetClientRequest {
+    string client_id = 1;
+}
+message ForgetClientResponse {}
 
 message GetDevicesRequest {}
 
