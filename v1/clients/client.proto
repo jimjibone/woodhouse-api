@@ -7,12 +7,13 @@ message Client {
     string id = 1;
     string name = 2;
     string description = 3;
+    string version = 4;
 
-    bool paired = 4;
-    bool online = 5;
+    bool paired = 5;
+    bool online = 6;
 
-    uint64 first_seen = 6; // Seconds since Unix epoch 1970-01-01T00:00:00Z.
-    uint64 last_seen = 7; // Seconds since Unix epoch 1970-01-01T00:00:00Z.
+    uint64 first_seen = 7; // Seconds since Unix epoch 1970-01-01T00:00:00Z.
+    uint64 last_seen = 8; // Seconds since Unix epoch 1970-01-01T00:00:00Z.
 }
 
 message PairingRequest {
