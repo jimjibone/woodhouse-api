@@ -9,11 +9,10 @@ message Client {
     string description = 3;
 
     bool paired = 4;
-    bool blocked = 5;
-    bool online = 6;
+    bool online = 5;
 
-    uint64 first_seen = 7; // Seconds since Unix epoch 1970-01-01T00:00:00Z.
-    uint64 last_seen = 8; // Seconds since Unix epoch 1970-01-01T00:00:00Z.
+    uint64 first_seen = 6; // Seconds since Unix epoch 1970-01-01T00:00:00Z.
+    uint64 last_seen = 7; // Seconds since Unix epoch 1970-01-01T00:00:00Z.
 }
 
 message PairingRequest {

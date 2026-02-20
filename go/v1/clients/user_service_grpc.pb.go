@@ -28,8 +28,8 @@ type UserServiceClient interface {
 	GetClients(ctx context.Context, in *GetClientsRequest, opts ...grpc.CallOption) (UserService_GetClientsClient, error)
 	// Get a stream of Client updates. The first batch of replies will be the
 	// current state of the clients, followed by updates when they occur. The
-	// stream also includes a 10 second heartbeat (an empty Client) which should
-	// be ignored, but can be used to monitor the stream for disconnects.
+	// stream also includes a 10 second heartbeat (an empty response) which
+	// should be ignored, but can be used to monitor the stream for disconnects.
 	ClientsStream(ctx context.Context, in *ClientsStreamRequest, opts ...grpc.CallOption) (UserService_ClientsStreamClient, error)
 	// Get a stream of pending pairing requests and updates. The first batch of
 	// replies will be the current set, followed by updates when they occur. The
@@ -42,11 +42,7 @@ type UserServiceClient interface {
 	DenyPairing(ctx context.Context, in *DenyPairingRequest, opts ...grpc.CallOption) (*DenyPairingResponse, error)
 	// Unpair a client and invalidate auth tokens.
 	UnpairClient(ctx context.Context, in *UnpairClientRequest, opts ...grpc.CallOption) (*UnpairClientResponse, error)
-	// Block a client (unpairs the client and blocks future pairing requests).
-	BlockClient(ctx context.Context, in *BlockClientRequest, opts ...grpc.CallOption) (*BlockClientResponse, error)
-	// Unblock a client (allows pairing for previously blocked clients).
-	UnblockClient(ctx context.Context, in *UnblockClientRequest, opts ...grpc.CallOption) (*UnblockClientResponse, error)
-	// Forget a client.
+	// Forget a client (unpair then forget).
 	ForgetClient(ctx context.Context, in *ForgetClientRequest, opts ...grpc.CallOption) (*ForgetClientResponse, error)
 	// Get the current device states. This returns a stream of devices which
 	// will close once all devices are sent. Use DevicesStream method to get a
@@ -135,7 +131,7 @@ func (c *userServiceClient) ClientsStream(ctx context.Context, in *ClientsStream
 }
 
 type UserService_ClientsStreamClient interface {
-	Recv() (*Client, error)
+	Recv() (*ClientsStreamResponse, error)
 	grpc.ClientStream
 }
 
@@ -143,8 +139,8 @@ type userServiceClientsStreamClient struct {
 	grpc.ClientStream
 }
 
-func (x *userServiceClientsStreamClient) Recv() (*Client, error) {
-	m := new(Client)
+func (x *userServiceClientsStreamClient) Recv() (*ClientsStreamResponse, error) {
+	m := new(ClientsStreamResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -204,24 +200,6 @@ func (c *userServiceClient) DenyPairing(ctx context.Context, in *DenyPairingRequ
 func (c *userServiceClient) UnpairClient(ctx context.Context, in *UnpairClientRequest, opts ...grpc.CallOption) (*UnpairClientResponse, error) {
 	out := new(UnpairClientResponse)
 	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/UnpairClient", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) BlockClient(ctx context.Context, in *BlockClientRequest, opts ...grpc.CallOption) (*BlockClientResponse, error) {
-	out := new(BlockClientResponse)
-	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/BlockClient", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) UnblockClient(ctx context.Context, in *UnblockClientRequest, opts ...grpc.CallOption) (*UnblockClientResponse, error) {
-	out := new(UnblockClientResponse)
-	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/UnblockClient", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -484,8 +462,8 @@ type UserServiceServer interface {
 	GetClients(*GetClientsRequest, UserService_GetClientsServer) error
 	// Get a stream of Client updates. The first batch of replies will be the
 	// current state of the clients, followed by updates when they occur. The
-	// stream also includes a 10 second heartbeat (an empty Client) which should
-	// be ignored, but can be used to monitor the stream for disconnects.
+	// stream also includes a 10 second heartbeat (an empty response) which
+	// should be ignored, but can be used to monitor the stream for disconnects.
 	ClientsStream(*ClientsStreamRequest, UserService_ClientsStreamServer) error
 	// Get a stream of pending pairing requests and updates. The first batch of
 	// replies will be the current set, followed by updates when they occur. The
@@ -498,11 +476,7 @@ type UserServiceServer interface {
 	DenyPairing(context.Context, *DenyPairingRequest) (*DenyPairingResponse, error)
 	// Unpair a client and invalidate auth tokens.
 	UnpairClient(context.Context, *UnpairClientRequest) (*UnpairClientResponse, error)
-	// Block a client (unpairs the client and blocks future pairing requests).
-	BlockClient(context.Context, *BlockClientRequest) (*BlockClientResponse, error)
-	// Unblock a client (allows pairing for previously blocked clients).
-	UnblockClient(context.Context, *UnblockClientRequest) (*UnblockClientResponse, error)
-	// Forget a client.
+	// Forget a client (unpair then forget).
 	ForgetClient(context.Context, *ForgetClientRequest) (*ForgetClientResponse, error)
 	// Get the current device states. This returns a stream of devices which
 	// will close once all devices are sent. Use DevicesStream method to get a
@@ -557,12 +531,6 @@ func (UnimplementedUserServiceServer) DenyPairing(context.Context, *DenyPairingR
 }
 func (UnimplementedUserServiceServer) UnpairClient(context.Context, *UnpairClientRequest) (*UnpairClientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnpairClient not implemented")
-}
-func (UnimplementedUserServiceServer) BlockClient(context.Context, *BlockClientRequest) (*BlockClientResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BlockClient not implemented")
-}
-func (UnimplementedUserServiceServer) UnblockClient(context.Context, *UnblockClientRequest) (*UnblockClientResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UnblockClient not implemented")
 }
 func (UnimplementedUserServiceServer) ForgetClient(context.Context, *ForgetClientRequest) (*ForgetClientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ForgetClient not implemented")
@@ -643,7 +611,7 @@ func _UserService_ClientsStream_Handler(srv interface{}, stream grpc.ServerStrea
 }
 
 type UserService_ClientsStreamServer interface {
-	Send(*Client) error
+	Send(*ClientsStreamResponse) error
 	grpc.ServerStream
 }
 
@@ -651,7 +619,7 @@ type userServiceClientsStreamServer struct {
 	grpc.ServerStream
 }
 
-func (x *userServiceClientsStreamServer) Send(m *Client) error {
+func (x *userServiceClientsStreamServer) Send(m *ClientsStreamResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -726,42 +694,6 @@ func _UserService_UnpairClient_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).UnpairClient(ctx, req.(*UnpairClientRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_BlockClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BlockClientRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).BlockClient(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/woodhouse.api.v1.clients.UserService/BlockClient",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).BlockClient(ctx, req.(*BlockClientRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_UnblockClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UnblockClientRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).UnblockClient(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/woodhouse.api.v1.clients.UserService/UnblockClient",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).UnblockClient(ctx, req.(*UnblockClientRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1018,14 +950,6 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UnpairClient",
 			Handler:    _UserService_UnpairClient_Handler,
-		},
-		{
-			MethodName: "BlockClient",
-			Handler:    _UserService_BlockClient_Handler,
-		},
-		{
-			MethodName: "UnblockClient",
-			Handler:    _UserService_UnblockClient_Handler,
 		},
 		{
 			MethodName: "ForgetClient",

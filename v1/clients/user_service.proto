@@ -14,9 +14,9 @@ service UserService {
 
     // Get a stream of Client updates. The first batch of replies will be the
     // current state of the clients, followed by updates when they occur. The
-    // stream also includes a 10 second heartbeat (an empty Client) which should
-    // be ignored, but can be used to monitor the stream for disconnects.
-    rpc ClientsStream(ClientsStreamRequest) returns (stream Client);
+    // stream also includes a 10 second heartbeat (an empty response) which
+    // should be ignored, but can be used to monitor the stream for disconnects.
+    rpc ClientsStream(ClientsStreamRequest) returns (stream ClientsStreamResponse);
 
     // Get a stream of pending pairing requests and updates. The first batch of
     // replies will be the current set, followed by updates when they occur. The
@@ -33,13 +33,7 @@ service UserService {
     // Unpair a client and invalidate auth tokens.
     rpc UnpairClient(UnpairClientRequest) returns (UnpairClientResponse);
 
-    // Block a client (unpairs the client and blocks future pairing requests).
-    rpc BlockClient(BlockClientRequest) returns (BlockClientResponse);
-
-    // Unblock a client (allows pairing for previously blocked clients).
-    rpc UnblockClient(UnblockClientRequest) returns (UnblockClientResponse);
-
-    // Forget a client.
+    // Forget a client (unpair then forget).
     rpc ForgetClient(ForgetClientRequest) returns (ForgetClientResponse);
 
     // Get the current device states. This returns a stream of devices which
@@ -81,7 +75,12 @@ service UserService {
 }
 
 message GetClientsRequest {}
+
 message ClientsStreamRequest {}
+message ClientsStreamResponse {
+    Client client = 1; // Optional: A client update, possibly containing the full state.
+    string client_removed = 2; // Optional: Indicates the client_id of a client that was removed.
+}
 
 message PairingRequestsStreamRequest {}
 message PairingRequestsStreamResponse {
@@ -104,16 +103,6 @@ message UnpairClientRequest {
     string client_id = 1;
 }
 message UnpairClientResponse {}
-
-message BlockClientRequest {
-    string client_id = 1;
-}
-message BlockClientResponse {}
-
-message UnblockClientRequest {
-    string client_id = 1;
-}
-message UnblockClientResponse {}
 
 message ForgetClientRequest {
     string client_id = 1;
