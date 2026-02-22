@@ -125,7 +125,7 @@ message Device {
         BRIDGE     = 1;
         REACTOR    = 2;
         DEVICE     = 3;
-        GROUP      = 4;
+        GROUPED    = 4;
     }
 
     string           id         = 1; // The universally unique device ID (typically a hardware address or other static and unique identifier, e.g. "00158d00045c089f").
