@@ -5,6 +5,7 @@ option go_package = "github.com/jimjibone/woodhouse-4/api/go/v1/clients;clientsa
 
 import "clients/client.proto";
 import "clients/client_service.proto";
+import "clients/group.proto";
 
 service UserService {
     // Get the current Client states. This returns a stream of Clients which
@@ -56,6 +57,17 @@ service UserService {
 
     rpc AddFavorite(AddFavoriteRequest) returns (AddFavoriteResponse);
     rpc RemoveFavorite(RemoveFavoriteRequest) returns (RemoveFavoriteResponse);
+
+    // Get a stream of Group updates for groups. The first batch of replies will
+    // be the current state of the group infos, followed by updates when they
+    // occur. The stream also includes a 10 second heartbeat (an empty response)
+    // which should be ignored, but can be used to monitor the stream for
+    // disconnects.
+    rpc GroupStream(GroupStreamRequest) returns (stream GroupStreamResponse);
+
+    rpc AddGroup(AddGroupRequest) returns (AddGroupResponse);
+    rpc UpdateGroup(UpdateGroupRequest) returns (UpdateGroupResponse);
+    rpc RemoveGroup(RemoveGroupRequest) returns (RemoveGroupResponse);
 
     // Send an action to a device service.
     rpc SendAction(ActionRequest) returns (stream ActionResponse);
@@ -157,6 +169,33 @@ message RemoveFavoriteRequest {
     string service_id = 2;
 }
 message RemoveFavoriteResponse {}
+
+message GroupStreamRequest {}
+message GroupStreamResponse {
+    Group  group_update = 1; // Optional: A Group update.
+    string removed_id   = 2; // Optional: Indicates the group ID of a Group that was removed.
+}
+
+message AddGroupRequest {
+    string name = 1;
+    Service.ServiceType type = 2;
+    repeated GroupMember members = 3;
+}
+message AddGroupResponse {
+    Group group = 1; // The added group, including the generated ID.
+}
+
+message UpdateGroupRequest {
+    string id = 1;
+    optional string name = 2; // Optional: If not set, the name will not be updated.
+    repeated GroupMember members = 3; // The full list of members for the group. If empty, the members will not be updated.
+}
+message UpdateGroupResponse {}
+
+message RemoveGroupRequest {
+    string id = 1;
+}
+message RemoveGroupResponse {}
 
 message UsersStreamRequest {}
 message UsersStreamResponse {

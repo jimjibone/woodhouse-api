@@ -61,6 +61,15 @@ type UserServiceClient interface {
 	FavoritesStream(ctx context.Context, in *FavoritesStreamRequest, opts ...grpc.CallOption) (UserService_FavoritesStreamClient, error)
 	AddFavorite(ctx context.Context, in *AddFavoriteRequest, opts ...grpc.CallOption) (*AddFavoriteResponse, error)
 	RemoveFavorite(ctx context.Context, in *RemoveFavoriteRequest, opts ...grpc.CallOption) (*RemoveFavoriteResponse, error)
+	// Get a stream of Group updates for groups. The first batch of replies will
+	// be the current state of the group infos, followed by updates when they
+	// occur. The stream also includes a 10 second heartbeat (an empty response)
+	// which should be ignored, but can be used to monitor the stream for
+	// disconnects.
+	GroupStream(ctx context.Context, in *GroupStreamRequest, opts ...grpc.CallOption) (UserService_GroupStreamClient, error)
+	AddGroup(ctx context.Context, in *AddGroupRequest, opts ...grpc.CallOption) (*AddGroupResponse, error)
+	UpdateGroup(ctx context.Context, in *UpdateGroupRequest, opts ...grpc.CallOption) (*UpdateGroupResponse, error)
+	RemoveGroup(ctx context.Context, in *RemoveGroupRequest, opts ...grpc.CallOption) (*RemoveGroupResponse, error)
 	// Send an action to a device service.
 	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error)
 	// Send an image request to a device service.
@@ -329,8 +338,67 @@ func (c *userServiceClient) RemoveFavorite(ctx context.Context, in *RemoveFavori
 	return out, nil
 }
 
+func (c *userServiceClient) GroupStream(ctx context.Context, in *GroupStreamRequest, opts ...grpc.CallOption) (UserService_GroupStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[6], "/woodhouse.api.v1.clients.UserService/GroupStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &userServiceGroupStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type UserService_GroupStreamClient interface {
+	Recv() (*GroupStreamResponse, error)
+	grpc.ClientStream
+}
+
+type userServiceGroupStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *userServiceGroupStreamClient) Recv() (*GroupStreamResponse, error) {
+	m := new(GroupStreamResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *userServiceClient) AddGroup(ctx context.Context, in *AddGroupRequest, opts ...grpc.CallOption) (*AddGroupResponse, error) {
+	out := new(AddGroupResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/AddGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateGroup(ctx context.Context, in *UpdateGroupRequest, opts ...grpc.CallOption) (*UpdateGroupResponse, error) {
+	out := new(UpdateGroupResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/UpdateGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) RemoveGroup(ctx context.Context, in *RemoveGroupRequest, opts ...grpc.CallOption) (*RemoveGroupResponse, error) {
+	out := new(RemoveGroupResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/RemoveGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[6], "/woodhouse.api.v1.clients.UserService/SendAction", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[7], "/woodhouse.api.v1.clients.UserService/SendAction", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -362,7 +430,7 @@ func (x *userServiceSendActionClient) Recv() (*ActionResponse, error) {
 }
 
 func (c *userServiceClient) SendImageRequest(ctx context.Context, in *ImageRequest, opts ...grpc.CallOption) (UserService_SendImageRequestClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[7], "/woodhouse.api.v1.clients.UserService/SendImageRequest", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[8], "/woodhouse.api.v1.clients.UserService/SendImageRequest", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -394,7 +462,7 @@ func (x *userServiceSendImageRequestClient) Recv() (*ImageResponse, error) {
 }
 
 func (c *userServiceClient) UsersStream(ctx context.Context, in *UsersStreamRequest, opts ...grpc.CallOption) (UserService_UsersStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[8], "/woodhouse.api.v1.clients.UserService/UsersStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[9], "/woodhouse.api.v1.clients.UserService/UsersStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -495,6 +563,15 @@ type UserServiceServer interface {
 	FavoritesStream(*FavoritesStreamRequest, UserService_FavoritesStreamServer) error
 	AddFavorite(context.Context, *AddFavoriteRequest) (*AddFavoriteResponse, error)
 	RemoveFavorite(context.Context, *RemoveFavoriteRequest) (*RemoveFavoriteResponse, error)
+	// Get a stream of Group updates for groups. The first batch of replies will
+	// be the current state of the group infos, followed by updates when they
+	// occur. The stream also includes a 10 second heartbeat (an empty response)
+	// which should be ignored, but can be used to monitor the stream for
+	// disconnects.
+	GroupStream(*GroupStreamRequest, UserService_GroupStreamServer) error
+	AddGroup(context.Context, *AddGroupRequest) (*AddGroupResponse, error)
+	UpdateGroup(context.Context, *UpdateGroupRequest) (*UpdateGroupResponse, error)
+	RemoveGroup(context.Context, *RemoveGroupRequest) (*RemoveGroupResponse, error)
 	// Send an action to a device service.
 	SendAction(*ActionRequest, UserService_SendActionServer) error
 	// Send an image request to a device service.
@@ -549,6 +626,18 @@ func (UnimplementedUserServiceServer) AddFavorite(context.Context, *AddFavoriteR
 }
 func (UnimplementedUserServiceServer) RemoveFavorite(context.Context, *RemoveFavoriteRequest) (*RemoveFavoriteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveFavorite not implemented")
+}
+func (UnimplementedUserServiceServer) GroupStream(*GroupStreamRequest, UserService_GroupStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method GroupStream not implemented")
+}
+func (UnimplementedUserServiceServer) AddGroup(context.Context, *AddGroupRequest) (*AddGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddGroup not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateGroup(context.Context, *UpdateGroupRequest) (*UpdateGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroup not implemented")
+}
+func (UnimplementedUserServiceServer) RemoveGroup(context.Context, *RemoveGroupRequest) (*RemoveGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveGroup not implemented")
 }
 func (UnimplementedUserServiceServer) SendAction(*ActionRequest, UserService_SendActionServer) error {
 	return status.Errorf(codes.Unimplemented, "method SendAction not implemented")
@@ -815,6 +904,81 @@ func _UserService_RemoveFavorite_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GroupStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GroupStreamRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UserServiceServer).GroupStream(m, &userServiceGroupStreamServer{stream})
+}
+
+type UserService_GroupStreamServer interface {
+	Send(*GroupStreamResponse) error
+	grpc.ServerStream
+}
+
+type userServiceGroupStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *userServiceGroupStreamServer) Send(m *GroupStreamResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _UserService_AddGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AddGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/AddGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AddGroup(ctx, req.(*AddGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/UpdateGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateGroup(ctx, req.(*UpdateGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_RemoveGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RemoveGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/RemoveGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RemoveGroup(ctx, req.(*RemoveGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_SendAction_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(ActionRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -964,6 +1128,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_RemoveFavorite_Handler,
 		},
 		{
+			MethodName: "AddGroup",
+			Handler:    _UserService_AddGroup_Handler,
+		},
+		{
+			MethodName: "UpdateGroup",
+			Handler:    _UserService_UpdateGroup_Handler,
+		},
+		{
+			MethodName: "RemoveGroup",
+			Handler:    _UserService_RemoveGroup_Handler,
+		},
+		{
 			MethodName: "AddUser",
 			Handler:    _UserService_AddUser_Handler,
 		},
@@ -1005,6 +1181,11 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "FavoritesStream",
 			Handler:       _UserService_FavoritesStream_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "GroupStream",
+			Handler:       _UserService_GroupStream_Handler,
 			ServerStreams: true,
 		},
 		{

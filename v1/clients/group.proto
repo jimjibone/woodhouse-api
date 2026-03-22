@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package woodhouse.api.v1.clients;
+option go_package = "github.com/jimjibone/woodhouse-4/api/go/v1/clients;clientsapi";
+
+import "clients/client_service.proto";
+
+message Group {
+    string id                    = 1; // The universally unique device ID (typically a UUID or other static and unique identifier, e.g. "00158d00045c089f").
+    string service_id            = 2; // The service ID (typically the name of the service type, e.g. "info").
+    string name                  = 3; // The name of this group.
+    Service.ServiceType  type    = 4; // The service type. All members of the group must have the same service type.
+    repeated GroupMember members = 5; // The group members.
+}
+
+message GroupMember {
+    string device_id  = 1; // The universally unique device ID (typically a hardware address or other static and unique identifier, e.g. "00158d00045c089f").
+    string service_id = 2; // The service ID (typically the name of the service type, e.g. "info").
+}
