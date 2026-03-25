@@ -46,7 +46,7 @@ service UserService {
     // current state of the devices, followed by updates when they occur. The
     // stream also includes a 10 second heartbeat (an empty Device) which should
     // be ignored, but can be used to monitor the stream for disconnects.
-    rpc DevicesStream(DevicesStreamRequest) returns (stream Device);
+    rpc DevicesStream(DevicesStreamRequest) returns (stream DevicesStreamResponse);
 
     // Get a stream of DeviceService updates for favorites. The first batch of
     // replies will be the current state of the favorites, followed by updates
@@ -63,7 +63,7 @@ service UserService {
     // occur. The stream also includes a 10 second heartbeat (an empty response)
     // which should be ignored, but can be used to monitor the stream for
     // disconnects.
-    rpc GroupStream(GroupStreamRequest) returns (stream GroupStreamResponse);
+    rpc GroupsStream(GroupsStreamRequest) returns (stream GroupsStreamResponse);
 
     rpc AddGroup(AddGroupRequest) returns (AddGroupResponse);
     rpc UpdateGroup(UpdateGroupRequest) returns (UpdateGroupResponse);
@@ -127,6 +127,10 @@ message DevicesStreamRequest {
     // A list of device IDs to include in the steam. Sends all devices if empty.
     repeated string include_device_ids = 1;
 }
+message DevicesStreamResponse {
+    Device device         = 1; // Optional: A device update, possibly containing the full state.
+    string device_removed = 2; // Optional: Indicates the device_id of a device that was removed.
+}
 
 message DeviceService {
     string key = 1; // The key is a combined version of the device and service IDs.
@@ -170,8 +174,8 @@ message RemoveFavoriteRequest {
 }
 message RemoveFavoriteResponse {}
 
-message GroupStreamRequest {}
-message GroupStreamResponse {
+message GroupsStreamRequest {}
+message GroupsStreamResponse {
     Group  group_update = 1; // Optional: A Group update.
     string removed_id   = 2; // Optional: Indicates the group ID of a Group that was removed.
 }

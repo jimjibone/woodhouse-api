@@ -161,7 +161,7 @@ func (c *clientServiceClient) DeviceStream(ctx context.Context, opts ...grpc.Cal
 
 type ClientService_DeviceStreamClient interface {
 	Send(*DeviceStreamRequest) error
-	Recv() (*Device, error)
+	Recv() (*DeviceStreamResponse, error)
 	grpc.ClientStream
 }
 
@@ -173,8 +173,8 @@ func (x *clientServiceDeviceStreamClient) Send(m *DeviceStreamRequest) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *clientServiceDeviceStreamClient) Recv() (*Device, error) {
-	m := new(Device)
+func (x *clientServiceDeviceStreamClient) Recv() (*DeviceStreamResponse, error) {
+	m := new(DeviceStreamResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -392,7 +392,7 @@ func _ClientService_DeviceStream_Handler(srv interface{}, stream grpc.ServerStre
 }
 
 type ClientService_DeviceStreamServer interface {
-	Send(*Device) error
+	Send(*DeviceStreamResponse) error
 	Recv() (*DeviceStreamRequest, error)
 	grpc.ServerStream
 }
@@ -401,7 +401,7 @@ type clientServiceDeviceStreamServer struct {
 	grpc.ServerStream
 }
 
-func (x *clientServiceDeviceStreamServer) Send(m *Device) error {
+func (x *clientServiceDeviceStreamServer) Send(m *DeviceStreamResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 

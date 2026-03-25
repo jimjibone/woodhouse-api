@@ -66,7 +66,7 @@ type UserServiceClient interface {
 	// occur. The stream also includes a 10 second heartbeat (an empty response)
 	// which should be ignored, but can be used to monitor the stream for
 	// disconnects.
-	GroupStream(ctx context.Context, in *GroupStreamRequest, opts ...grpc.CallOption) (UserService_GroupStreamClient, error)
+	GroupsStream(ctx context.Context, in *GroupsStreamRequest, opts ...grpc.CallOption) (UserService_GroupsStreamClient, error)
 	AddGroup(ctx context.Context, in *AddGroupRequest, opts ...grpc.CallOption) (*AddGroupResponse, error)
 	UpdateGroup(ctx context.Context, in *UpdateGroupRequest, opts ...grpc.CallOption) (*UpdateGroupResponse, error)
 	RemoveGroup(ctx context.Context, in *RemoveGroupRequest, opts ...grpc.CallOption) (*RemoveGroupResponse, error)
@@ -272,7 +272,7 @@ func (c *userServiceClient) DevicesStream(ctx context.Context, in *DevicesStream
 }
 
 type UserService_DevicesStreamClient interface {
-	Recv() (*Device, error)
+	Recv() (*DevicesStreamResponse, error)
 	grpc.ClientStream
 }
 
@@ -280,8 +280,8 @@ type userServiceDevicesStreamClient struct {
 	grpc.ClientStream
 }
 
-func (x *userServiceDevicesStreamClient) Recv() (*Device, error) {
-	m := new(Device)
+func (x *userServiceDevicesStreamClient) Recv() (*DevicesStreamResponse, error) {
+	m := new(DevicesStreamResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -338,12 +338,12 @@ func (c *userServiceClient) RemoveFavorite(ctx context.Context, in *RemoveFavori
 	return out, nil
 }
 
-func (c *userServiceClient) GroupStream(ctx context.Context, in *GroupStreamRequest, opts ...grpc.CallOption) (UserService_GroupStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[6], "/woodhouse.api.v1.clients.UserService/GroupStream", opts...)
+func (c *userServiceClient) GroupsStream(ctx context.Context, in *GroupsStreamRequest, opts ...grpc.CallOption) (UserService_GroupsStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[6], "/woodhouse.api.v1.clients.UserService/GroupsStream", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &userServiceGroupStreamClient{stream}
+	x := &userServiceGroupsStreamClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -353,17 +353,17 @@ func (c *userServiceClient) GroupStream(ctx context.Context, in *GroupStreamRequ
 	return x, nil
 }
 
-type UserService_GroupStreamClient interface {
-	Recv() (*GroupStreamResponse, error)
+type UserService_GroupsStreamClient interface {
+	Recv() (*GroupsStreamResponse, error)
 	grpc.ClientStream
 }
 
-type userServiceGroupStreamClient struct {
+type userServiceGroupsStreamClient struct {
 	grpc.ClientStream
 }
 
-func (x *userServiceGroupStreamClient) Recv() (*GroupStreamResponse, error) {
-	m := new(GroupStreamResponse)
+func (x *userServiceGroupsStreamClient) Recv() (*GroupsStreamResponse, error) {
+	m := new(GroupsStreamResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -568,7 +568,7 @@ type UserServiceServer interface {
 	// occur. The stream also includes a 10 second heartbeat (an empty response)
 	// which should be ignored, but can be used to monitor the stream for
 	// disconnects.
-	GroupStream(*GroupStreamRequest, UserService_GroupStreamServer) error
+	GroupsStream(*GroupsStreamRequest, UserService_GroupsStreamServer) error
 	AddGroup(context.Context, *AddGroupRequest) (*AddGroupResponse, error)
 	UpdateGroup(context.Context, *UpdateGroupRequest) (*UpdateGroupResponse, error)
 	RemoveGroup(context.Context, *RemoveGroupRequest) (*RemoveGroupResponse, error)
@@ -627,8 +627,8 @@ func (UnimplementedUserServiceServer) AddFavorite(context.Context, *AddFavoriteR
 func (UnimplementedUserServiceServer) RemoveFavorite(context.Context, *RemoveFavoriteRequest) (*RemoveFavoriteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveFavorite not implemented")
 }
-func (UnimplementedUserServiceServer) GroupStream(*GroupStreamRequest, UserService_GroupStreamServer) error {
-	return status.Errorf(codes.Unimplemented, "method GroupStream not implemented")
+func (UnimplementedUserServiceServer) GroupsStream(*GroupsStreamRequest, UserService_GroupsStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method GroupsStream not implemented")
 }
 func (UnimplementedUserServiceServer) AddGroup(context.Context, *AddGroupRequest) (*AddGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddGroup not implemented")
@@ -835,7 +835,7 @@ func _UserService_DevicesStream_Handler(srv interface{}, stream grpc.ServerStrea
 }
 
 type UserService_DevicesStreamServer interface {
-	Send(*Device) error
+	Send(*DevicesStreamResponse) error
 	grpc.ServerStream
 }
 
@@ -843,7 +843,7 @@ type userServiceDevicesStreamServer struct {
 	grpc.ServerStream
 }
 
-func (x *userServiceDevicesStreamServer) Send(m *Device) error {
+func (x *userServiceDevicesStreamServer) Send(m *DevicesStreamResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -904,24 +904,24 @@ func _UserService_RemoveFavorite_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_GroupStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GroupStreamRequest)
+func _UserService_GroupsStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GroupsStreamRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(UserServiceServer).GroupStream(m, &userServiceGroupStreamServer{stream})
+	return srv.(UserServiceServer).GroupsStream(m, &userServiceGroupsStreamServer{stream})
 }
 
-type UserService_GroupStreamServer interface {
-	Send(*GroupStreamResponse) error
+type UserService_GroupsStreamServer interface {
+	Send(*GroupsStreamResponse) error
 	grpc.ServerStream
 }
 
-type userServiceGroupStreamServer struct {
+type userServiceGroupsStreamServer struct {
 	grpc.ServerStream
 }
 
-func (x *userServiceGroupStreamServer) Send(m *GroupStreamResponse) error {
+func (x *userServiceGroupsStreamServer) Send(m *GroupsStreamResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -1184,8 +1184,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "GroupStream",
-			Handler:       _UserService_GroupStream_Handler,
+			StreamName:    "GroupsStream",
+			Handler:       _UserService_GroupsStream_Handler,
 			ServerStreams: true,
 		},
 		{

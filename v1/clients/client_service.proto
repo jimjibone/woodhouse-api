@@ -26,7 +26,7 @@ service ClientService {
     // current state of the devices, followed by updates when they occur. The
     // stream also includes a 10 second heartbeat (an empty Device) which should
     // be ignored, but can be used to monitor the stream for disconnects.
-    rpc DeviceStream (stream DeviceStreamRequest) returns (stream Device);
+    rpc DeviceStream (stream DeviceStreamRequest) returns (stream DeviceStreamResponse);
 
     // Send an action to a device service.
     rpc SendAction(ActionRequest) returns (stream ActionResponse);
@@ -86,6 +86,10 @@ message DeviceStreamRequest {
     // immediately but will be sent when the server is ready.
     string get_device_id = 1;
 }
+message DeviceStreamResponse {
+    Device device         = 1; // Optional: A device update, possibly containing the full state.
+    string device_removed = 2; // Optional: Indicates the device_id of a device that was removed.
+}
 
 message ImageRequest {
     string request_id   = 1; // Set by the server.
@@ -128,7 +132,7 @@ message Device {
         GROUPED    = 4;
     }
 
-    string           id         = 1; // The universally unique device ID (typically a hardware address or other static and unique identifier, e.g. "00158d00045c089f").
+    string           id         = 1; // The universally unique device ID (typically a hardware address or other static and unique identifier and prefixed with the protocol, e.g. "zigbee00158d00045c089f").
     bool             full_state = 2; // Indicates that this message contains the entire state of the device.
     DeviceType       typ        = 3; // The general type of this device (helps with classification in user interfaces).
     repeated Service services   = 4; // The services supported by the device and their states.
