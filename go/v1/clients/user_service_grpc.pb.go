@@ -53,6 +53,8 @@ type UserServiceClient interface {
 	// stream also includes a 10 second heartbeat (an empty Device) which should
 	// be ignored, but can be used to monitor the stream for disconnects.
 	DevicesStream(ctx context.Context, in *DevicesStreamRequest, opts ...grpc.CallOption) (UserService_DevicesStreamClient, error)
+	// Remove a device. This will remove the device from the system.
+	RemoveDevice(ctx context.Context, in *RemoveDeviceRequest, opts ...grpc.CallOption) (*RemoveDeviceResponse, error)
 	// Get a stream of DeviceService updates for favorites. The first batch of
 	// replies will be the current state of the favorites, followed by updates
 	// when they occur. The stream also includes a 10 second heartbeat (an empty
@@ -286,6 +288,15 @@ func (x *userServiceDevicesStreamClient) Recv() (*DevicesStreamResponse, error) 
 		return nil, err
 	}
 	return m, nil
+}
+
+func (c *userServiceClient) RemoveDevice(ctx context.Context, in *RemoveDeviceRequest, opts ...grpc.CallOption) (*RemoveDeviceResponse, error) {
+	out := new(RemoveDeviceResponse)
+	err := c.cc.Invoke(ctx, "/woodhouse.api.v1.clients.UserService/RemoveDevice", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *userServiceClient) FavoritesStream(ctx context.Context, in *FavoritesStreamRequest, opts ...grpc.CallOption) (UserService_FavoritesStreamClient, error) {
@@ -555,6 +566,8 @@ type UserServiceServer interface {
 	// stream also includes a 10 second heartbeat (an empty Device) which should
 	// be ignored, but can be used to monitor the stream for disconnects.
 	DevicesStream(*DevicesStreamRequest, UserService_DevicesStreamServer) error
+	// Remove a device. This will remove the device from the system.
+	RemoveDevice(context.Context, *RemoveDeviceRequest) (*RemoveDeviceResponse, error)
 	// Get a stream of DeviceService updates for favorites. The first batch of
 	// replies will be the current state of the favorites, followed by updates
 	// when they occur. The stream also includes a 10 second heartbeat (an empty
@@ -617,6 +630,9 @@ func (UnimplementedUserServiceServer) GetDevices(*GetDevicesRequest, UserService
 }
 func (UnimplementedUserServiceServer) DevicesStream(*DevicesStreamRequest, UserService_DevicesStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method DevicesStream not implemented")
+}
+func (UnimplementedUserServiceServer) RemoveDevice(context.Context, *RemoveDeviceRequest) (*RemoveDeviceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveDevice not implemented")
 }
 func (UnimplementedUserServiceServer) FavoritesStream(*FavoritesStreamRequest, UserService_FavoritesStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method FavoritesStream not implemented")
@@ -845,6 +861,24 @@ type userServiceDevicesStreamServer struct {
 
 func (x *userServiceDevicesStreamServer) Send(m *DevicesStreamResponse) error {
 	return x.ServerStream.SendMsg(m)
+}
+
+func _UserService_RemoveDevice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveDeviceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RemoveDevice(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/woodhouse.api.v1.clients.UserService/RemoveDevice",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RemoveDevice(ctx, req.(*RemoveDeviceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_FavoritesStream_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -1118,6 +1152,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ForgetClient",
 			Handler:    _UserService_ForgetClient_Handler,
+		},
+		{
+			MethodName: "RemoveDevice",
+			Handler:    _UserService_RemoveDevice_Handler,
 		},
 		{
 			MethodName: "AddFavorite",
