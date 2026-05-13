@@ -74,8 +74,16 @@ type UserServiceClient interface {
 	RemoveGroup(ctx context.Context, in *RemoveGroupRequest, opts ...grpc.CallOption) (*RemoveGroupResponse, error)
 	// Send an action to a device service.
 	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error)
-	// Send an image request to a device service.
+	// Send an image request to a device service. This will also update the
+	// server-side image cache and push the new image to all ImagesStream
+	// subscribers.
 	SendImageRequest(ctx context.Context, in *ImageRequest, opts ...grpc.CallOption) (UserService_SendImageRequestClient, error)
+	// Get a stream of camera image updates. The first batch of replies will be
+	// the current cached image for each known camera, followed by updates as
+	// the server polls cameras on a schedule or a user triggers a refresh via
+	// SendImageRequest. The stream also includes a 10 second heartbeat (an
+	// empty response) which should be ignored.
+	ImagesStream(ctx context.Context, in *ImagesStreamRequest, opts ...grpc.CallOption) (UserService_ImagesStreamClient, error)
 	// Get a stream of User updates. The first batch of replies will be the
 	// current state of the users, followed by updates when they occur. The
 	// stream also includes a 10 second heartbeat (an empty User) which should
@@ -472,8 +480,40 @@ func (x *userServiceSendImageRequestClient) Recv() (*ImageResponse, error) {
 	return m, nil
 }
 
+func (c *userServiceClient) ImagesStream(ctx context.Context, in *ImagesStreamRequest, opts ...grpc.CallOption) (UserService_ImagesStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[9], "/woodhouse.api.v1.clients.UserService/ImagesStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &userServiceImagesStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type UserService_ImagesStreamClient interface {
+	Recv() (*ImagesStreamResponse, error)
+	grpc.ClientStream
+}
+
+type userServiceImagesStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *userServiceImagesStreamClient) Recv() (*ImagesStreamResponse, error) {
+	m := new(ImagesStreamResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *userServiceClient) UsersStream(ctx context.Context, in *UsersStreamRequest, opts ...grpc.CallOption) (UserService_UsersStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[9], "/woodhouse.api.v1.clients.UserService/UsersStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[10], "/woodhouse.api.v1.clients.UserService/UsersStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -587,8 +627,16 @@ type UserServiceServer interface {
 	RemoveGroup(context.Context, *RemoveGroupRequest) (*RemoveGroupResponse, error)
 	// Send an action to a device service.
 	SendAction(*ActionRequest, UserService_SendActionServer) error
-	// Send an image request to a device service.
+	// Send an image request to a device service. This will also update the
+	// server-side image cache and push the new image to all ImagesStream
+	// subscribers.
 	SendImageRequest(*ImageRequest, UserService_SendImageRequestServer) error
+	// Get a stream of camera image updates. The first batch of replies will be
+	// the current cached image for each known camera, followed by updates as
+	// the server polls cameras on a schedule or a user triggers a refresh via
+	// SendImageRequest. The stream also includes a 10 second heartbeat (an
+	// empty response) which should be ignored.
+	ImagesStream(*ImagesStreamRequest, UserService_ImagesStreamServer) error
 	// Get a stream of User updates. The first batch of replies will be the
 	// current state of the users, followed by updates when they occur. The
 	// stream also includes a 10 second heartbeat (an empty User) which should
@@ -660,6 +708,9 @@ func (UnimplementedUserServiceServer) SendAction(*ActionRequest, UserService_Sen
 }
 func (UnimplementedUserServiceServer) SendImageRequest(*ImageRequest, UserService_SendImageRequestServer) error {
 	return status.Errorf(codes.Unimplemented, "method SendImageRequest not implemented")
+}
+func (UnimplementedUserServiceServer) ImagesStream(*ImagesStreamRequest, UserService_ImagesStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method ImagesStream not implemented")
 }
 func (UnimplementedUserServiceServer) UsersStream(*UsersStreamRequest, UserService_UsersStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method UsersStream not implemented")
@@ -1055,6 +1106,27 @@ func (x *userServiceSendImageRequestServer) Send(m *ImageResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _UserService_ImagesStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ImagesStreamRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UserServiceServer).ImagesStream(m, &userServiceImagesStreamServer{stream})
+}
+
+type UserService_ImagesStreamServer interface {
+	Send(*ImagesStreamResponse) error
+	grpc.ServerStream
+}
+
+type userServiceImagesStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *userServiceImagesStreamServer) Send(m *ImagesStreamResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 func _UserService_UsersStream_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(UsersStreamRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -1234,6 +1306,11 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "SendImageRequest",
 			Handler:       _UserService_SendImageRequest_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "ImagesStream",
+			Handler:       _UserService_ImagesStream_Handler,
 			ServerStreams: true,
 		},
 		{

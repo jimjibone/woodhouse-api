@@ -75,8 +75,17 @@ service UserService {
     // Send an action to a device service.
     rpc SendAction(ActionRequest) returns (stream ActionResponse);
 
-    // Send an image request to a device service.
+    // Send an image request to a device service. This will also update the
+    // server-side image cache and push the new image to all ImagesStream
+    // subscribers.
     rpc SendImageRequest(ImageRequest) returns (stream ImageResponse);
+
+    // Get a stream of camera image updates. The first batch of replies will be
+    // the current cached image for each known camera, followed by updates as
+    // the server polls cameras on a schedule or a user triggers a refresh via
+    // SendImageRequest. The stream also includes a 10 second heartbeat (an
+    // empty response) which should be ignored.
+    rpc ImagesStream(ImagesStreamRequest) returns (stream ImagesStreamResponse);
 
     // Get a stream of User updates. The first batch of replies will be the
     // current state of the users, followed by updates when they occur. The
@@ -235,6 +244,20 @@ message RemoveUserRequest {
     string username = 1;
 }
 message RemoveUserResponse {}
+
+message ImagesStreamRequest {
+    // A list of device IDs to subscribe to. Subscribes to all cameras if empty.
+    repeated string device_ids = 1;
+}
+
+message ImagesStreamResponse {
+    string device_id    = 1;
+    string service_id   = 2;
+    string attribute_id = 3;
+    bytes  data         = 4;
+    string mime_type    = 5;
+    int64  fetched_at   = 6; // Unix milliseconds.
+}
 
 message User {
     string   username  = 1;
