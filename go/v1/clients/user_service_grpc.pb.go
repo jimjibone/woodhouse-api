@@ -76,8 +76,9 @@ type UserServiceClient interface {
 	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (UserService_SendActionClient, error)
 	// Send an image request to a device service. This will also update the
 	// server-side image cache and push the new image to all ImagesStream
-	// subscribers.
-	SendImageRequest(ctx context.Context, in *ImageRequest, opts ...grpc.CallOption) (UserService_SendImageRequestClient, error)
+	// subscribers. The optional width and height fields act as a size hint;
+	// the server will resize the image before caching and streaming.
+	SendImageRequest(ctx context.Context, in *UserImageRequest, opts ...grpc.CallOption) (UserService_SendImageRequestClient, error)
 	// Get a stream of camera image updates. The first batch of replies will be
 	// the current cached image for each known camera, followed by updates as
 	// the server polls cameras on a schedule or a user triggers a refresh via
@@ -448,7 +449,7 @@ func (x *userServiceSendActionClient) Recv() (*ActionResponse, error) {
 	return m, nil
 }
 
-func (c *userServiceClient) SendImageRequest(ctx context.Context, in *ImageRequest, opts ...grpc.CallOption) (UserService_SendImageRequestClient, error) {
+func (c *userServiceClient) SendImageRequest(ctx context.Context, in *UserImageRequest, opts ...grpc.CallOption) (UserService_SendImageRequestClient, error) {
 	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[8], "/woodhouse.api.v1.clients.UserService/SendImageRequest", opts...)
 	if err != nil {
 		return nil, err
@@ -629,8 +630,9 @@ type UserServiceServer interface {
 	SendAction(*ActionRequest, UserService_SendActionServer) error
 	// Send an image request to a device service. This will also update the
 	// server-side image cache and push the new image to all ImagesStream
-	// subscribers.
-	SendImageRequest(*ImageRequest, UserService_SendImageRequestServer) error
+	// subscribers. The optional width and height fields act as a size hint;
+	// the server will resize the image before caching and streaming.
+	SendImageRequest(*UserImageRequest, UserService_SendImageRequestServer) error
 	// Get a stream of camera image updates. The first batch of replies will be
 	// the current cached image for each known camera, followed by updates as
 	// the server polls cameras on a schedule or a user triggers a refresh via
@@ -706,7 +708,7 @@ func (UnimplementedUserServiceServer) RemoveGroup(context.Context, *RemoveGroupR
 func (UnimplementedUserServiceServer) SendAction(*ActionRequest, UserService_SendActionServer) error {
 	return status.Errorf(codes.Unimplemented, "method SendAction not implemented")
 }
-func (UnimplementedUserServiceServer) SendImageRequest(*ImageRequest, UserService_SendImageRequestServer) error {
+func (UnimplementedUserServiceServer) SendImageRequest(*UserImageRequest, UserService_SendImageRequestServer) error {
 	return status.Errorf(codes.Unimplemented, "method SendImageRequest not implemented")
 }
 func (UnimplementedUserServiceServer) ImagesStream(*ImagesStreamRequest, UserService_ImagesStreamServer) error {
@@ -1086,7 +1088,7 @@ func (x *userServiceSendActionServer) Send(m *ActionResponse) error {
 }
 
 func _UserService_SendImageRequest_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ImageRequest)
+	m := new(UserImageRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}

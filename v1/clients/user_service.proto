@@ -77,8 +77,9 @@ service UserService {
 
     // Send an image request to a device service. This will also update the
     // server-side image cache and push the new image to all ImagesStream
-    // subscribers.
-    rpc SendImageRequest(ImageRequest) returns (stream ImageResponse);
+    // subscribers. The optional width and height fields act as a size hint;
+    // the server will resize the image before caching and streaming.
+    rpc SendImageRequest(UserImageRequest) returns (stream ImageResponse);
 
     // Get a stream of camera image updates. The first batch of replies will be
     // the current cached image for each known camera, followed by updates as
@@ -248,6 +249,29 @@ message RemoveUserResponse {}
 message ImagesStreamRequest {
     // A list of device IDs to subscribe to. Subscribes to all cameras if empty.
     repeated string device_ids = 1;
+    // Per-camera size hints. The server uses the maximum width/height seen
+    // across all connected subscribers when resizing cached images.
+    repeated ImageSizeHint size_hints = 2;
+}
+
+// ImageSizeHint tells the server the rendered pixel size of a specific camera
+// attribute so it can resize the cached image to the appropriate resolution.
+message ImageSizeHint {
+    string device_id    = 1;
+    string service_id   = 2;
+    string attribute_id = 3;
+    uint32 width        = 4; // Rendered pixel width.  0 = full resolution.
+    uint32 height       = 5; // Rendered pixel height. 0 = full resolution.
+}
+
+// UserImageRequest is like ImageRequest but with an optional size hint for
+// server-side resizing. The size hint is not forwarded to the bridge.
+message UserImageRequest {
+    string device_id    = 1;
+    string service_id   = 2;
+    string attribute_id = 3;
+    uint32 width        = 4; // Desired pixel width.  0 = full resolution.
+    uint32 height       = 5; // Desired pixel height. 0 = full resolution.
 }
 
 message ImagesStreamResponse {
