@@ -4,7 +4,7 @@ This repository contains the Woodhouse gRPC API protobuf and related files.
 
 The API is stored in major version directories, with there currently only being
 version 1. In the future we may introduce new versions, so this separation can
-2. enable backwards compatibility if we choose to support it.
+enable backwards compatibility if we choose to support it.
 
 ## Version 1
 
@@ -39,6 +39,14 @@ larger project. In fact, you may not need to use this project directly as it is
 already bundled in:
 
 - [woodhouse-core](https://github.com/jimjibone/woodhouse-core) which uses it to
-    implement the woodhouse core server and admin web interface.
+  implement the woodhouse core server and admin web interface.
 - [wh](https://github.com/jimjibone/wh) which uses it to provide a Go client
-    library for bridges and reactors.
+  library for bridges and reactors.
+
+## History
+
+If you go looking through the git commit history you will notice that some
+commits look slightly odd. This is because the files were extracted while
+retaining commit history from the original monorepo which is now known as
+woodhouse-core. This is to allow for future reasoning about why things are the
+way they are. Git commit messages can be very useful if written well.
