@@ -1,6 +1,10 @@
 version: '3'
 
 tasks:
+  default:
+    deps:
+      - proto-go-v1
+
   proto-go-plugins:
     run: when_changed
     status:
