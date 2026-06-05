@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package woodhouse.api.v1.clients;
-option go_package = "github.com/jimjibone/woodhouse-4/api/go/v1/clients;clientsapi";
+option go_package = "github.com/jimjibone/woodhouse-api/go/v1/clients;clientsapi";
 
 message Client {
     string id = 1;
