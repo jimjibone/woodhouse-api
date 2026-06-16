@@ -24,5 +24,5 @@ tasks:
     generates:
       - ./go/v1/*/*.pb.go
     cmds:
-      - cd proto && protoc --plugin=../.bin/protoc-gen-go -I./v1 --go_out=../go/v1 --go_opt=module=github.com/jimjibone/woodhouse-4/api/go/v1 ./v1/*/*.proto
-      - cd proto && protoc --plugin=../.bin/protoc-gen-go-grpc -I./v1 --go-grpc_out=../go/v1 --go-grpc_opt=module=github.com/jimjibone/woodhouse-4/api/go/v1 ./v1/*/*_service.proto
+      - cd proto && protoc --plugin=../.bin/protoc-gen-go -I./v1 --go_out=../go/v1 --go_opt=module=github.com/jimjibone/woodhouse-api/go/v1 ./v1/*/*.proto
+      - cd proto && protoc --plugin=../.bin/protoc-gen-go-grpc -I./v1 --go-grpc_out=../go/v1 --go-grpc_opt=module=github.com/jimjibone/woodhouse-api/go/v1 ./v1/*/*_service.proto
