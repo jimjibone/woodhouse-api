@@ -24,9 +24,11 @@ const (
 type PairResponse_State int32
 
 const (
-	PairResponse_Undefined PairResponse_State = 0
-	PairResponse_Pending   PairResponse_State = 1
-	PairResponse_Handshake PairResponse_State = 2
+	PairResponse_Undefined   PairResponse_State = 0
+	PairResponse_Pending     PairResponse_State = 1 // Keepalive while awaiting the user's confirm/deny.
+	PairResponse_KeyExchange PairResponse_State = 2 // Carries server_pubkey and commitment.
+	PairResponse_Reveal      PairResponse_State = 3 // Carries server_nonce.
+	PairResponse_Confirmed   PairResponse_State = 4 // Carries the first encrypted payload (the cert).
 )
 
 // Enum value maps for PairResponse_State.
@@ -34,12 +36,16 @@ var (
 	PairResponse_State_name = map[int32]string{
 		0: "Undefined",
 		1: "Pending",
-		2: "Handshake",
+		2: "KeyExchange",
+		3: "Reveal",
+		4: "Confirmed",
 	}
 	PairResponse_State_value = map[string]int32{
-		"Undefined": 0,
-		"Pending":   1,
-		"Handshake": 2,
+		"Undefined":   0,
+		"Pending":     1,
+		"KeyExchange": 2,
+		"Reveal":      3,
+		"Confirmed":   4,
 	}
 )
 
@@ -72,8 +78,9 @@ func (PairResponse_State) EnumDescriptor() ([]byte, []int) {
 
 type PairRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"` // Only needed in the first message.
-	Data          []byte                 `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`             // Only needed in the first message.
+	ClientPubkey  []byte                 `protobuf:"bytes,3,opt,name=client_pubkey,json=clientPubkey,proto3" json:"client_pubkey,omitempty"` // Ephemeral X25519 public key PKa (first message).
+	ClientNonce   []byte                 `protobuf:"bytes,4,opt,name=client_nonce,json=clientNonce,proto3" json:"client_nonce,omitempty"`    // 32-byte SAS nonce Na.
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -115,9 +122,16 @@ func (x *PairRequest) GetClientId() string {
 	return ""
 }
 
-func (x *PairRequest) GetData() []byte {
+func (x *PairRequest) GetClientPubkey() []byte {
 	if x != nil {
-		return x.Data
+		return x.ClientPubkey
+	}
+	return nil
+}
+
+func (x *PairRequest) GetClientNonce() []byte {
+	if x != nil {
+		return x.ClientNonce
 	}
 	return nil
 }
@@ -125,7 +139,10 @@ func (x *PairRequest) GetData() []byte {
 type PairResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	State         PairResponse_State     `protobuf:"varint,1,opt,name=state,proto3,enum=woodhouse.api.v1.clients.PairResponse_State" json:"state,omitempty"`
-	Data          []byte                 `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	Data          []byte                 `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`                                     // Encrypted cert / refresh-token payloads.
+	ServerPubkey  []byte                 `protobuf:"bytes,3,opt,name=server_pubkey,json=serverPubkey,proto3" json:"server_pubkey,omitempty"` // Ephemeral X25519 public key PKb (KeyExchange).
+	Commitment    []byte                 `protobuf:"bytes,4,opt,name=commitment,proto3" json:"commitment,omitempty"`                         // SHA-256 commitment to server_nonce (KeyExchange).
+	ServerNonce   []byte                 `protobuf:"bytes,5,opt,name=server_nonce,json=serverNonce,proto3" json:"server_nonce,omitempty"`    // 32-byte SAS nonce Nb, revealed (Reveal).
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -170,6 +187,27 @@ func (x *PairResponse) GetState() PairResponse_State {
 func (x *PairResponse) GetData() []byte {
 	if x != nil {
 		return x.Data
+	}
+	return nil
+}
+
+func (x *PairResponse) GetServerPubkey() []byte {
+	if x != nil {
+		return x.ServerPubkey
+	}
+	return nil
+}
+
+func (x *PairResponse) GetCommitment() []byte {
+	if x != nil {
+		return x.Commitment
+	}
+	return nil
+}
+
+func (x *PairResponse) GetServerNonce() []byte {
+	if x != nil {
+		return x.ServerNonce
 	}
 	return nil
 }
@@ -426,17 +464,26 @@ var File_clients_auth_service_proto protoreflect.FileDescriptor
 
 const file_clients_auth_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1aclients/auth_service.proto\x12\x18woodhouse.api.v1.clients\">\n" +
+	"\x1aclients/auth_service.proto\x12\x18woodhouse.api.v1.clients\"~\n" +
 	"\vPairRequest\x12\x1b\n" +
-	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12\x12\n" +
-	"\x04data\x18\x02 \x01(\fR\x04data\"\x9a\x01\n" +
+	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12#\n" +
+	"\rclient_pubkey\x18\x03 \x01(\fR\fclientPubkey\x12!\n" +
+	"\fclient_nonce\x18\x04 \x01(\fR\vclientNonceJ\x04\b\x02\x10\x03R\x04data\"\x9f\x02\n" +
 	"\fPairResponse\x12B\n" +
 	"\x05state\x18\x01 \x01(\x0e2,.woodhouse.api.v1.clients.PairResponse.StateR\x05state\x12\x12\n" +
-	"\x04data\x18\x02 \x01(\fR\x04data\"2\n" +
+	"\x04data\x18\x02 \x01(\fR\x04data\x12#\n" +
+	"\rserver_pubkey\x18\x03 \x01(\fR\fserverPubkey\x12\x1e\n" +
+	"\n" +
+	"commitment\x18\x04 \x01(\fR\n" +
+	"commitment\x12!\n" +
+	"\fserver_nonce\x18\x05 \x01(\fR\vserverNonce\"O\n" +
 	"\x05State\x12\r\n" +
 	"\tUndefined\x10\x00\x12\v\n" +
-	"\aPending\x10\x01\x12\r\n" +
-	"\tHandshake\x10\x02\"5\n" +
+	"\aPending\x10\x01\x12\x0f\n" +
+	"\vKeyExchange\x10\x02\x12\n" +
+	"\n" +
+	"\x06Reveal\x10\x03\x12\r\n" +
+	"\tConfirmed\x10\x04\"5\n" +
 	"\x0eRefreshRequest\x12#\n" +
 	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"Y\n" +
 	"\x0fRefreshResponse\x12#\n" +

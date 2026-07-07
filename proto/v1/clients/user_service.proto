@@ -110,17 +110,20 @@ message ClientsStreamResponse {
 message PairingRequestsStreamRequest {}
 message PairingRequestsStreamResponse {
     PairingRequest pairing_request = 1; // Optional: A pairing request update, possibly containing the full state.
-    string pairing_removed = 2; // Optional: Indicates the client_id of a pairing request that was removed.
+    string pairing_removed = 2; // Optional: Indicates the request_id of a pairing request that was removed.
 }
 
 message ApprovePairingRequest {
-    string client_id = 1;
-    string pairing_code = 2;
+    string client_id = 1; // Informational: the client_id being confirmed.
+    string request_id = 3; // Identifies the specific pairing attempt to confirm.
+    reserved 2; // was 'pairing_code'; SAS is now compared, not entered.
+    reserved "pairing_code";
 }
 message ApprovePairingResponse {}
 
 message DenyPairingRequest {
-    string client_id = 1;
+    string client_id = 1; // Informational: the client_id being denied.
+    string request_id = 2; // Identifies the specific pairing attempt to deny.
 }
 message DenyPairingResponse {}
 

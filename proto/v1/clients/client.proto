@@ -21,4 +21,6 @@ message PairingRequest {
     string name = 2;
     string description = 3;
     uint64 requested_at = 4; // Seconds since Unix epoch 1970-01-01T00:00:00Z.
+    string request_id = 5; // Server-generated unique id for this pairing attempt.
+    string sas = 6; // 8-digit SAS to compare against the client CLI (empty until known).
 }

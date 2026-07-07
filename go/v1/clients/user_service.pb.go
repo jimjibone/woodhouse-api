@@ -233,7 +233,7 @@ func (*PairingRequestsStreamRequest) Descriptor() ([]byte, []int) {
 type PairingRequestsStreamResponse struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	PairingRequest *PairingRequest        `protobuf:"bytes,1,opt,name=pairing_request,json=pairingRequest,proto3" json:"pairing_request,omitempty"` // Optional: A pairing request update, possibly containing the full state.
-	PairingRemoved string                 `protobuf:"bytes,2,opt,name=pairing_removed,json=pairingRemoved,proto3" json:"pairing_removed,omitempty"` // Optional: Indicates the client_id of a pairing request that was removed.
+	PairingRemoved string                 `protobuf:"bytes,2,opt,name=pairing_removed,json=pairingRemoved,proto3" json:"pairing_removed,omitempty"` // Optional: Indicates the request_id of a pairing request that was removed.
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -284,8 +284,8 @@ func (x *PairingRequestsStreamResponse) GetPairingRemoved() string {
 
 type ApprovePairingRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
-	PairingCode   string                 `protobuf:"bytes,2,opt,name=pairing_code,json=pairingCode,proto3" json:"pairing_code,omitempty"`
+	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`    // Informational: the client_id being confirmed.
+	RequestId     string                 `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"` // Identifies the specific pairing attempt to confirm.
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -327,9 +327,9 @@ func (x *ApprovePairingRequest) GetClientId() string {
 	return ""
 }
 
-func (x *ApprovePairingRequest) GetPairingCode() string {
+func (x *ApprovePairingRequest) GetRequestId() string {
 	if x != nil {
-		return x.PairingCode
+		return x.RequestId
 	}
 	return ""
 }
@@ -372,7 +372,8 @@ func (*ApprovePairingResponse) Descriptor() ([]byte, []int) {
 
 type DenyPairingRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`    // Informational: the client_id being denied.
+	RequestId     string                 `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"` // Identifies the specific pairing attempt to deny.
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -410,6 +411,13 @@ func (*DenyPairingRequest) Descriptor() ([]byte, []int) {
 func (x *DenyPairingRequest) GetClientId() string {
 	if x != nil {
 		return x.ClientId
+	}
+	return ""
+}
+
+func (x *DenyPairingRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
 	}
 	return ""
 }
@@ -2306,13 +2314,16 @@ const file_clients_user_service_proto_rawDesc = "" +
 	"\x1cPairingRequestsStreamRequest\"\x9b\x01\n" +
 	"\x1dPairingRequestsStreamResponse\x12Q\n" +
 	"\x0fpairing_request\x18\x01 \x01(\v2(.woodhouse.api.v1.clients.PairingRequestR\x0epairingRequest\x12'\n" +
-	"\x0fpairing_removed\x18\x02 \x01(\tR\x0epairingRemoved\"W\n" +
+	"\x0fpairing_removed\x18\x02 \x01(\tR\x0epairingRemoved\"g\n" +
 	"\x15ApprovePairingRequest\x12\x1b\n" +
-	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12!\n" +
-	"\fpairing_code\x18\x02 \x01(\tR\vpairingCode\"\x18\n" +
-	"\x16ApprovePairingResponse\"1\n" +
+	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12\x1d\n" +
+	"\n" +
+	"request_id\x18\x03 \x01(\tR\trequestIdJ\x04\b\x02\x10\x03R\fpairing_code\"\x18\n" +
+	"\x16ApprovePairingResponse\"P\n" +
 	"\x12DenyPairingRequest\x12\x1b\n" +
-	"\tclient_id\x18\x01 \x01(\tR\bclientId\"\x15\n" +
+	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12\x1d\n" +
+	"\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"\x15\n" +
 	"\x13DenyPairingResponse\"2\n" +
 	"\x13UnpairClientRequest\x12\x1b\n" +
 	"\tclient_id\x18\x01 \x01(\tR\bclientId\"\x16\n" +

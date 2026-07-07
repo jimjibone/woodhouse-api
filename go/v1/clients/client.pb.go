@@ -127,6 +127,8 @@ type PairingRequest struct {
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	RequestedAt   uint64                 `protobuf:"varint,4,opt,name=requested_at,json=requestedAt,proto3" json:"requested_at,omitempty"` // Seconds since Unix epoch 1970-01-01T00:00:00Z.
+	RequestId     string                 `protobuf:"bytes,5,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`        // Server-generated unique id for this pairing attempt.
+	Sas           string                 `protobuf:"bytes,6,opt,name=sas,proto3" json:"sas,omitempty"`                                     // 8-digit SAS to compare against the client CLI (empty until known).
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -189,6 +191,20 @@ func (x *PairingRequest) GetRequestedAt() uint64 {
 	return 0
 }
 
+func (x *PairingRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+func (x *PairingRequest) GetSas() string {
+	if x != nil {
+		return x.Sas
+	}
+	return ""
+}
+
 var File_clients_client_proto protoreflect.FileDescriptor
 
 const file_clients_client_proto_rawDesc = "" +
@@ -203,12 +219,15 @@ const file_clients_client_proto_rawDesc = "" +
 	"\x06online\x18\x06 \x01(\bR\x06online\x12\x1d\n" +
 	"\n" +
 	"first_seen\x18\a \x01(\x04R\tfirstSeen\x12\x1b\n" +
-	"\tlast_seen\x18\b \x01(\x04R\blastSeen\"\x86\x01\n" +
+	"\tlast_seen\x18\b \x01(\x04R\blastSeen\"\xb7\x01\n" +
 	"\x0ePairingRequest\x12\x1b\n" +
 	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12!\n" +
-	"\frequested_at\x18\x04 \x01(\x04R\vrequestedAtB=Z;github.com/jimjibone/woodhouse-api/go/v1/clients;clientsapib\x06proto3"
+	"\frequested_at\x18\x04 \x01(\x04R\vrequestedAt\x12\x1d\n" +
+	"\n" +
+	"request_id\x18\x05 \x01(\tR\trequestId\x12\x10\n" +
+	"\x03sas\x18\x06 \x01(\tR\x03sasB=Z;github.com/jimjibone/woodhouse-api/go/v1/clients;clientsapib\x06proto3"
 
 var (
 	file_clients_client_proto_rawDescOnce sync.Once

@@ -29,31 +29,29 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
-	// Pair with (login to) the woodhouse core server. Note that this RPC can
-	// wait in the pending state for a long time, until a user approves/denies
-	// the pairing request. The bi-directional stream is normally used in
-	// 'insecure' mode (i.e. use 'insecure skip verify' TLS option) and follows
-	// this pattern:
-	//  1. The client starts the bi-directional stream by sending its client_id.
-	//  2. The server will send back the 'Pending' state every second until a
-	//     user has either accepted or denied the pairing request.
-	//  3. If the user accepts the pairing request, the server will send the
-	//     first PAKE handshake blob.
-	//  4. The client should read the handshake into their PAKE object and send
-	//     back the second PAKE handshake blob.
-	//  5. Server and client should now have the session key. The server tests
-	//     this by sending some random data to client after encrypting with
-	//     AES-256.
-	//  6. The client should then decrypt the random bytes, reverse the order,
-	//     encrypt using its session key and send it back to the server.
-	//  7. If the server is happy it will send its own certificate file in PEM
-	//     format which the client should save and use to verify future
-	//     connections.
-	//  8. The server will then generate a new refresh token (JWT) and send it to
-	//     the client. The client should save this and use it to obtain new
-	//     tokens using the `Refresh` RPC.
-	//  9. Server and client should now both finish the RPC. The client should
-	//     now call `Refresh` to obtain an access token which...
+	// Pair with (login to) the woodhouse core server. The bi-directional stream
+	// is normally used in 'insecure' mode (i.e. use 'insecure skip verify' TLS
+	// option); the channel is authenticated by a commitment-based Short
+	// Authentication String (SAS) that the user compares on both the client CLI
+	// and the server web UI. The pattern is:
+	//  1. The client starts the stream by sending its client_id and an ephemeral
+	//     X25519 client_pubkey (PKa).
+	//  2. The server replies with KeyExchange, carrying its ephemeral X25519
+	//     server_pubkey (PKb) and a commitment to its 32-byte nonce Nb:
+	//     commitment = SHA256(len‖PKb ‖ len‖PKa ‖ len‖client_id ‖ len‖Nb).
+	//  3. The client sends its own 32-byte nonce Na (client_nonce).
+	//  4. The server replies with Reveal, carrying server_nonce = Nb.
+	//  5. The client verifies the commitment, then both sides compute the shared
+	//     ECDH secret and derive, via HKDF with distinct info labels:
+	//     - an 8-digit SAS (displayed on both ends for the user to compare);
+	//     - a 32-byte AES-256 session key.
+	//  6. The server stores the SAS on the pairing request (shown in the web UI)
+	//     and sends periodic Pending keepalives while awaiting the user.
+	//  7. The user compares the two 8-digit codes and clicks Confirm (or Deny).
+	//  8. On confirm the server sends Confirmed with data = Encrypt(cert), then a
+	//     further message with data = Encrypt(refresh token), each AES-256-GCM
+	//     encrypted under the session key. On deny/timeout it returns
+	//     PermissionDenied and sends nothing.
 	Pair(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[PairRequest, PairResponse], error)
 	// Refresh session auth tokens. Should be called regularly before tokens
 	// expire.
@@ -119,31 +117,29 @@ func (c *authServiceClient) Ping(ctx context.Context, in *PingRequest, opts ...g
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
 type AuthServiceServer interface {
-	// Pair with (login to) the woodhouse core server. Note that this RPC can
-	// wait in the pending state for a long time, until a user approves/denies
-	// the pairing request. The bi-directional stream is normally used in
-	// 'insecure' mode (i.e. use 'insecure skip verify' TLS option) and follows
-	// this pattern:
-	//  1. The client starts the bi-directional stream by sending its client_id.
-	//  2. The server will send back the 'Pending' state every second until a
-	//     user has either accepted or denied the pairing request.
-	//  3. If the user accepts the pairing request, the server will send the
-	//     first PAKE handshake blob.
-	//  4. The client should read the handshake into their PAKE object and send
-	//     back the second PAKE handshake blob.
-	//  5. Server and client should now have the session key. The server tests
-	//     this by sending some random data to client after encrypting with
-	//     AES-256.
-	//  6. The client should then decrypt the random bytes, reverse the order,
-	//     encrypt using its session key and send it back to the server.
-	//  7. If the server is happy it will send its own certificate file in PEM
-	//     format which the client should save and use to verify future
-	//     connections.
-	//  8. The server will then generate a new refresh token (JWT) and send it to
-	//     the client. The client should save this and use it to obtain new
-	//     tokens using the `Refresh` RPC.
-	//  9. Server and client should now both finish the RPC. The client should
-	//     now call `Refresh` to obtain an access token which...
+	// Pair with (login to) the woodhouse core server. The bi-directional stream
+	// is normally used in 'insecure' mode (i.e. use 'insecure skip verify' TLS
+	// option); the channel is authenticated by a commitment-based Short
+	// Authentication String (SAS) that the user compares on both the client CLI
+	// and the server web UI. The pattern is:
+	//  1. The client starts the stream by sending its client_id and an ephemeral
+	//     X25519 client_pubkey (PKa).
+	//  2. The server replies with KeyExchange, carrying its ephemeral X25519
+	//     server_pubkey (PKb) and a commitment to its 32-byte nonce Nb:
+	//     commitment = SHA256(len‖PKb ‖ len‖PKa ‖ len‖client_id ‖ len‖Nb).
+	//  3. The client sends its own 32-byte nonce Na (client_nonce).
+	//  4. The server replies with Reveal, carrying server_nonce = Nb.
+	//  5. The client verifies the commitment, then both sides compute the shared
+	//     ECDH secret and derive, via HKDF with distinct info labels:
+	//     - an 8-digit SAS (displayed on both ends for the user to compare);
+	//     - a 32-byte AES-256 session key.
+	//  6. The server stores the SAS on the pairing request (shown in the web UI)
+	//     and sends periodic Pending keepalives while awaiting the user.
+	//  7. The user compares the two 8-digit codes and clicks Confirm (or Deny).
+	//  8. On confirm the server sends Confirmed with data = Encrypt(cert), then a
+	//     further message with data = Encrypt(refresh token), each AES-256-GCM
+	//     encrypted under the session key. On deny/timeout it returns
+	//     PermissionDenied and sends nothing.
 	Pair(grpc.BidiStreamingServer[PairRequest, PairResponse]) error
 	// Refresh session auth tokens. Should be called regularly before tokens
 	// expire.
