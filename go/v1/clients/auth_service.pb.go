@@ -77,12 +77,15 @@ func (PairResponse_State) EnumDescriptor() ([]byte, []int) {
 }
 
 type PairRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`             // Only needed in the first message.
-	ClientPubkey  []byte                 `protobuf:"bytes,3,opt,name=client_pubkey,json=clientPubkey,proto3" json:"client_pubkey,omitempty"` // Ephemeral X25519 public key PKa (first message).
-	ClientNonce   []byte                 `protobuf:"bytes,4,opt,name=client_nonce,json=clientNonce,proto3" json:"client_nonce,omitempty"`    // 32-byte SAS nonce Na.
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	ClientId          string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`                            // Only needed in the first message.
+	ClientName        string                 `protobuf:"bytes,3,opt,name=client_name,json=clientName,proto3" json:"client_name,omitempty"`                      // Only needed in the first message.
+	ClientDescription string                 `protobuf:"bytes,4,opt,name=client_description,json=clientDescription,proto3" json:"client_description,omitempty"` // Only needed in the first message.
+	ClientVersion     string                 `protobuf:"bytes,5,opt,name=client_version,json=clientVersion,proto3" json:"client_version,omitempty"`             // Only needed in the first message.
+	ClientPubkey      []byte                 `protobuf:"bytes,6,opt,name=client_pubkey,json=clientPubkey,proto3" json:"client_pubkey,omitempty"`                // Ephemeral X25519 public key PKa (first message).
+	ClientNonce       []byte                 `protobuf:"bytes,7,opt,name=client_nonce,json=clientNonce,proto3" json:"client_nonce,omitempty"`                   // 32-byte SAS nonce Na.
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *PairRequest) Reset() {
@@ -118,6 +121,27 @@ func (*PairRequest) Descriptor() ([]byte, []int) {
 func (x *PairRequest) GetClientId() string {
 	if x != nil {
 		return x.ClientId
+	}
+	return ""
+}
+
+func (x *PairRequest) GetClientName() string {
+	if x != nil {
+		return x.ClientName
+	}
+	return ""
+}
+
+func (x *PairRequest) GetClientDescription() string {
+	if x != nil {
+		return x.ClientDescription
+	}
+	return ""
+}
+
+func (x *PairRequest) GetClientVersion() string {
+	if x != nil {
+		return x.ClientVersion
 	}
 	return ""
 }
@@ -464,11 +488,15 @@ var File_clients_auth_service_proto protoreflect.FileDescriptor
 
 const file_clients_auth_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1aclients/auth_service.proto\x12\x18woodhouse.api.v1.clients\"~\n" +
+	"\x1aclients/auth_service.proto\x12\x18woodhouse.api.v1.clients\"\xf5\x01\n" +
 	"\vPairRequest\x12\x1b\n" +
-	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12#\n" +
-	"\rclient_pubkey\x18\x03 \x01(\fR\fclientPubkey\x12!\n" +
-	"\fclient_nonce\x18\x04 \x01(\fR\vclientNonceJ\x04\b\x02\x10\x03R\x04data\"\x9f\x02\n" +
+	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12\x1f\n" +
+	"\vclient_name\x18\x03 \x01(\tR\n" +
+	"clientName\x12-\n" +
+	"\x12client_description\x18\x04 \x01(\tR\x11clientDescription\x12%\n" +
+	"\x0eclient_version\x18\x05 \x01(\tR\rclientVersion\x12#\n" +
+	"\rclient_pubkey\x18\x06 \x01(\fR\fclientPubkey\x12!\n" +
+	"\fclient_nonce\x18\a \x01(\fR\vclientNonceJ\x04\b\x02\x10\x03R\x04data\"\x9f\x02\n" +
 	"\fPairResponse\x12B\n" +
 	"\x05state\x18\x01 \x01(\x0e2,.woodhouse.api.v1.clients.PairResponse.StateR\x05state\x12\x12\n" +
 	"\x04data\x18\x02 \x01(\fR\x04data\x12#\n" +

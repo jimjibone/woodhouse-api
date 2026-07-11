@@ -41,10 +41,13 @@ service AuthService {
 }
 
 message PairRequest {
-    string client_id     = 1; // Only needed in the first message.
-    bytes  client_pubkey = 3; // Ephemeral X25519 public key PKa (first message).
-    bytes  client_nonce  = 4; // 32-byte SAS nonce Na.
-    reserved 2;               // was 'bytes data' (PAKE handshake blob).
+    string client_id          = 1; // Only needed in the first message.
+    string client_name        = 3; // Only needed in the first message.
+    string client_description = 4; // Only needed in the first message.
+    string client_version     = 5; // Only needed in the first message.
+    bytes  client_pubkey      = 6; // Ephemeral X25519 public key PKa (first message).
+    bytes  client_nonce       = 7; // 32-byte SAS nonce Na.
+    reserved 2;                    // was 'bytes data' (PAKE handshake blob).
     reserved "data";
 }
 
