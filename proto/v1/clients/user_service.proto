@@ -97,6 +97,13 @@ service UserService {
     rpc AddUser(AddUserRequest) returns (AddUserResponse);
     rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
     rpc RemoveUser(RemoveUserRequest) returns (RemoveUserResponse);
+
+    // Get the current server settings.
+    rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
+
+    // Update the server settings. Only the fields present in the request are
+    // applied. Returns the settings as stored, after normalisation.
+    rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
 }
 
 message GetClientsRequest {}
@@ -296,4 +303,29 @@ enum UserRole {
     USER_ROLE_UNDEFINED = 0;
     USER_ROLE_ADMIN     = 1;
     USER_ROLE_USER      = 2;
+}
+
+// Settings holds the server-wide configuration that can be changed at runtime.
+message Settings {
+    // The name this server advertises on the local network (mDNS/Bonjour). It
+    // is what users see when discovering this server from a client app.
+    string instance_name = 1;
+
+    // Whether the admin interface should show the instance name in place of
+    // the Woodhouse product name. Off by default; useful when running more
+    // than one instance.
+    bool show_instance_name = 2;
+}
+
+message GetSettingsRequest {}
+message GetSettingsResponse {
+    Settings settings = 1;
+}
+
+message UpdateSettingsRequest {
+    optional string instance_name = 1; // Optional: If not set, the instance name will not be updated.
+    optional bool show_instance_name = 2; // Optional: If not set, this preference will not be updated.
+}
+message UpdateSettingsResponse {
+    Settings settings = 1; // The settings as stored, after normalisation.
 }

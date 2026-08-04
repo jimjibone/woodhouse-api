@@ -2301,6 +2301,240 @@ func (x *User) GetRole() UserRole {
 	return UserRole_USER_ROLE_UNDEFINED
 }
 
+// Settings holds the server-wide configuration that can be changed at runtime.
+type Settings struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The name this server advertises on the local network (mDNS/Bonjour). It
+	// is what users see when discovering this server from a client app.
+	InstanceName string `protobuf:"bytes,1,opt,name=instance_name,json=instanceName,proto3" json:"instance_name,omitempty"`
+	// Whether the admin interface should show the instance name in place of
+	// the Woodhouse product name. Off by default; useful when running more
+	// than one instance.
+	ShowInstanceName bool `protobuf:"varint,2,opt,name=show_instance_name,json=showInstanceName,proto3" json:"show_instance_name,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *Settings) Reset() {
+	*x = Settings{}
+	mi := &file_clients_user_service_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Settings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Settings) ProtoMessage() {}
+
+func (x *Settings) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Settings.ProtoReflect.Descriptor instead.
+func (*Settings) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{46}
+}
+
+func (x *Settings) GetInstanceName() string {
+	if x != nil {
+		return x.InstanceName
+	}
+	return ""
+}
+
+func (x *Settings) GetShowInstanceName() bool {
+	if x != nil {
+		return x.ShowInstanceName
+	}
+	return false
+}
+
+type GetSettingsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSettingsRequest) Reset() {
+	*x = GetSettingsRequest{}
+	mi := &file_clients_user_service_proto_msgTypes[47]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSettingsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSettingsRequest) ProtoMessage() {}
+
+func (x *GetSettingsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[47]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSettingsRequest.ProtoReflect.Descriptor instead.
+func (*GetSettingsRequest) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{47}
+}
+
+type GetSettingsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Settings      *Settings              `protobuf:"bytes,1,opt,name=settings,proto3" json:"settings,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSettingsResponse) Reset() {
+	*x = GetSettingsResponse{}
+	mi := &file_clients_user_service_proto_msgTypes[48]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSettingsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSettingsResponse) ProtoMessage() {}
+
+func (x *GetSettingsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[48]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSettingsResponse.ProtoReflect.Descriptor instead.
+func (*GetSettingsResponse) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{48}
+}
+
+func (x *GetSettingsResponse) GetSettings() *Settings {
+	if x != nil {
+		return x.Settings
+	}
+	return nil
+}
+
+type UpdateSettingsRequest struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	InstanceName     *string                `protobuf:"bytes,1,opt,name=instance_name,json=instanceName,proto3,oneof" json:"instance_name,omitempty"`                // Optional: If not set, the instance name will not be updated.
+	ShowInstanceName *bool                  `protobuf:"varint,2,opt,name=show_instance_name,json=showInstanceName,proto3,oneof" json:"show_instance_name,omitempty"` // Optional: If not set, this preference will not be updated.
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *UpdateSettingsRequest) Reset() {
+	*x = UpdateSettingsRequest{}
+	mi := &file_clients_user_service_proto_msgTypes[49]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateSettingsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSettingsRequest) ProtoMessage() {}
+
+func (x *UpdateSettingsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[49]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateSettingsRequest.ProtoReflect.Descriptor instead.
+func (*UpdateSettingsRequest) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{49}
+}
+
+func (x *UpdateSettingsRequest) GetInstanceName() string {
+	if x != nil && x.InstanceName != nil {
+		return *x.InstanceName
+	}
+	return ""
+}
+
+func (x *UpdateSettingsRequest) GetShowInstanceName() bool {
+	if x != nil && x.ShowInstanceName != nil {
+		return *x.ShowInstanceName
+	}
+	return false
+}
+
+type UpdateSettingsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Settings      *Settings              `protobuf:"bytes,1,opt,name=settings,proto3" json:"settings,omitempty"` // The settings as stored, after normalisation.
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateSettingsResponse) Reset() {
+	*x = UpdateSettingsResponse{}
+	mi := &file_clients_user_service_proto_msgTypes[50]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateSettingsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSettingsResponse) ProtoMessage() {}
+
+func (x *UpdateSettingsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_service_proto_msgTypes[50]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateSettingsResponse.ProtoReflect.Descriptor instead.
+func (*UpdateSettingsResponse) Descriptor() ([]byte, []int) {
+	return file_clients_user_service_proto_rawDescGZIP(), []int{50}
+}
+
+func (x *UpdateSettingsResponse) GetSettings() *Settings {
+	if x != nil {
+		return x.Settings
+	}
+	return nil
+}
+
 var File_clients_user_service_proto protoreflect.FileDescriptor
 
 const file_clients_user_service_proto_rawDesc = "" +
@@ -2444,11 +2678,24 @@ const file_clients_user_service_proto_rawDesc = "" +
 	"\x04User\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bfullname\x18\x02 \x01(\tR\bfullname\x126\n" +
-	"\x04role\x18\x03 \x01(\x0e2\".woodhouse.api.v1.clients.UserRoleR\x04role*L\n" +
+	"\x04role\x18\x03 \x01(\x0e2\".woodhouse.api.v1.clients.UserRoleR\x04role\"]\n" +
+	"\bSettings\x12#\n" +
+	"\rinstance_name\x18\x01 \x01(\tR\finstanceName\x12,\n" +
+	"\x12show_instance_name\x18\x02 \x01(\bR\x10showInstanceName\"\x14\n" +
+	"\x12GetSettingsRequest\"U\n" +
+	"\x13GetSettingsResponse\x12>\n" +
+	"\bsettings\x18\x01 \x01(\v2\".woodhouse.api.v1.clients.SettingsR\bsettings\"\x9d\x01\n" +
+	"\x15UpdateSettingsRequest\x12(\n" +
+	"\rinstance_name\x18\x01 \x01(\tH\x00R\finstanceName\x88\x01\x01\x121\n" +
+	"\x12show_instance_name\x18\x02 \x01(\bH\x01R\x10showInstanceName\x88\x01\x01B\x10\n" +
+	"\x0e_instance_nameB\x15\n" +
+	"\x13_show_instance_name\"X\n" +
+	"\x16UpdateSettingsResponse\x12>\n" +
+	"\bsettings\x18\x01 \x01(\v2\".woodhouse.api.v1.clients.SettingsR\bsettings*L\n" +
 	"\bUserRole\x12\x17\n" +
 	"\x13USER_ROLE_UNDEFINED\x10\x00\x12\x13\n" +
 	"\x0fUSER_ROLE_ADMIN\x10\x01\x12\x12\n" +
-	"\x0eUSER_ROLE_USER\x10\x022\xd4\x14\n" +
+	"\x0eUSER_ROLE_USER\x10\x022\xb5\x16\n" +
 	"\vUserService\x12]\n" +
 	"\n" +
 	"GetClients\x12+.woodhouse.api.v1.clients.GetClientsRequest\x1a .woodhouse.api.v1.clients.Client0\x01\x12r\n" +
@@ -2478,7 +2725,9 @@ const file_clients_user_service_proto_rawDesc = "" +
 	"\n" +
 	"UpdateUser\x12+.woodhouse.api.v1.clients.UpdateUserRequest\x1a,.woodhouse.api.v1.clients.UpdateUserResponse\x12g\n" +
 	"\n" +
-	"RemoveUser\x12+.woodhouse.api.v1.clients.RemoveUserRequest\x1a,.woodhouse.api.v1.clients.RemoveUserResponseB=Z;github.com/jimjibone/woodhouse-api/go/v1/clients;clientsapib\x06proto3"
+	"RemoveUser\x12+.woodhouse.api.v1.clients.RemoveUserRequest\x1a,.woodhouse.api.v1.clients.RemoveUserResponse\x12j\n" +
+	"\vGetSettings\x12,.woodhouse.api.v1.clients.GetSettingsRequest\x1a-.woodhouse.api.v1.clients.GetSettingsResponse\x12s\n" +
+	"\x0eUpdateSettings\x12/.woodhouse.api.v1.clients.UpdateSettingsRequest\x1a0.woodhouse.api.v1.clients.UpdateSettingsResponseB=Z;github.com/jimjibone/woodhouse-api/go/v1/clients;clientsapib\x06proto3"
 
 var (
 	file_clients_user_service_proto_rawDescOnce sync.Once
@@ -2493,7 +2742,7 @@ func file_clients_user_service_proto_rawDescGZIP() []byte {
 }
 
 var file_clients_user_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_clients_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 46)
+var file_clients_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 51)
 var file_clients_user_service_proto_goTypes = []any{
 	(UserRole)(0),                         // 0: woodhouse.api.v1.clients.UserRole
 	(*GetClientsRequest)(nil),             // 1: woodhouse.api.v1.clients.GetClientsRequest
@@ -2542,88 +2791,99 @@ var file_clients_user_service_proto_goTypes = []any{
 	(*UserImageRequest)(nil),              // 44: woodhouse.api.v1.clients.UserImageRequest
 	(*ImagesStreamResponse)(nil),          // 45: woodhouse.api.v1.clients.ImagesStreamResponse
 	(*User)(nil),                          // 46: woodhouse.api.v1.clients.User
-	(*Client)(nil),                        // 47: woodhouse.api.v1.clients.Client
-	(*PairingRequest)(nil),                // 48: woodhouse.api.v1.clients.PairingRequest
-	(*Device)(nil),                        // 49: woodhouse.api.v1.clients.Device
-	(*TimeValue)(nil),                     // 50: woodhouse.api.v1.clients.TimeValue
-	(*Service)(nil),                       // 51: woodhouse.api.v1.clients.Service
-	(*Group)(nil),                         // 52: woodhouse.api.v1.clients.Group
-	(Service_ServiceType)(0),              // 53: woodhouse.api.v1.clients.Service.ServiceType
-	(*GroupMember)(nil),                   // 54: woodhouse.api.v1.clients.GroupMember
-	(*ActionRequest)(nil),                 // 55: woodhouse.api.v1.clients.ActionRequest
-	(*ActionResponse)(nil),                // 56: woodhouse.api.v1.clients.ActionResponse
-	(*ImageResponse)(nil),                 // 57: woodhouse.api.v1.clients.ImageResponse
+	(*Settings)(nil),                      // 47: woodhouse.api.v1.clients.Settings
+	(*GetSettingsRequest)(nil),            // 48: woodhouse.api.v1.clients.GetSettingsRequest
+	(*GetSettingsResponse)(nil),           // 49: woodhouse.api.v1.clients.GetSettingsResponse
+	(*UpdateSettingsRequest)(nil),         // 50: woodhouse.api.v1.clients.UpdateSettingsRequest
+	(*UpdateSettingsResponse)(nil),        // 51: woodhouse.api.v1.clients.UpdateSettingsResponse
+	(*Client)(nil),                        // 52: woodhouse.api.v1.clients.Client
+	(*PairingRequest)(nil),                // 53: woodhouse.api.v1.clients.PairingRequest
+	(*Device)(nil),                        // 54: woodhouse.api.v1.clients.Device
+	(*TimeValue)(nil),                     // 55: woodhouse.api.v1.clients.TimeValue
+	(*Service)(nil),                       // 56: woodhouse.api.v1.clients.Service
+	(*Group)(nil),                         // 57: woodhouse.api.v1.clients.Group
+	(Service_ServiceType)(0),              // 58: woodhouse.api.v1.clients.Service.ServiceType
+	(*GroupMember)(nil),                   // 59: woodhouse.api.v1.clients.GroupMember
+	(*ActionRequest)(nil),                 // 60: woodhouse.api.v1.clients.ActionRequest
+	(*ActionResponse)(nil),                // 61: woodhouse.api.v1.clients.ActionResponse
+	(*ImageResponse)(nil),                 // 62: woodhouse.api.v1.clients.ImageResponse
 }
 var file_clients_user_service_proto_depIdxs = []int32{
-	47, // 0: woodhouse.api.v1.clients.ClientsStreamResponse.client:type_name -> woodhouse.api.v1.clients.Client
-	48, // 1: woodhouse.api.v1.clients.PairingRequestsStreamResponse.pairing_request:type_name -> woodhouse.api.v1.clients.PairingRequest
-	49, // 2: woodhouse.api.v1.clients.DevicesStreamResponse.device:type_name -> woodhouse.api.v1.clients.Device
-	50, // 3: woodhouse.api.v1.clients.DeviceService.last_seen:type_name -> woodhouse.api.v1.clients.TimeValue
-	51, // 4: woodhouse.api.v1.clients.DeviceService.service:type_name -> woodhouse.api.v1.clients.Service
+	52, // 0: woodhouse.api.v1.clients.ClientsStreamResponse.client:type_name -> woodhouse.api.v1.clients.Client
+	53, // 1: woodhouse.api.v1.clients.PairingRequestsStreamResponse.pairing_request:type_name -> woodhouse.api.v1.clients.PairingRequest
+	54, // 2: woodhouse.api.v1.clients.DevicesStreamResponse.device:type_name -> woodhouse.api.v1.clients.Device
+	55, // 3: woodhouse.api.v1.clients.DeviceService.last_seen:type_name -> woodhouse.api.v1.clients.TimeValue
+	56, // 4: woodhouse.api.v1.clients.DeviceService.service:type_name -> woodhouse.api.v1.clients.Service
 	19, // 5: woodhouse.api.v1.clients.FavoritesStreamResponse.device_service:type_name -> woodhouse.api.v1.clients.DeviceService
-	52, // 6: woodhouse.api.v1.clients.GroupsStreamResponse.group_update:type_name -> woodhouse.api.v1.clients.Group
-	53, // 7: woodhouse.api.v1.clients.AddGroupRequest.type:type_name -> woodhouse.api.v1.clients.Service.ServiceType
-	54, // 8: woodhouse.api.v1.clients.AddGroupRequest.members:type_name -> woodhouse.api.v1.clients.GroupMember
-	52, // 9: woodhouse.api.v1.clients.AddGroupResponse.group:type_name -> woodhouse.api.v1.clients.Group
-	54, // 10: woodhouse.api.v1.clients.UpdateGroupRequest.members:type_name -> woodhouse.api.v1.clients.GroupMember
+	57, // 6: woodhouse.api.v1.clients.GroupsStreamResponse.group_update:type_name -> woodhouse.api.v1.clients.Group
+	58, // 7: woodhouse.api.v1.clients.AddGroupRequest.type:type_name -> woodhouse.api.v1.clients.Service.ServiceType
+	59, // 8: woodhouse.api.v1.clients.AddGroupRequest.members:type_name -> woodhouse.api.v1.clients.GroupMember
+	57, // 9: woodhouse.api.v1.clients.AddGroupResponse.group:type_name -> woodhouse.api.v1.clients.Group
+	59, // 10: woodhouse.api.v1.clients.UpdateGroupRequest.members:type_name -> woodhouse.api.v1.clients.GroupMember
 	46, // 11: woodhouse.api.v1.clients.UsersStreamResponse.user:type_name -> woodhouse.api.v1.clients.User
 	0,  // 12: woodhouse.api.v1.clients.AddUserRequest.role:type_name -> woodhouse.api.v1.clients.UserRole
 	0,  // 13: woodhouse.api.v1.clients.UpdateUserRequest.role:type_name -> woodhouse.api.v1.clients.UserRole
 	43, // 14: woodhouse.api.v1.clients.ImagesStreamRequest.size_hints:type_name -> woodhouse.api.v1.clients.ImageSizeHint
 	0,  // 15: woodhouse.api.v1.clients.User.role:type_name -> woodhouse.api.v1.clients.UserRole
-	1,  // 16: woodhouse.api.v1.clients.UserService.GetClients:input_type -> woodhouse.api.v1.clients.GetClientsRequest
-	2,  // 17: woodhouse.api.v1.clients.UserService.ClientsStream:input_type -> woodhouse.api.v1.clients.ClientsStreamRequest
-	4,  // 18: woodhouse.api.v1.clients.UserService.PairingRequestsStream:input_type -> woodhouse.api.v1.clients.PairingRequestsStreamRequest
-	6,  // 19: woodhouse.api.v1.clients.UserService.ApprovePairing:input_type -> woodhouse.api.v1.clients.ApprovePairingRequest
-	8,  // 20: woodhouse.api.v1.clients.UserService.DenyPairing:input_type -> woodhouse.api.v1.clients.DenyPairingRequest
-	10, // 21: woodhouse.api.v1.clients.UserService.UnpairClient:input_type -> woodhouse.api.v1.clients.UnpairClientRequest
-	12, // 22: woodhouse.api.v1.clients.UserService.ForgetClient:input_type -> woodhouse.api.v1.clients.ForgetClientRequest
-	14, // 23: woodhouse.api.v1.clients.UserService.GetDevices:input_type -> woodhouse.api.v1.clients.GetDevicesRequest
-	15, // 24: woodhouse.api.v1.clients.UserService.DevicesStream:input_type -> woodhouse.api.v1.clients.DevicesStreamRequest
-	17, // 25: woodhouse.api.v1.clients.UserService.RemoveDevice:input_type -> woodhouse.api.v1.clients.RemoveDeviceRequest
-	20, // 26: woodhouse.api.v1.clients.UserService.FavoritesStream:input_type -> woodhouse.api.v1.clients.FavoritesStreamRequest
-	22, // 27: woodhouse.api.v1.clients.UserService.AddFavorite:input_type -> woodhouse.api.v1.clients.AddFavoriteRequest
-	24, // 28: woodhouse.api.v1.clients.UserService.RemoveFavorite:input_type -> woodhouse.api.v1.clients.RemoveFavoriteRequest
-	26, // 29: woodhouse.api.v1.clients.UserService.GroupsStream:input_type -> woodhouse.api.v1.clients.GroupsStreamRequest
-	28, // 30: woodhouse.api.v1.clients.UserService.AddGroup:input_type -> woodhouse.api.v1.clients.AddGroupRequest
-	30, // 31: woodhouse.api.v1.clients.UserService.UpdateGroup:input_type -> woodhouse.api.v1.clients.UpdateGroupRequest
-	32, // 32: woodhouse.api.v1.clients.UserService.RemoveGroup:input_type -> woodhouse.api.v1.clients.RemoveGroupRequest
-	55, // 33: woodhouse.api.v1.clients.UserService.SendAction:input_type -> woodhouse.api.v1.clients.ActionRequest
-	44, // 34: woodhouse.api.v1.clients.UserService.SendImageRequest:input_type -> woodhouse.api.v1.clients.UserImageRequest
-	42, // 35: woodhouse.api.v1.clients.UserService.ImagesStream:input_type -> woodhouse.api.v1.clients.ImagesStreamRequest
-	34, // 36: woodhouse.api.v1.clients.UserService.UsersStream:input_type -> woodhouse.api.v1.clients.UsersStreamRequest
-	36, // 37: woodhouse.api.v1.clients.UserService.AddUser:input_type -> woodhouse.api.v1.clients.AddUserRequest
-	38, // 38: woodhouse.api.v1.clients.UserService.UpdateUser:input_type -> woodhouse.api.v1.clients.UpdateUserRequest
-	40, // 39: woodhouse.api.v1.clients.UserService.RemoveUser:input_type -> woodhouse.api.v1.clients.RemoveUserRequest
-	47, // 40: woodhouse.api.v1.clients.UserService.GetClients:output_type -> woodhouse.api.v1.clients.Client
-	3,  // 41: woodhouse.api.v1.clients.UserService.ClientsStream:output_type -> woodhouse.api.v1.clients.ClientsStreamResponse
-	5,  // 42: woodhouse.api.v1.clients.UserService.PairingRequestsStream:output_type -> woodhouse.api.v1.clients.PairingRequestsStreamResponse
-	7,  // 43: woodhouse.api.v1.clients.UserService.ApprovePairing:output_type -> woodhouse.api.v1.clients.ApprovePairingResponse
-	9,  // 44: woodhouse.api.v1.clients.UserService.DenyPairing:output_type -> woodhouse.api.v1.clients.DenyPairingResponse
-	11, // 45: woodhouse.api.v1.clients.UserService.UnpairClient:output_type -> woodhouse.api.v1.clients.UnpairClientResponse
-	13, // 46: woodhouse.api.v1.clients.UserService.ForgetClient:output_type -> woodhouse.api.v1.clients.ForgetClientResponse
-	49, // 47: woodhouse.api.v1.clients.UserService.GetDevices:output_type -> woodhouse.api.v1.clients.Device
-	16, // 48: woodhouse.api.v1.clients.UserService.DevicesStream:output_type -> woodhouse.api.v1.clients.DevicesStreamResponse
-	18, // 49: woodhouse.api.v1.clients.UserService.RemoveDevice:output_type -> woodhouse.api.v1.clients.RemoveDeviceResponse
-	21, // 50: woodhouse.api.v1.clients.UserService.FavoritesStream:output_type -> woodhouse.api.v1.clients.FavoritesStreamResponse
-	23, // 51: woodhouse.api.v1.clients.UserService.AddFavorite:output_type -> woodhouse.api.v1.clients.AddFavoriteResponse
-	25, // 52: woodhouse.api.v1.clients.UserService.RemoveFavorite:output_type -> woodhouse.api.v1.clients.RemoveFavoriteResponse
-	27, // 53: woodhouse.api.v1.clients.UserService.GroupsStream:output_type -> woodhouse.api.v1.clients.GroupsStreamResponse
-	29, // 54: woodhouse.api.v1.clients.UserService.AddGroup:output_type -> woodhouse.api.v1.clients.AddGroupResponse
-	31, // 55: woodhouse.api.v1.clients.UserService.UpdateGroup:output_type -> woodhouse.api.v1.clients.UpdateGroupResponse
-	33, // 56: woodhouse.api.v1.clients.UserService.RemoveGroup:output_type -> woodhouse.api.v1.clients.RemoveGroupResponse
-	56, // 57: woodhouse.api.v1.clients.UserService.SendAction:output_type -> woodhouse.api.v1.clients.ActionResponse
-	57, // 58: woodhouse.api.v1.clients.UserService.SendImageRequest:output_type -> woodhouse.api.v1.clients.ImageResponse
-	45, // 59: woodhouse.api.v1.clients.UserService.ImagesStream:output_type -> woodhouse.api.v1.clients.ImagesStreamResponse
-	35, // 60: woodhouse.api.v1.clients.UserService.UsersStream:output_type -> woodhouse.api.v1.clients.UsersStreamResponse
-	37, // 61: woodhouse.api.v1.clients.UserService.AddUser:output_type -> woodhouse.api.v1.clients.AddUserResponse
-	39, // 62: woodhouse.api.v1.clients.UserService.UpdateUser:output_type -> woodhouse.api.v1.clients.UpdateUserResponse
-	41, // 63: woodhouse.api.v1.clients.UserService.RemoveUser:output_type -> woodhouse.api.v1.clients.RemoveUserResponse
-	40, // [40:64] is the sub-list for method output_type
-	16, // [16:40] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	47, // 16: woodhouse.api.v1.clients.GetSettingsResponse.settings:type_name -> woodhouse.api.v1.clients.Settings
+	47, // 17: woodhouse.api.v1.clients.UpdateSettingsResponse.settings:type_name -> woodhouse.api.v1.clients.Settings
+	1,  // 18: woodhouse.api.v1.clients.UserService.GetClients:input_type -> woodhouse.api.v1.clients.GetClientsRequest
+	2,  // 19: woodhouse.api.v1.clients.UserService.ClientsStream:input_type -> woodhouse.api.v1.clients.ClientsStreamRequest
+	4,  // 20: woodhouse.api.v1.clients.UserService.PairingRequestsStream:input_type -> woodhouse.api.v1.clients.PairingRequestsStreamRequest
+	6,  // 21: woodhouse.api.v1.clients.UserService.ApprovePairing:input_type -> woodhouse.api.v1.clients.ApprovePairingRequest
+	8,  // 22: woodhouse.api.v1.clients.UserService.DenyPairing:input_type -> woodhouse.api.v1.clients.DenyPairingRequest
+	10, // 23: woodhouse.api.v1.clients.UserService.UnpairClient:input_type -> woodhouse.api.v1.clients.UnpairClientRequest
+	12, // 24: woodhouse.api.v1.clients.UserService.ForgetClient:input_type -> woodhouse.api.v1.clients.ForgetClientRequest
+	14, // 25: woodhouse.api.v1.clients.UserService.GetDevices:input_type -> woodhouse.api.v1.clients.GetDevicesRequest
+	15, // 26: woodhouse.api.v1.clients.UserService.DevicesStream:input_type -> woodhouse.api.v1.clients.DevicesStreamRequest
+	17, // 27: woodhouse.api.v1.clients.UserService.RemoveDevice:input_type -> woodhouse.api.v1.clients.RemoveDeviceRequest
+	20, // 28: woodhouse.api.v1.clients.UserService.FavoritesStream:input_type -> woodhouse.api.v1.clients.FavoritesStreamRequest
+	22, // 29: woodhouse.api.v1.clients.UserService.AddFavorite:input_type -> woodhouse.api.v1.clients.AddFavoriteRequest
+	24, // 30: woodhouse.api.v1.clients.UserService.RemoveFavorite:input_type -> woodhouse.api.v1.clients.RemoveFavoriteRequest
+	26, // 31: woodhouse.api.v1.clients.UserService.GroupsStream:input_type -> woodhouse.api.v1.clients.GroupsStreamRequest
+	28, // 32: woodhouse.api.v1.clients.UserService.AddGroup:input_type -> woodhouse.api.v1.clients.AddGroupRequest
+	30, // 33: woodhouse.api.v1.clients.UserService.UpdateGroup:input_type -> woodhouse.api.v1.clients.UpdateGroupRequest
+	32, // 34: woodhouse.api.v1.clients.UserService.RemoveGroup:input_type -> woodhouse.api.v1.clients.RemoveGroupRequest
+	60, // 35: woodhouse.api.v1.clients.UserService.SendAction:input_type -> woodhouse.api.v1.clients.ActionRequest
+	44, // 36: woodhouse.api.v1.clients.UserService.SendImageRequest:input_type -> woodhouse.api.v1.clients.UserImageRequest
+	42, // 37: woodhouse.api.v1.clients.UserService.ImagesStream:input_type -> woodhouse.api.v1.clients.ImagesStreamRequest
+	34, // 38: woodhouse.api.v1.clients.UserService.UsersStream:input_type -> woodhouse.api.v1.clients.UsersStreamRequest
+	36, // 39: woodhouse.api.v1.clients.UserService.AddUser:input_type -> woodhouse.api.v1.clients.AddUserRequest
+	38, // 40: woodhouse.api.v1.clients.UserService.UpdateUser:input_type -> woodhouse.api.v1.clients.UpdateUserRequest
+	40, // 41: woodhouse.api.v1.clients.UserService.RemoveUser:input_type -> woodhouse.api.v1.clients.RemoveUserRequest
+	48, // 42: woodhouse.api.v1.clients.UserService.GetSettings:input_type -> woodhouse.api.v1.clients.GetSettingsRequest
+	50, // 43: woodhouse.api.v1.clients.UserService.UpdateSettings:input_type -> woodhouse.api.v1.clients.UpdateSettingsRequest
+	52, // 44: woodhouse.api.v1.clients.UserService.GetClients:output_type -> woodhouse.api.v1.clients.Client
+	3,  // 45: woodhouse.api.v1.clients.UserService.ClientsStream:output_type -> woodhouse.api.v1.clients.ClientsStreamResponse
+	5,  // 46: woodhouse.api.v1.clients.UserService.PairingRequestsStream:output_type -> woodhouse.api.v1.clients.PairingRequestsStreamResponse
+	7,  // 47: woodhouse.api.v1.clients.UserService.ApprovePairing:output_type -> woodhouse.api.v1.clients.ApprovePairingResponse
+	9,  // 48: woodhouse.api.v1.clients.UserService.DenyPairing:output_type -> woodhouse.api.v1.clients.DenyPairingResponse
+	11, // 49: woodhouse.api.v1.clients.UserService.UnpairClient:output_type -> woodhouse.api.v1.clients.UnpairClientResponse
+	13, // 50: woodhouse.api.v1.clients.UserService.ForgetClient:output_type -> woodhouse.api.v1.clients.ForgetClientResponse
+	54, // 51: woodhouse.api.v1.clients.UserService.GetDevices:output_type -> woodhouse.api.v1.clients.Device
+	16, // 52: woodhouse.api.v1.clients.UserService.DevicesStream:output_type -> woodhouse.api.v1.clients.DevicesStreamResponse
+	18, // 53: woodhouse.api.v1.clients.UserService.RemoveDevice:output_type -> woodhouse.api.v1.clients.RemoveDeviceResponse
+	21, // 54: woodhouse.api.v1.clients.UserService.FavoritesStream:output_type -> woodhouse.api.v1.clients.FavoritesStreamResponse
+	23, // 55: woodhouse.api.v1.clients.UserService.AddFavorite:output_type -> woodhouse.api.v1.clients.AddFavoriteResponse
+	25, // 56: woodhouse.api.v1.clients.UserService.RemoveFavorite:output_type -> woodhouse.api.v1.clients.RemoveFavoriteResponse
+	27, // 57: woodhouse.api.v1.clients.UserService.GroupsStream:output_type -> woodhouse.api.v1.clients.GroupsStreamResponse
+	29, // 58: woodhouse.api.v1.clients.UserService.AddGroup:output_type -> woodhouse.api.v1.clients.AddGroupResponse
+	31, // 59: woodhouse.api.v1.clients.UserService.UpdateGroup:output_type -> woodhouse.api.v1.clients.UpdateGroupResponse
+	33, // 60: woodhouse.api.v1.clients.UserService.RemoveGroup:output_type -> woodhouse.api.v1.clients.RemoveGroupResponse
+	61, // 61: woodhouse.api.v1.clients.UserService.SendAction:output_type -> woodhouse.api.v1.clients.ActionResponse
+	62, // 62: woodhouse.api.v1.clients.UserService.SendImageRequest:output_type -> woodhouse.api.v1.clients.ImageResponse
+	45, // 63: woodhouse.api.v1.clients.UserService.ImagesStream:output_type -> woodhouse.api.v1.clients.ImagesStreamResponse
+	35, // 64: woodhouse.api.v1.clients.UserService.UsersStream:output_type -> woodhouse.api.v1.clients.UsersStreamResponse
+	37, // 65: woodhouse.api.v1.clients.UserService.AddUser:output_type -> woodhouse.api.v1.clients.AddUserResponse
+	39, // 66: woodhouse.api.v1.clients.UserService.UpdateUser:output_type -> woodhouse.api.v1.clients.UpdateUserResponse
+	41, // 67: woodhouse.api.v1.clients.UserService.RemoveUser:output_type -> woodhouse.api.v1.clients.RemoveUserResponse
+	49, // 68: woodhouse.api.v1.clients.UserService.GetSettings:output_type -> woodhouse.api.v1.clients.GetSettingsResponse
+	51, // 69: woodhouse.api.v1.clients.UserService.UpdateSettings:output_type -> woodhouse.api.v1.clients.UpdateSettingsResponse
+	44, // [44:70] is the sub-list for method output_type
+	18, // [18:44] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_clients_user_service_proto_init() }
@@ -2637,13 +2897,14 @@ func file_clients_user_service_proto_init() {
 	file_clients_user_service_proto_msgTypes[18].OneofWrappers = []any{}
 	file_clients_user_service_proto_msgTypes[29].OneofWrappers = []any{}
 	file_clients_user_service_proto_msgTypes[37].OneofWrappers = []any{}
+	file_clients_user_service_proto_msgTypes[49].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_clients_user_service_proto_rawDesc), len(file_clients_user_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   46,
+			NumMessages:   51,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
