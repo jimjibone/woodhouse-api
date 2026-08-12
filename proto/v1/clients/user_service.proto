@@ -248,6 +248,12 @@ message UpdateUserRequest {
     optional string   fullname = 2;
     optional UserRole role      = 3;
     optional string   password  = 4;
+    // Required when `password` is set and the caller is changing their own
+    // password: the caller's existing password, re-entered. Without it a
+    // stolen session could change the password and lock the real owner out.
+    // Ignored when an admin resets another user's password - that path
+    // forces `reset_password` on the target instead.
+    optional string   current_password = 5;
 }
 message UpdateUserResponse {}
 
@@ -297,6 +303,10 @@ message User {
     string   username  = 1;
     string   fullname = 2;
     UserRole role      = 3;
+    // True while the user still holds a password an admin set for them (a
+    // newly created account, or one an admin has reset). The webui blocks
+    // the app behind a password change until they clear it.
+    bool     reset_password = 4;
 }
 
 enum UserRole {

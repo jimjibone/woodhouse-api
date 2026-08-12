@@ -1763,13 +1763,19 @@ func (*AddUserResponse) Descriptor() ([]byte, []int) {
 }
 
 type UpdateUserRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Fullname      *string                `protobuf:"bytes,2,opt,name=fullname,proto3,oneof" json:"fullname,omitempty"`
-	Role          *UserRole              `protobuf:"varint,3,opt,name=role,proto3,enum=woodhouse.api.v1.clients.UserRole,oneof" json:"role,omitempty"`
-	Password      *string                `protobuf:"bytes,4,opt,name=password,proto3,oneof" json:"password,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Username string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Fullname *string                `protobuf:"bytes,2,opt,name=fullname,proto3,oneof" json:"fullname,omitempty"`
+	Role     *UserRole              `protobuf:"varint,3,opt,name=role,proto3,enum=woodhouse.api.v1.clients.UserRole,oneof" json:"role,omitempty"`
+	Password *string                `protobuf:"bytes,4,opt,name=password,proto3,oneof" json:"password,omitempty"`
+	// Required when `password` is set and the caller is changing their own
+	// password: the caller's existing password, re-entered. Without it a
+	// stolen session could change the password and lock the real owner out.
+	// Ignored when an admin resets another user's password - that path
+	// forces `reset_password` on the target instead.
+	CurrentPassword *string `protobuf:"bytes,5,opt,name=current_password,json=currentPassword,proto3,oneof" json:"current_password,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *UpdateUserRequest) Reset() {
@@ -1826,6 +1832,13 @@ func (x *UpdateUserRequest) GetRole() UserRole {
 func (x *UpdateUserRequest) GetPassword() string {
 	if x != nil && x.Password != nil {
 		return *x.Password
+	}
+	return ""
+}
+
+func (x *UpdateUserRequest) GetCurrentPassword() string {
+	if x != nil && x.CurrentPassword != nil {
+		return *x.CurrentPassword
 	}
 	return ""
 }
@@ -2242,10 +2255,14 @@ func (x *ImagesStreamResponse) GetFetchedAt() int64 {
 }
 
 type User struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Fullname      string                 `protobuf:"bytes,2,opt,name=fullname,proto3" json:"fullname,omitempty"`
-	Role          UserRole               `protobuf:"varint,3,opt,name=role,proto3,enum=woodhouse.api.v1.clients.UserRole" json:"role,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Username string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Fullname string                 `protobuf:"bytes,2,opt,name=fullname,proto3" json:"fullname,omitempty"`
+	Role     UserRole               `protobuf:"varint,3,opt,name=role,proto3,enum=woodhouse.api.v1.clients.UserRole" json:"role,omitempty"`
+	// True while the user still holds a password an admin set for them (a
+	// newly created account, or one an admin has reset). The webui blocks
+	// the app behind a password change until they clear it.
+	ResetPassword bool `protobuf:"varint,4,opt,name=reset_password,json=resetPassword,proto3" json:"reset_password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2299,6 +2316,13 @@ func (x *User) GetRole() UserRole {
 		return x.Role
 	}
 	return UserRole_USER_ROLE_UNDEFINED
+}
+
+func (x *User) GetResetPassword() bool {
+	if x != nil {
+		return x.ResetPassword
+	}
+	return false
 }
 
 // Settings holds the server-wide configuration that can be changed at runtime.
@@ -2634,15 +2658,17 @@ const file_clients_user_service_proto_rawDesc = "" +
 	"\bfullname\x18\x02 \x01(\tR\bfullname\x126\n" +
 	"\x04role\x18\x03 \x01(\x0e2\".woodhouse.api.v1.clients.UserRoleR\x04role\x12)\n" +
 	"\x10initial_password\x18\x04 \x01(\tR\x0finitialPassword\"\x11\n" +
-	"\x0fAddUserResponse\"\xd1\x01\n" +
+	"\x0fAddUserResponse\"\x96\x02\n" +
 	"\x11UpdateUserRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1f\n" +
 	"\bfullname\x18\x02 \x01(\tH\x00R\bfullname\x88\x01\x01\x12;\n" +
 	"\x04role\x18\x03 \x01(\x0e2\".woodhouse.api.v1.clients.UserRoleH\x01R\x04role\x88\x01\x01\x12\x1f\n" +
-	"\bpassword\x18\x04 \x01(\tH\x02R\bpassword\x88\x01\x01B\v\n" +
+	"\bpassword\x18\x04 \x01(\tH\x02R\bpassword\x88\x01\x01\x12.\n" +
+	"\x10current_password\x18\x05 \x01(\tH\x03R\x0fcurrentPassword\x88\x01\x01B\v\n" +
 	"\t_fullnameB\a\n" +
 	"\x05_roleB\v\n" +
-	"\t_password\"\x14\n" +
+	"\t_passwordB\x13\n" +
+	"\x11_current_password\"\x14\n" +
 	"\x12UpdateUserResponse\"/\n" +
 	"\x11RemoveUserRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\"\x14\n" +
@@ -2674,11 +2700,12 @@ const file_clients_user_service_proto_rawDesc = "" +
 	"\x04data\x18\x04 \x01(\fR\x04data\x12\x1b\n" +
 	"\tmime_type\x18\x05 \x01(\tR\bmimeType\x12\x1d\n" +
 	"\n" +
-	"fetched_at\x18\x06 \x01(\x03R\tfetchedAt\"v\n" +
+	"fetched_at\x18\x06 \x01(\x03R\tfetchedAt\"\x9d\x01\n" +
 	"\x04User\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bfullname\x18\x02 \x01(\tR\bfullname\x126\n" +
-	"\x04role\x18\x03 \x01(\x0e2\".woodhouse.api.v1.clients.UserRoleR\x04role\"]\n" +
+	"\x04role\x18\x03 \x01(\x0e2\".woodhouse.api.v1.clients.UserRoleR\x04role\x12%\n" +
+	"\x0ereset_password\x18\x04 \x01(\bR\rresetPassword\"]\n" +
 	"\bSettings\x12#\n" +
 	"\rinstance_name\x18\x01 \x01(\tR\finstanceName\x12,\n" +
 	"\x12show_instance_name\x18\x02 \x01(\bR\x10showInstanceName\"\x14\n" +
