@@ -182,6 +182,10 @@ message DeviceService {
     optional int64 battery_level = 11;
 
     Service service = 12; // A service belonging to the device.
+
+    // The general type of the device the service belongs to (helps with classification in user interfaces). May not be
+    // set if the value has not changed and full_state is false.
+    optional Device.DeviceType device_type = 13;
 }
 
 message FavoritesStreamRequest {}
