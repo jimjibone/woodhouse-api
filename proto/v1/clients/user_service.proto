@@ -6,6 +6,7 @@ option go_package = "github.com/jimjibone/woodhouse-api/go/v1/clients;clientsapi
 import "clients/client.proto";
 import "clients/client_service.proto";
 import "clients/group.proto";
+import "clients/zone.proto";
 
 service UserService {
     // Get the current Client states. This returns a stream of Clients which
@@ -71,6 +72,17 @@ service UserService {
     rpc AddGroup(AddGroupRequest) returns (AddGroupResponse);
     rpc UpdateGroup(UpdateGroupRequest) returns (UpdateGroupResponse);
     rpc RemoveGroup(RemoveGroupRequest) returns (RemoveGroupResponse);
+
+    // Get a stream of Zone updates. The first batch of replies will be the
+    // current state of the zones, followed by updates when they occur. The
+    // stream also includes a 10 second heartbeat which should be ignored, but
+    // can be used to monitor the stream for disconnects. Readable by every
+    // user; only admins may change zones.
+    rpc ZonesStream(ZonesStreamRequest) returns (stream ZonesStreamResponse);
+
+    rpc AddZone(AddZoneRequest) returns (AddZoneResponse);
+    rpc UpdateZone(UpdateZoneRequest) returns (UpdateZoneResponse);
+    rpc RemoveZone(RemoveZoneRequest) returns (RemoveZoneResponse);
 
     // Send an action to a device service.
     rpc SendAction(ActionRequest) returns (stream ActionResponse);
@@ -232,6 +244,50 @@ message RemoveGroupRequest {
     string id = 1;
 }
 message RemoveGroupResponse {}
+
+// Heartbeat is the empty keepalive a server stream sends every 10 seconds. The
+// first one also marks the end of the initial batch of state.
+message Heartbeat {}
+
+message ZonesStreamRequest {}
+message ZonesStreamResponse {
+    // Exactly one of these is set on every response. A oneof rather than
+    // optional fields plus sentinels: it makes an ambiguous or empty response
+    // unrepresentable, and separates a removal from a heartbeat without
+    // leaning on an empty string.
+    oneof update {
+        Zone      zone_update = 1; // A Zone was added or changed.
+        string    removed_id  = 2; // The zone ID of a Zone that was removed.
+        Heartbeat heartbeat   = 3; // Keepalive. The first one also ends the initial batch.
+    }
+}
+
+message AddZoneRequest {
+    string          name       = 1;
+    string          icon       = 2;
+    repeated string device_ids = 3;
+}
+message AddZoneResponse {
+    Zone zone = 1; // The added zone, including the generated ID.
+}
+
+message UpdateZoneRequest {
+    string          id   = 1;
+    optional string name = 2; // Optional: If not set, the name will not be updated.
+    optional string icon = 3; // Optional: If not set, the icon will not be updated.
+
+    // Membership is only touched when set_devices is true, in which case
+    // device_ids replaces it in full - including with an empty list, which
+    // empties the zone.
+    bool            set_devices = 4;
+    repeated string device_ids  = 5;
+}
+message UpdateZoneResponse {}
+
+message RemoveZoneRequest {
+    string id = 1;
+}
+message RemoveZoneResponse {}
 
 message UsersStreamRequest {}
 message UsersStreamResponse {

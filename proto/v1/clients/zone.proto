@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package woodhouse.api.v1.clients;
+option go_package = "github.com/jimjibone/woodhouse-api/go/v1/clients;clientsapi";
+
+// A Zone is a room or area of the home, e.g. "Kitchen" or "Garden". Every
+// device belongs to at most one zone. Zones carry no device state of their own
+// - they are metadata that clients join against the devices stream.
+message Zone {
+    string id                  = 1; // The server-generated unique zone ID.
+    string name                = 2; // The name of this zone.
+    string icon                = 3; // An opaque icon key, e.g. "utensils-crossed". Clients map this onto their own icon set.
+    repeated string device_ids = 4; // The IDs of the devices in this zone.
+}

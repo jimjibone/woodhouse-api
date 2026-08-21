@@ -36,6 +36,10 @@ const (
 	UserService_AddGroup_FullMethodName              = "/woodhouse.api.v1.clients.UserService/AddGroup"
 	UserService_UpdateGroup_FullMethodName           = "/woodhouse.api.v1.clients.UserService/UpdateGroup"
 	UserService_RemoveGroup_FullMethodName           = "/woodhouse.api.v1.clients.UserService/RemoveGroup"
+	UserService_ZonesStream_FullMethodName           = "/woodhouse.api.v1.clients.UserService/ZonesStream"
+	UserService_AddZone_FullMethodName               = "/woodhouse.api.v1.clients.UserService/AddZone"
+	UserService_UpdateZone_FullMethodName            = "/woodhouse.api.v1.clients.UserService/UpdateZone"
+	UserService_RemoveZone_FullMethodName            = "/woodhouse.api.v1.clients.UserService/RemoveZone"
 	UserService_SendAction_FullMethodName            = "/woodhouse.api.v1.clients.UserService/SendAction"
 	UserService_SendImageRequest_FullMethodName      = "/woodhouse.api.v1.clients.UserService/SendImageRequest"
 	UserService_ImagesStream_FullMethodName          = "/woodhouse.api.v1.clients.UserService/ImagesStream"
@@ -101,6 +105,15 @@ type UserServiceClient interface {
 	AddGroup(ctx context.Context, in *AddGroupRequest, opts ...grpc.CallOption) (*AddGroupResponse, error)
 	UpdateGroup(ctx context.Context, in *UpdateGroupRequest, opts ...grpc.CallOption) (*UpdateGroupResponse, error)
 	RemoveGroup(ctx context.Context, in *RemoveGroupRequest, opts ...grpc.CallOption) (*RemoveGroupResponse, error)
+	// Get a stream of Zone updates. The first batch of replies will be the
+	// current state of the zones, followed by updates when they occur. The
+	// stream also includes a 10 second heartbeat which should be ignored, but
+	// can be used to monitor the stream for disconnects. Readable by every
+	// user; only admins may change zones.
+	ZonesStream(ctx context.Context, in *ZonesStreamRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ZonesStreamResponse], error)
+	AddZone(ctx context.Context, in *AddZoneRequest, opts ...grpc.CallOption) (*AddZoneResponse, error)
+	UpdateZone(ctx context.Context, in *UpdateZoneRequest, opts ...grpc.CallOption) (*UpdateZoneResponse, error)
+	RemoveZone(ctx context.Context, in *RemoveZoneRequest, opts ...grpc.CallOption) (*RemoveZoneResponse, error)
 	// Send an action to a device service.
 	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ActionResponse], error)
 	// Send an image request to a device service. This will also update the
@@ -370,9 +383,58 @@ func (c *userServiceClient) RemoveGroup(ctx context.Context, in *RemoveGroupRequ
 	return out, nil
 }
 
+func (c *userServiceClient) ZonesStream(ctx context.Context, in *ZonesStreamRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ZonesStreamResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[7], UserService_ZonesStream_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[ZonesStreamRequest, ZonesStreamResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type UserService_ZonesStreamClient = grpc.ServerStreamingClient[ZonesStreamResponse]
+
+func (c *userServiceClient) AddZone(ctx context.Context, in *AddZoneRequest, opts ...grpc.CallOption) (*AddZoneResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddZoneResponse)
+	err := c.cc.Invoke(ctx, UserService_AddZone_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateZone(ctx context.Context, in *UpdateZoneRequest, opts ...grpc.CallOption) (*UpdateZoneResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateZoneResponse)
+	err := c.cc.Invoke(ctx, UserService_UpdateZone_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) RemoveZone(ctx context.Context, in *RemoveZoneRequest, opts ...grpc.CallOption) (*RemoveZoneResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RemoveZoneResponse)
+	err := c.cc.Invoke(ctx, UserService_RemoveZone_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ActionResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[7], UserService_SendAction_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[8], UserService_SendAction_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -391,7 +453,7 @@ type UserService_SendActionClient = grpc.ServerStreamingClient[ActionResponse]
 
 func (c *userServiceClient) SendImageRequest(ctx context.Context, in *UserImageRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ImageResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[8], UserService_SendImageRequest_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[9], UserService_SendImageRequest_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -410,7 +472,7 @@ type UserService_SendImageRequestClient = grpc.ServerStreamingClient[ImageRespon
 
 func (c *userServiceClient) ImagesStream(ctx context.Context, in *ImagesStreamRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ImagesStreamResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[9], UserService_ImagesStream_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[10], UserService_ImagesStream_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -429,7 +491,7 @@ type UserService_ImagesStreamClient = grpc.ServerStreamingClient[ImagesStreamRes
 
 func (c *userServiceClient) UsersStream(ctx context.Context, in *UsersStreamRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[UsersStreamResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[10], UserService_UsersStream_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[11], UserService_UsersStream_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -550,6 +612,15 @@ type UserServiceServer interface {
 	AddGroup(context.Context, *AddGroupRequest) (*AddGroupResponse, error)
 	UpdateGroup(context.Context, *UpdateGroupRequest) (*UpdateGroupResponse, error)
 	RemoveGroup(context.Context, *RemoveGroupRequest) (*RemoveGroupResponse, error)
+	// Get a stream of Zone updates. The first batch of replies will be the
+	// current state of the zones, followed by updates when they occur. The
+	// stream also includes a 10 second heartbeat which should be ignored, but
+	// can be used to monitor the stream for disconnects. Readable by every
+	// user; only admins may change zones.
+	ZonesStream(*ZonesStreamRequest, grpc.ServerStreamingServer[ZonesStreamResponse]) error
+	AddZone(context.Context, *AddZoneRequest) (*AddZoneResponse, error)
+	UpdateZone(context.Context, *UpdateZoneRequest) (*UpdateZoneResponse, error)
+	RemoveZone(context.Context, *RemoveZoneRequest) (*RemoveZoneResponse, error)
 	// Send an action to a device service.
 	SendAction(*ActionRequest, grpc.ServerStreamingServer[ActionResponse]) error
 	// Send an image request to a device service. This will also update the
@@ -636,6 +707,18 @@ func (UnimplementedUserServiceServer) UpdateGroup(context.Context, *UpdateGroupR
 }
 func (UnimplementedUserServiceServer) RemoveGroup(context.Context, *RemoveGroupRequest) (*RemoveGroupResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RemoveGroup not implemented")
+}
+func (UnimplementedUserServiceServer) ZonesStream(*ZonesStreamRequest, grpc.ServerStreamingServer[ZonesStreamResponse]) error {
+	return status.Error(codes.Unimplemented, "method ZonesStream not implemented")
+}
+func (UnimplementedUserServiceServer) AddZone(context.Context, *AddZoneRequest) (*AddZoneResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AddZone not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateZone(context.Context, *UpdateZoneRequest) (*UpdateZoneResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateZone not implemented")
+}
+func (UnimplementedUserServiceServer) RemoveZone(context.Context, *RemoveZoneRequest) (*RemoveZoneResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RemoveZone not implemented")
 }
 func (UnimplementedUserServiceServer) SendAction(*ActionRequest, grpc.ServerStreamingServer[ActionResponse]) error {
 	return status.Error(codes.Unimplemented, "method SendAction not implemented")
@@ -942,6 +1025,71 @@ func _UserService_RemoveGroup_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ZonesStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ZonesStreamRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UserServiceServer).ZonesStream(m, &grpc.GenericServerStream[ZonesStreamRequest, ZonesStreamResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type UserService_ZonesStreamServer = grpc.ServerStreamingServer[ZonesStreamResponse]
+
+func _UserService_AddZone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddZoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AddZone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_AddZone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AddZone(ctx, req.(*AddZoneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateZone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateZoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateZone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdateZone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateZone(ctx, req.(*UpdateZoneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_RemoveZone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveZoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RemoveZone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_RemoveZone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RemoveZone(ctx, req.(*RemoveZoneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_SendAction_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(ActionRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -1124,6 +1272,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_RemoveGroup_Handler,
 		},
 		{
+			MethodName: "AddZone",
+			Handler:    _UserService_AddZone_Handler,
+		},
+		{
+			MethodName: "UpdateZone",
+			Handler:    _UserService_UpdateZone_Handler,
+		},
+		{
+			MethodName: "RemoveZone",
+			Handler:    _UserService_RemoveZone_Handler,
+		},
+		{
 			MethodName: "AddUser",
 			Handler:    _UserService_AddUser_Handler,
 		},
@@ -1178,6 +1338,11 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "GroupsStream",
 			Handler:       _UserService_GroupsStream_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "ZonesStream",
+			Handler:       _UserService_ZonesStream_Handler,
 			ServerStreams: true,
 		},
 		{
