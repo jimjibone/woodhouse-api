@@ -84,6 +84,28 @@ service UserService {
     rpc UpdateZone(UpdateZoneRequest) returns (UpdateZoneResponse);
     rpc RemoveZone(RemoveZoneRequest) returns (RemoveZoneResponse);
 
+    // Get a stream of Notifications addressed to the calling user. The first
+    // batch is the stored history they can still see, followed by updates as
+    // they occur. Every response carries `read` for the calling user only, so
+    // two users on the same notification see different values. The stream also
+    // includes a 10 second heartbeat; the first one ends the initial batch.
+    rpc NotificationsStream(NotificationsStreamRequest) returns (stream NotificationsStreamResponse);
+
+    // Mark one notification read for the calling user. Idempotent.
+    rpc MarkNotificationRead(MarkNotificationReadRequest) returns (MarkNotificationReadResponse);
+
+    // Mark every notification currently visible to the calling user read.
+    rpc MarkAllNotificationsRead(MarkAllNotificationsReadRequest) returns (MarkAllNotificationsReadResponse);
+
+    // Dismiss one notification for the calling user. It leaves their inbox but
+    // stays in the history for everybody else in its audience.
+    rpc DismissNotification(DismissNotificationRequest) returns (DismissNotificationResponse);
+
+    // Send a test notification. Admin only; it exists so the delivery path can
+    // be exercised before anything in the system generates notifications of
+    // its own.
+    rpc SendTestNotification(SendTestNotificationRequest) returns (SendTestNotificationResponse);
+
     // Send an action to a device service.
     rpc SendAction(ActionRequest) returns (stream ActionResponse);
 
@@ -288,6 +310,104 @@ message RemoveZoneRequest {
     string id = 1;
 }
 message RemoveZoneResponse {}
+
+enum NotificationLevel {
+    NOTIFICATION_LEVEL_UNSPECIFIED = 0;
+    NOTIFICATION_LEVEL_INFO        = 1;
+    NOTIFICATION_LEVEL_SUCCESS     = 2;
+    NOTIFICATION_LEVEL_WARNING     = 3;
+    NOTIFICATION_LEVEL_ERROR       = 4;
+}
+
+// Who a notification is for. An enum plus its operand rather than a oneof: the
+// audience is data the server stores and evaluates, not a discriminator
+// between unrelated payloads, and it round-trips through JSON on disk. An
+// unspecified kind matches nobody, so an audience that fails to decode fails
+// closed rather than reaching everyone.
+message NotificationAudience {
+    enum Kind {
+        KIND_UNSPECIFIED = 0;
+        KIND_ALL         = 1; // Every user.
+        KIND_ROLE        = 2; // Every user holding `role`.
+        KIND_USER        = 3; // The single user named by `username`.
+    }
+    Kind     kind     = 1;
+    UserRole role     = 2; // Only meaningful when kind is KIND_ROLE.
+    string   username = 3; // Only meaningful when kind is KIND_USER.
+}
+
+message Notification {
+    string            id         = 1; // Server-generated, unique.
+    int64             created_at = 2; // Unix milliseconds.
+    NotificationLevel level      = 3;
+    string            title      = 4; // One short line.
+    string            body       = 5; // Optional detail. May be empty.
+
+    // An opaque origin key, e.g. "settings-test" or "device-offline". For
+    // grouping and filtering, not for display.
+    string source = 6;
+    // A coarse bucket for future per-user preferences, e.g. "system",
+    // "devices", "security". May be empty.
+    string category = 7;
+    // Optional. A new notification carrying the same non-empty collapse_key
+    // replaces the previous one, so a flapping sensor does not accumulate a
+    // hundred rows. Empty means never collapse.
+    string collapse_key = 8;
+
+    NotificationAudience audience = 9;
+
+    // Read by the user whose stream this is, and nobody else. It is a
+    // projection of per-user state rather than a property of the notification,
+    // which is why the same notification arrives with different values on two
+    // users' streams.
+    bool read = 10;
+
+    // Optional client-relative link opened when the notification is activated,
+    // e.g. "/devices/00158d00045c089f". Never absolute.
+    string link = 11;
+}
+
+message NotificationsStreamRequest {}
+message NotificationsStreamResponse {
+    // Exactly one of these is set on every response, for the same reasons as
+    // ZonesStreamResponse above.
+    oneof update {
+        // A Notification was added, changed, or had its read state flipped for
+        // the user this stream belongs to.
+        Notification notification_update = 1;
+        // The ID of a Notification that left this user's inbox, either trimmed
+        // from the history or dismissed by them.
+        string    removed_id = 2;
+        Heartbeat heartbeat  = 3; // Keepalive. The first one also ends the initial batch.
+    }
+}
+
+message MarkNotificationReadRequest {
+    string id = 1;
+}
+message MarkNotificationReadResponse {}
+
+message MarkAllNotificationsReadRequest {}
+message MarkAllNotificationsReadResponse {}
+
+message DismissNotificationRequest {
+    string id = 1;
+}
+message DismissNotificationResponse {}
+
+message SendTestNotificationRequest {
+    optional string            title = 1; // Optional: falls back to a canned test title.
+    optional string            body  = 2; // Optional: falls back to a canned test body.
+    optional NotificationLevel level = 3; // Optional: defaults to info.
+
+    // Optional. Defaults to KIND_USER targeting the calling admin, so pressing
+    // "send test" on a shared instance does not notify the whole household by
+    // accident.
+    NotificationAudience audience = 4;
+}
+message SendTestNotificationResponse {
+    Notification notification = 1; // The notification as stored, including the generated ID.
+}
 
 message UsersStreamRequest {}
 message UsersStreamResponse {

@@ -19,36 +19,41 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_GetClients_FullMethodName            = "/woodhouse.api.v1.clients.UserService/GetClients"
-	UserService_ClientsStream_FullMethodName         = "/woodhouse.api.v1.clients.UserService/ClientsStream"
-	UserService_PairingRequestsStream_FullMethodName = "/woodhouse.api.v1.clients.UserService/PairingRequestsStream"
-	UserService_ApprovePairing_FullMethodName        = "/woodhouse.api.v1.clients.UserService/ApprovePairing"
-	UserService_DenyPairing_FullMethodName           = "/woodhouse.api.v1.clients.UserService/DenyPairing"
-	UserService_UnpairClient_FullMethodName          = "/woodhouse.api.v1.clients.UserService/UnpairClient"
-	UserService_ForgetClient_FullMethodName          = "/woodhouse.api.v1.clients.UserService/ForgetClient"
-	UserService_GetDevices_FullMethodName            = "/woodhouse.api.v1.clients.UserService/GetDevices"
-	UserService_DevicesStream_FullMethodName         = "/woodhouse.api.v1.clients.UserService/DevicesStream"
-	UserService_RemoveDevice_FullMethodName          = "/woodhouse.api.v1.clients.UserService/RemoveDevice"
-	UserService_FavoritesStream_FullMethodName       = "/woodhouse.api.v1.clients.UserService/FavoritesStream"
-	UserService_AddFavorite_FullMethodName           = "/woodhouse.api.v1.clients.UserService/AddFavorite"
-	UserService_RemoveFavorite_FullMethodName        = "/woodhouse.api.v1.clients.UserService/RemoveFavorite"
-	UserService_GroupsStream_FullMethodName          = "/woodhouse.api.v1.clients.UserService/GroupsStream"
-	UserService_AddGroup_FullMethodName              = "/woodhouse.api.v1.clients.UserService/AddGroup"
-	UserService_UpdateGroup_FullMethodName           = "/woodhouse.api.v1.clients.UserService/UpdateGroup"
-	UserService_RemoveGroup_FullMethodName           = "/woodhouse.api.v1.clients.UserService/RemoveGroup"
-	UserService_ZonesStream_FullMethodName           = "/woodhouse.api.v1.clients.UserService/ZonesStream"
-	UserService_AddZone_FullMethodName               = "/woodhouse.api.v1.clients.UserService/AddZone"
-	UserService_UpdateZone_FullMethodName            = "/woodhouse.api.v1.clients.UserService/UpdateZone"
-	UserService_RemoveZone_FullMethodName            = "/woodhouse.api.v1.clients.UserService/RemoveZone"
-	UserService_SendAction_FullMethodName            = "/woodhouse.api.v1.clients.UserService/SendAction"
-	UserService_SendImageRequest_FullMethodName      = "/woodhouse.api.v1.clients.UserService/SendImageRequest"
-	UserService_ImagesStream_FullMethodName          = "/woodhouse.api.v1.clients.UserService/ImagesStream"
-	UserService_UsersStream_FullMethodName           = "/woodhouse.api.v1.clients.UserService/UsersStream"
-	UserService_AddUser_FullMethodName               = "/woodhouse.api.v1.clients.UserService/AddUser"
-	UserService_UpdateUser_FullMethodName            = "/woodhouse.api.v1.clients.UserService/UpdateUser"
-	UserService_RemoveUser_FullMethodName            = "/woodhouse.api.v1.clients.UserService/RemoveUser"
-	UserService_GetSettings_FullMethodName           = "/woodhouse.api.v1.clients.UserService/GetSettings"
-	UserService_UpdateSettings_FullMethodName        = "/woodhouse.api.v1.clients.UserService/UpdateSettings"
+	UserService_GetClients_FullMethodName               = "/woodhouse.api.v1.clients.UserService/GetClients"
+	UserService_ClientsStream_FullMethodName            = "/woodhouse.api.v1.clients.UserService/ClientsStream"
+	UserService_PairingRequestsStream_FullMethodName    = "/woodhouse.api.v1.clients.UserService/PairingRequestsStream"
+	UserService_ApprovePairing_FullMethodName           = "/woodhouse.api.v1.clients.UserService/ApprovePairing"
+	UserService_DenyPairing_FullMethodName              = "/woodhouse.api.v1.clients.UserService/DenyPairing"
+	UserService_UnpairClient_FullMethodName             = "/woodhouse.api.v1.clients.UserService/UnpairClient"
+	UserService_ForgetClient_FullMethodName             = "/woodhouse.api.v1.clients.UserService/ForgetClient"
+	UserService_GetDevices_FullMethodName               = "/woodhouse.api.v1.clients.UserService/GetDevices"
+	UserService_DevicesStream_FullMethodName            = "/woodhouse.api.v1.clients.UserService/DevicesStream"
+	UserService_RemoveDevice_FullMethodName             = "/woodhouse.api.v1.clients.UserService/RemoveDevice"
+	UserService_FavoritesStream_FullMethodName          = "/woodhouse.api.v1.clients.UserService/FavoritesStream"
+	UserService_AddFavorite_FullMethodName              = "/woodhouse.api.v1.clients.UserService/AddFavorite"
+	UserService_RemoveFavorite_FullMethodName           = "/woodhouse.api.v1.clients.UserService/RemoveFavorite"
+	UserService_GroupsStream_FullMethodName             = "/woodhouse.api.v1.clients.UserService/GroupsStream"
+	UserService_AddGroup_FullMethodName                 = "/woodhouse.api.v1.clients.UserService/AddGroup"
+	UserService_UpdateGroup_FullMethodName              = "/woodhouse.api.v1.clients.UserService/UpdateGroup"
+	UserService_RemoveGroup_FullMethodName              = "/woodhouse.api.v1.clients.UserService/RemoveGroup"
+	UserService_ZonesStream_FullMethodName              = "/woodhouse.api.v1.clients.UserService/ZonesStream"
+	UserService_AddZone_FullMethodName                  = "/woodhouse.api.v1.clients.UserService/AddZone"
+	UserService_UpdateZone_FullMethodName               = "/woodhouse.api.v1.clients.UserService/UpdateZone"
+	UserService_RemoveZone_FullMethodName               = "/woodhouse.api.v1.clients.UserService/RemoveZone"
+	UserService_NotificationsStream_FullMethodName      = "/woodhouse.api.v1.clients.UserService/NotificationsStream"
+	UserService_MarkNotificationRead_FullMethodName     = "/woodhouse.api.v1.clients.UserService/MarkNotificationRead"
+	UserService_MarkAllNotificationsRead_FullMethodName = "/woodhouse.api.v1.clients.UserService/MarkAllNotificationsRead"
+	UserService_DismissNotification_FullMethodName      = "/woodhouse.api.v1.clients.UserService/DismissNotification"
+	UserService_SendTestNotification_FullMethodName     = "/woodhouse.api.v1.clients.UserService/SendTestNotification"
+	UserService_SendAction_FullMethodName               = "/woodhouse.api.v1.clients.UserService/SendAction"
+	UserService_SendImageRequest_FullMethodName         = "/woodhouse.api.v1.clients.UserService/SendImageRequest"
+	UserService_ImagesStream_FullMethodName             = "/woodhouse.api.v1.clients.UserService/ImagesStream"
+	UserService_UsersStream_FullMethodName              = "/woodhouse.api.v1.clients.UserService/UsersStream"
+	UserService_AddUser_FullMethodName                  = "/woodhouse.api.v1.clients.UserService/AddUser"
+	UserService_UpdateUser_FullMethodName               = "/woodhouse.api.v1.clients.UserService/UpdateUser"
+	UserService_RemoveUser_FullMethodName               = "/woodhouse.api.v1.clients.UserService/RemoveUser"
+	UserService_GetSettings_FullMethodName              = "/woodhouse.api.v1.clients.UserService/GetSettings"
+	UserService_UpdateSettings_FullMethodName           = "/woodhouse.api.v1.clients.UserService/UpdateSettings"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -114,6 +119,23 @@ type UserServiceClient interface {
 	AddZone(ctx context.Context, in *AddZoneRequest, opts ...grpc.CallOption) (*AddZoneResponse, error)
 	UpdateZone(ctx context.Context, in *UpdateZoneRequest, opts ...grpc.CallOption) (*UpdateZoneResponse, error)
 	RemoveZone(ctx context.Context, in *RemoveZoneRequest, opts ...grpc.CallOption) (*RemoveZoneResponse, error)
+	// Get a stream of Notifications addressed to the calling user. The first
+	// batch is the stored history they can still see, followed by updates as
+	// they occur. Every response carries `read` for the calling user only, so
+	// two users on the same notification see different values. The stream also
+	// includes a 10 second heartbeat; the first one ends the initial batch.
+	NotificationsStream(ctx context.Context, in *NotificationsStreamRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[NotificationsStreamResponse], error)
+	// Mark one notification read for the calling user. Idempotent.
+	MarkNotificationRead(ctx context.Context, in *MarkNotificationReadRequest, opts ...grpc.CallOption) (*MarkNotificationReadResponse, error)
+	// Mark every notification currently visible to the calling user read.
+	MarkAllNotificationsRead(ctx context.Context, in *MarkAllNotificationsReadRequest, opts ...grpc.CallOption) (*MarkAllNotificationsReadResponse, error)
+	// Dismiss one notification for the calling user. It leaves their inbox but
+	// stays in the history for everybody else in its audience.
+	DismissNotification(ctx context.Context, in *DismissNotificationRequest, opts ...grpc.CallOption) (*DismissNotificationResponse, error)
+	// Send a test notification. Admin only; it exists so the delivery path can
+	// be exercised before anything in the system generates notifications of
+	// its own.
+	SendTestNotification(ctx context.Context, in *SendTestNotificationRequest, opts ...grpc.CallOption) (*SendTestNotificationResponse, error)
 	// Send an action to a device service.
 	SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ActionResponse], error)
 	// Send an image request to a device service. This will also update the
@@ -432,9 +454,68 @@ func (c *userServiceClient) RemoveZone(ctx context.Context, in *RemoveZoneReques
 	return out, nil
 }
 
+func (c *userServiceClient) NotificationsStream(ctx context.Context, in *NotificationsStreamRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[NotificationsStreamResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[8], UserService_NotificationsStream_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[NotificationsStreamRequest, NotificationsStreamResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type UserService_NotificationsStreamClient = grpc.ServerStreamingClient[NotificationsStreamResponse]
+
+func (c *userServiceClient) MarkNotificationRead(ctx context.Context, in *MarkNotificationReadRequest, opts ...grpc.CallOption) (*MarkNotificationReadResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MarkNotificationReadResponse)
+	err := c.cc.Invoke(ctx, UserService_MarkNotificationRead_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) MarkAllNotificationsRead(ctx context.Context, in *MarkAllNotificationsReadRequest, opts ...grpc.CallOption) (*MarkAllNotificationsReadResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MarkAllNotificationsReadResponse)
+	err := c.cc.Invoke(ctx, UserService_MarkAllNotificationsRead_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) DismissNotification(ctx context.Context, in *DismissNotificationRequest, opts ...grpc.CallOption) (*DismissNotificationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DismissNotificationResponse)
+	err := c.cc.Invoke(ctx, UserService_DismissNotification_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) SendTestNotification(ctx context.Context, in *SendTestNotificationRequest, opts ...grpc.CallOption) (*SendTestNotificationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SendTestNotificationResponse)
+	err := c.cc.Invoke(ctx, UserService_SendTestNotification_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) SendAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ActionResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[8], UserService_SendAction_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[9], UserService_SendAction_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -453,7 +534,7 @@ type UserService_SendActionClient = grpc.ServerStreamingClient[ActionResponse]
 
 func (c *userServiceClient) SendImageRequest(ctx context.Context, in *UserImageRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ImageResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[9], UserService_SendImageRequest_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[10], UserService_SendImageRequest_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -472,7 +553,7 @@ type UserService_SendImageRequestClient = grpc.ServerStreamingClient[ImageRespon
 
 func (c *userServiceClient) ImagesStream(ctx context.Context, in *ImagesStreamRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ImagesStreamResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[10], UserService_ImagesStream_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[11], UserService_ImagesStream_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -491,7 +572,7 @@ type UserService_ImagesStreamClient = grpc.ServerStreamingClient[ImagesStreamRes
 
 func (c *userServiceClient) UsersStream(ctx context.Context, in *UsersStreamRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[UsersStreamResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[11], UserService_UsersStream_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[12], UserService_UsersStream_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -621,6 +702,23 @@ type UserServiceServer interface {
 	AddZone(context.Context, *AddZoneRequest) (*AddZoneResponse, error)
 	UpdateZone(context.Context, *UpdateZoneRequest) (*UpdateZoneResponse, error)
 	RemoveZone(context.Context, *RemoveZoneRequest) (*RemoveZoneResponse, error)
+	// Get a stream of Notifications addressed to the calling user. The first
+	// batch is the stored history they can still see, followed by updates as
+	// they occur. Every response carries `read` for the calling user only, so
+	// two users on the same notification see different values. The stream also
+	// includes a 10 second heartbeat; the first one ends the initial batch.
+	NotificationsStream(*NotificationsStreamRequest, grpc.ServerStreamingServer[NotificationsStreamResponse]) error
+	// Mark one notification read for the calling user. Idempotent.
+	MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*MarkNotificationReadResponse, error)
+	// Mark every notification currently visible to the calling user read.
+	MarkAllNotificationsRead(context.Context, *MarkAllNotificationsReadRequest) (*MarkAllNotificationsReadResponse, error)
+	// Dismiss one notification for the calling user. It leaves their inbox but
+	// stays in the history for everybody else in its audience.
+	DismissNotification(context.Context, *DismissNotificationRequest) (*DismissNotificationResponse, error)
+	// Send a test notification. Admin only; it exists so the delivery path can
+	// be exercised before anything in the system generates notifications of
+	// its own.
+	SendTestNotification(context.Context, *SendTestNotificationRequest) (*SendTestNotificationResponse, error)
 	// Send an action to a device service.
 	SendAction(*ActionRequest, grpc.ServerStreamingServer[ActionResponse]) error
 	// Send an image request to a device service. This will also update the
@@ -719,6 +817,21 @@ func (UnimplementedUserServiceServer) UpdateZone(context.Context, *UpdateZoneReq
 }
 func (UnimplementedUserServiceServer) RemoveZone(context.Context, *RemoveZoneRequest) (*RemoveZoneResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RemoveZone not implemented")
+}
+func (UnimplementedUserServiceServer) NotificationsStream(*NotificationsStreamRequest, grpc.ServerStreamingServer[NotificationsStreamResponse]) error {
+	return status.Error(codes.Unimplemented, "method NotificationsStream not implemented")
+}
+func (UnimplementedUserServiceServer) MarkNotificationRead(context.Context, *MarkNotificationReadRequest) (*MarkNotificationReadResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method MarkNotificationRead not implemented")
+}
+func (UnimplementedUserServiceServer) MarkAllNotificationsRead(context.Context, *MarkAllNotificationsReadRequest) (*MarkAllNotificationsReadResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method MarkAllNotificationsRead not implemented")
+}
+func (UnimplementedUserServiceServer) DismissNotification(context.Context, *DismissNotificationRequest) (*DismissNotificationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DismissNotification not implemented")
+}
+func (UnimplementedUserServiceServer) SendTestNotification(context.Context, *SendTestNotificationRequest) (*SendTestNotificationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SendTestNotification not implemented")
 }
 func (UnimplementedUserServiceServer) SendAction(*ActionRequest, grpc.ServerStreamingServer[ActionResponse]) error {
 	return status.Error(codes.Unimplemented, "method SendAction not implemented")
@@ -1090,6 +1203,89 @@ func _UserService_RemoveZone_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_NotificationsStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(NotificationsStreamRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UserServiceServer).NotificationsStream(m, &grpc.GenericServerStream[NotificationsStreamRequest, NotificationsStreamResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type UserService_NotificationsStreamServer = grpc.ServerStreamingServer[NotificationsStreamResponse]
+
+func _UserService_MarkNotificationRead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkNotificationReadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).MarkNotificationRead(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_MarkNotificationRead_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).MarkNotificationRead(ctx, req.(*MarkNotificationReadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_MarkAllNotificationsRead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkAllNotificationsReadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).MarkAllNotificationsRead(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_MarkAllNotificationsRead_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).MarkAllNotificationsRead(ctx, req.(*MarkAllNotificationsReadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_DismissNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DismissNotificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).DismissNotification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_DismissNotification_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).DismissNotification(ctx, req.(*DismissNotificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_SendTestNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendTestNotificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).SendTestNotification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_SendTestNotification_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).SendTestNotification(ctx, req.(*SendTestNotificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_SendAction_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(ActionRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -1284,6 +1480,22 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_RemoveZone_Handler,
 		},
 		{
+			MethodName: "MarkNotificationRead",
+			Handler:    _UserService_MarkNotificationRead_Handler,
+		},
+		{
+			MethodName: "MarkAllNotificationsRead",
+			Handler:    _UserService_MarkAllNotificationsRead_Handler,
+		},
+		{
+			MethodName: "DismissNotification",
+			Handler:    _UserService_DismissNotification_Handler,
+		},
+		{
+			MethodName: "SendTestNotification",
+			Handler:    _UserService_SendTestNotification_Handler,
+		},
+		{
 			MethodName: "AddUser",
 			Handler:    _UserService_AddUser_Handler,
 		},
@@ -1343,6 +1555,11 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "ZonesStream",
 			Handler:       _UserService_ZonesStream_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "NotificationsStream",
+			Handler:       _UserService_NotificationsStream_Handler,
 			ServerStreams: true,
 		},
 		{
