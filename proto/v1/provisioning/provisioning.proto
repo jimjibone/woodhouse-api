@@ -4,8 +4,12 @@ syntax = "proto3";
 // recovering) Woodhouse device over Bluetooth LE or the setup access point.
 //
 // Every message travels inside an encrypted Noise_XX_25519_ChaChaPoly_SHA256
-// session. The transport (GATT characteristics, framing) and the handshake
-// are described in woodhouse-os (agent/README.md).
+// session. The transports (GATT characteristics and framing, or HTTP on the
+// setup access point) and the handshake are described in woodhouse-os
+// (agent/README.md).
+//
+// Over the setup access point, adopt before joining WiFi: the device has to
+// leave the access point to join, so a join there only returns PENDING.
 //
 // Authorization depends on the device state:
 // - UNADOPTED: any peer may call everything (trust on first use while the
@@ -82,6 +86,11 @@ message GetInfoResponse {
     bool authorized = 6;
     WifiStatus wifi = 7;
     bool ethernet_connected = 8;
+    // Result of the most recent JoinWifi, once known. After a PENDING join
+    // over the setup access point, this is how the app learns the outcome.
+    JoinWifiResponse last_join = 9;
+    // True while the setup access point is up.
+    bool setup_ap_active = 10;
 }
 
 message WifiStatus {
@@ -133,6 +142,11 @@ message JoinWifiResponse {
         RESULT_TIMEOUT = 5;
         RESULT_UNSUPPORTED_SECURITY = 6;
         RESULT_FAILED = 7;
+        // The request came over the setup access point, which the device
+        // must leave to join. On success the device appears on the new
+        // network (mDNS); on failure the access point returns and
+        // GetInfo.last_join holds the result.
+        RESULT_PENDING = 8;
     }
     Result result = 1;
     WifiStatus wifi = 2;

@@ -8,8 +8,12 @@
 // recovering) Woodhouse device over Bluetooth LE or the setup access point.
 //
 // Every message travels inside an encrypted Noise_XX_25519_ChaChaPoly_SHA256
-// session. The transport (GATT characteristics, framing) and the handshake
-// are described in woodhouse-os (agent/README.md).
+// session. The transports (GATT characteristics and framing, or HTTP on the
+// setup access point) and the handshake are described in woodhouse-os
+// (agent/README.md).
+//
+// Over the setup access point, adopt before joining WiFi: the device has to
+// leave the access point to join, so a join there only returns PENDING.
 //
 // Authorization depends on the device state:
 // - UNADOPTED: any peer may call everything (trust on first use while the
@@ -223,6 +227,11 @@ const (
 	JoinWifiResponse_RESULT_TIMEOUT              JoinWifiResponse_Result = 5
 	JoinWifiResponse_RESULT_UNSUPPORTED_SECURITY JoinWifiResponse_Result = 6
 	JoinWifiResponse_RESULT_FAILED               JoinWifiResponse_Result = 7
+	// The request came over the setup access point, which the device
+	// must leave to join. On success the device appears on the new
+	// network (mDNS); on failure the access point returns and
+	// GetInfo.last_join holds the result.
+	JoinWifiResponse_RESULT_PENDING JoinWifiResponse_Result = 8
 )
 
 // Enum value maps for JoinWifiResponse_Result.
@@ -236,6 +245,7 @@ var (
 		5: "RESULT_TIMEOUT",
 		6: "RESULT_UNSUPPORTED_SECURITY",
 		7: "RESULT_FAILED",
+		8: "RESULT_PENDING",
 	}
 	JoinWifiResponse_Result_value = map[string]int32{
 		"RESULT_UNSPECIFIED":          0,
@@ -246,6 +256,7 @@ var (
 		"RESULT_TIMEOUT":              5,
 		"RESULT_UNSUPPORTED_SECURITY": 6,
 		"RESULT_FAILED":               7,
+		"RESULT_PENDING":              8,
 	}
 )
 
@@ -662,8 +673,13 @@ type GetInfoResponse struct {
 	Authorized        bool        `protobuf:"varint,6,opt,name=authorized,proto3" json:"authorized,omitempty"`
 	Wifi              *WifiStatus `protobuf:"bytes,7,opt,name=wifi,proto3" json:"wifi,omitempty"`
 	EthernetConnected bool        `protobuf:"varint,8,opt,name=ethernet_connected,json=ethernetConnected,proto3" json:"ethernet_connected,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Result of the most recent JoinWifi, once known. After a PENDING join
+	// over the setup access point, this is how the app learns the outcome.
+	LastJoin *JoinWifiResponse `protobuf:"bytes,9,opt,name=last_join,json=lastJoin,proto3" json:"last_join,omitempty"`
+	// True while the setup access point is up.
+	SetupApActive bool `protobuf:"varint,10,opt,name=setup_ap_active,json=setupApActive,proto3" json:"setup_ap_active,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetInfoResponse) Reset() {
@@ -748,6 +764,20 @@ func (x *GetInfoResponse) GetWifi() *WifiStatus {
 func (x *GetInfoResponse) GetEthernetConnected() bool {
 	if x != nil {
 		return x.EthernetConnected
+	}
+	return false
+}
+
+func (x *GetInfoResponse) GetLastJoin() *JoinWifiResponse {
+	if x != nil {
+		return x.LastJoin
+	}
+	return nil
+}
+
+func (x *GetInfoResponse) GetSetupApActive() bool {
+	if x != nil {
+		return x.SetupApActive
 	}
 	return false
 }
@@ -1355,7 +1385,7 @@ const file_provisioning_provisioning_proto_rawDesc = "" +
 	"\x13FAILED_PRECONDITION\x10\x03\x12\x16\n" +
 	"\x12RESOURCE_EXHAUSTED\x10\x04\x12\f\n" +
 	"\bINTERNAL\x10\x05\"\x10\n" +
-	"\x0eGetInfoRequest\"\xcf\x02\n" +
+	"\x0eGetInfoRequest\"\xc5\x03\n" +
 	"\x0fGetInfoResponse\x12@\n" +
 	"\x05state\x18\x01 \x01(\x0e2*.woodhouse.api.v1.provisioning.DeviceStateR\x05state\x12\x1b\n" +
 	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\x12\x1a\n" +
@@ -1367,7 +1397,10 @@ const file_provisioning_provisioning_proto_rawDesc = "" +
 	"authorized\x18\x06 \x01(\bR\n" +
 	"authorized\x12=\n" +
 	"\x04wifi\x18\a \x01(\v2).woodhouse.api.v1.provisioning.WifiStatusR\x04wifi\x12-\n" +
-	"\x12ethernet_connected\x18\b \x01(\bR\x11ethernetConnected\"\\\n" +
+	"\x12ethernet_connected\x18\b \x01(\bR\x11ethernetConnected\x12L\n" +
+	"\tlast_join\x18\t \x01(\v2/.woodhouse.api.v1.provisioning.JoinWifiResponseR\blastJoin\x12&\n" +
+	"\x0fsetup_ap_active\x18\n" +
+	" \x01(\bR\rsetupApActive\"\\\n" +
 	"\n" +
 	"WifiStatus\x12\x1c\n" +
 	"\tconnected\x18\x01 \x01(\bR\tconnected\x12\x12\n" +
@@ -1385,11 +1418,11 @@ const file_provisioning_provisioning_proto_rawDesc = "" +
 	"\x04ssid\x18\x01 \x01(\tR\x04ssid\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x16\n" +
 	"\x06hidden\x18\x03 \x01(\bR\x06hidden\x12\x18\n" +
-	"\acountry\x18\x04 \x01(\tR\acountry\"\x84\x03\n" +
+	"\acountry\x18\x04 \x01(\tR\acountry\"\x98\x03\n" +
 	"\x10JoinWifiResponse\x12N\n" +
 	"\x06result\x18\x01 \x01(\x0e26.woodhouse.api.v1.provisioning.JoinWifiResponse.ResultR\x06result\x12=\n" +
 	"\x04wifi\x18\x02 \x01(\v2).woodhouse.api.v1.provisioning.WifiStatusR\x04wifi\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage\"\xc6\x01\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\"\xda\x01\n" +
 	"\x06Result\x12\x16\n" +
 	"\x12RESULT_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10RESULT_CONNECTED\x10\x01\x12\x19\n" +
@@ -1398,7 +1431,8 @@ const file_provisioning_provisioning_proto_rawDesc = "" +
 	"\x11RESULT_NO_ADDRESS\x10\x04\x12\x12\n" +
 	"\x0eRESULT_TIMEOUT\x10\x05\x12\x1f\n" +
 	"\x1bRESULT_UNSUPPORTED_SECURITY\x10\x06\x12\x11\n" +
-	"\rRESULT_FAILED\x10\a\"\x81\x01\n" +
+	"\rRESULT_FAILED\x10\a\x12\x12\n" +
+	"\x0eRESULT_PENDING\x10\b\"\x81\x01\n" +
 	"\fAdoptRequest\x12%\n" +
 	"\x0eadmin_username\x18\x01 \x01(\tR\radminUsername\x12%\n" +
 	"\x0eadmin_password\x18\x02 \x01(\tR\radminPassword\x12#\n" +
@@ -1476,15 +1510,16 @@ var file_provisioning_provisioning_proto_depIdxs = []int32{
 	2,  // 11: woodhouse.api.v1.provisioning.Error.code:type_name -> woodhouse.api.v1.provisioning.Error.Code
 	0,  // 12: woodhouse.api.v1.provisioning.GetInfoResponse.state:type_name -> woodhouse.api.v1.provisioning.DeviceState
 	9,  // 13: woodhouse.api.v1.provisioning.GetInfoResponse.wifi:type_name -> woodhouse.api.v1.provisioning.WifiStatus
-	12, // 14: woodhouse.api.v1.provisioning.ScanWifiResponse.networks:type_name -> woodhouse.api.v1.provisioning.WifiNetwork
-	1,  // 15: woodhouse.api.v1.provisioning.WifiNetwork.security:type_name -> woodhouse.api.v1.provisioning.WifiSecurity
-	3,  // 16: woodhouse.api.v1.provisioning.JoinWifiResponse.result:type_name -> woodhouse.api.v1.provisioning.JoinWifiResponse.Result
-	9,  // 17: woodhouse.api.v1.provisioning.JoinWifiResponse.wifi:type_name -> woodhouse.api.v1.provisioning.WifiStatus
-	18, // [18:18] is the sub-list for method output_type
-	18, // [18:18] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	14, // 14: woodhouse.api.v1.provisioning.GetInfoResponse.last_join:type_name -> woodhouse.api.v1.provisioning.JoinWifiResponse
+	12, // 15: woodhouse.api.v1.provisioning.ScanWifiResponse.networks:type_name -> woodhouse.api.v1.provisioning.WifiNetwork
+	1,  // 16: woodhouse.api.v1.provisioning.WifiNetwork.security:type_name -> woodhouse.api.v1.provisioning.WifiSecurity
+	3,  // 17: woodhouse.api.v1.provisioning.JoinWifiResponse.result:type_name -> woodhouse.api.v1.provisioning.JoinWifiResponse.Result
+	9,  // 18: woodhouse.api.v1.provisioning.JoinWifiResponse.wifi:type_name -> woodhouse.api.v1.provisioning.WifiStatus
+	19, // [19:19] is the sub-list for method output_type
+	19, // [19:19] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_provisioning_provisioning_proto_init() }
