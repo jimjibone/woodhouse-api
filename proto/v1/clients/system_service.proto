@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+// System management of a woodhouse-os appliance: OS and update state, WiFi,
+// SSH, reboot and factory reset. Served by woodhouse-core to admins and
+// forwarded to the device agent (local.AgentService), which does the work.
+// On a woodhouse-core that is not running on woodhouse-os every call fails
+// with UNAVAILABLE.
+package woodhouse.api.v1.clients;
+option go_package = "github.com/jimjibone/woodhouse-api/go/v1/clients;clientsapi";
+
+service SystemService {
+    rpc GetSystemInfo(GetSystemInfoRequest) returns (GetSystemInfoResponse) {};
+    // Failed OS update attempts (newest last), kept on the device.
+    rpc GetUpdateReports(GetUpdateReportsRequest) returns (GetUpdateReportsResponse) {};
+    rpc GetWifiStatus(GetWifiStatusRequest) returns (GetWifiStatusResponse) {};
+    rpc ScanWifi(SystemScanWifiRequest) returns (SystemScanWifiResponse) {};
+    // Switch to another WiFi network. The caller is usually connected over
+    // the current network, so this always returns PENDING; the outcome is
+    // in GetWifiStatus.last_join once the device is reachable again. A
+    // failed join keeps the previous network.
+    rpc JoinWifi(SystemJoinWifiRequest) returns (SystemJoinWifiResponse) {};
+    // Enable or disable SSH access (root, public keys only).
+    rpc SetSSH(SetSSHRequest) returns (SetSSHResponse) {};
+    rpc Reboot(RebootRequest) returns (RebootResponse) {};
+    // Erase all data (users, devices, WiFi, settings) and reboot into setup.
+    rpc FactoryReset(FactoryResetRequest) returns (FactoryResetResponse) {};
+}
+
+message GetSystemInfoRequest {}
+
+message GetSystemInfoResponse {
+    string os_version = 1;
+    string board = 2;
+    string hostname = 3;
+    string device_id = 4;
+    uint64 uptime_seconds = 5;
+    // OS slots (A/B). The booted slot runs now; the primary slot boots next.
+    repeated SystemSlot slots = 6;
+    bool ssh_enabled = 7;
+}
+
+message SystemSlot {
+    string name = 1;  // "A" or "B"
+    // "good" or "bad" (a failed update attempt).
+    string state = 2;
+    // Version of the OS installed in the slot, if known.
+    string version = 3;
+    bool booted = 4;
+    bool primary = 5;
+}
+
+message GetUpdateReportsRequest {}
+
+message GetUpdateReportsResponse {
+    repeated UpdateReport reports = 1;
+}
+
+message UpdateReport {
+    // RFC 3339.
+    string time = 1;
+    string version = 2;
+    string previous_version = 3;
+    // "health-check" (the new version failed its checks) or "boot" (it did
+    // not come up: hang, crash or power loss).
+    string stage = 4;
+    string reason = 5;
+    repeated string log = 6;
+}
+
+message GetWifiStatusRequest {}
+
+message GetWifiStatusResponse {
+    bool connected = 1;
+    string ssid = 2;
+    repeated string addresses = 3;
+    bool ethernet_connected = 4;
+    // Outcome of the most recent JoinWifi, if any.
+    SystemJoinResult last_join = 5;
+}
+
+message SystemJoinResult {
+    // e.g. "connected", "wrong-password", "not-found", "no-address",
+    // "timeout", "unsupported-security", "failed".
+    string result = 1;
+    string ssid = 2;
+    string message = 3;
+}
+
+message SystemScanWifiRequest {}
+
+message SystemScanWifiResponse {
+    repeated SystemWifiNetwork networks = 1;
+}
+
+message SystemWifiNetwork {
+    string ssid = 1;
+    uint32 signal = 2;  // 0-100
+    // "open", "wpa-psk", "sae", "wep" or "enterprise" (the last two cannot
+    // be joined).
+    string security = 3;
+    uint32 frequency_mhz = 4;
+}
+
+message SystemJoinWifiRequest {
+    string ssid = 1;
+    string password = 2;
+    bool hidden = 3;
+    string country = 4;
+}
+
+message SystemJoinWifiResponse {}
+
+message SetSSHRequest {
+    bool enabled = 1;
+    // OpenSSH public keys allowed to log in as root. Replaces the current
+    // set when enabling.
+    repeated string authorized_keys = 2;
+}
+
+message SetSSHResponse {}
+
+message RebootRequest {}
+
+message RebootResponse {}
+
+message FactoryResetRequest {
+    // Must be true; guards against accidental calls.
+    bool confirm = 1;
+}
+
+message FactoryResetResponse {}

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+// Served by woodhouse-agent on woodhouse-os, on a unix socket that
+// woodhouse-core can open. woodhouse-core forwards its admin-only
+// clients.SystemService here unchanged, so the messages are shared.
+package woodhouse.api.v1.local;
+option go_package = "github.com/jimjibone/woodhouse-api/go/v1/local;localapi";
+
+import "clients/system_service.proto";
+
+service AgentService {
+    rpc GetSystemInfo(woodhouse.api.v1.clients.GetSystemInfoRequest) returns (woodhouse.api.v1.clients.GetSystemInfoResponse) {};
+    rpc GetUpdateReports(woodhouse.api.v1.clients.GetUpdateReportsRequest) returns (woodhouse.api.v1.clients.GetUpdateReportsResponse) {};
+    rpc GetWifiStatus(woodhouse.api.v1.clients.GetWifiStatusRequest) returns (woodhouse.api.v1.clients.GetWifiStatusResponse) {};
+    rpc ScanWifi(woodhouse.api.v1.clients.SystemScanWifiRequest) returns (woodhouse.api.v1.clients.SystemScanWifiResponse) {};
+    rpc JoinWifi(woodhouse.api.v1.clients.SystemJoinWifiRequest) returns (woodhouse.api.v1.clients.SystemJoinWifiResponse) {};
+    rpc SetSSH(woodhouse.api.v1.clients.SetSSHRequest) returns (woodhouse.api.v1.clients.SetSSHResponse) {};
+    rpc Reboot(woodhouse.api.v1.clients.RebootRequest) returns (woodhouse.api.v1.clients.RebootResponse) {};
+    rpc FactoryReset(woodhouse.api.v1.clients.FactoryResetRequest) returns (woodhouse.api.v1.clients.FactoryResetResponse) {};
+}
