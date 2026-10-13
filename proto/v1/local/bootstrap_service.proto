@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+// Local-only services: served by woodhouse-core on a unix socket for other
+// processes on the same device (woodhouse-agent on woodhouse-os). Never
+// exposed on the network; access control is the socket's file permissions.
+package woodhouse.api.v1.local;
+option go_package = "github.com/jimjibone/woodhouse-api/go/v1/local;localapi";
+
+service BootstrapService {
+    rpc GetStatus(GetStatusRequest) returns (GetStatusResponse) {};
+    // Create the first administrator. Fails with FAILED_PRECONDITION if an
+    // admin already exists.
+    rpc CreateAdmin(CreateAdminRequest) returns (CreateAdminResponse) {};
+    // Check that a username/password belongs to an administrator. Returns
+    // UNAUTHENTICATED otherwise. Subject to core's login rate limits.
+    rpc VerifyAdmin(VerifyAdminRequest) returns (VerifyAdminResponse) {};
+}
+
+message GetStatusRequest {}
+
+message GetStatusResponse {
+    bool has_admin = 1;
+    string instance_name = 2;
+    uint32 api_port = 3;
+    uint32 web_port = 4;
+    // DER of the gRPC leaf certificate.
+    bytes api_certificate = 5;
+}
+
+message CreateAdminRequest {
+    string username = 1;
+    string password = 2;
+    // Optional rename of the instance (mDNS name).
+    string instance_name = 3;
+}
+
+message CreateAdminResponse {}
+
+message VerifyAdminRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message VerifyAdminResponse {}

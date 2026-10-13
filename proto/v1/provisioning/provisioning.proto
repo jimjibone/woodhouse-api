@@ -1,0 +1,169 @@
+syntax = "proto3";
+
+// Device provisioning: the messages a phone exchanges with an unadopted (or
+// recovering) Woodhouse device over Bluetooth LE or the setup access point.
+//
+// Every message travels inside an encrypted Noise_XX_25519_ChaChaPoly_SHA256
+// session. The transport (GATT characteristics, framing) and the handshake
+// are described in woodhouse-os (agent/README.md).
+//
+// Authorization depends on the device state:
+// - UNADOPTED: any peer may call everything (trust on first use while the
+//   setup window is open). A successful Adopt pins the phone's Noise static
+//   key as an admin key.
+// - RECOVERY: only GetInfo is open. Everything else needs either a pinned
+//   phone key (checked during the handshake) or a successful Authenticate
+//   with an admin username and password.
+package woodhouse.api.v1.provisioning;
+option go_package = "github.com/jimjibone/woodhouse-api/go/v1/provisioning;provisioningapi";
+
+message Request {
+    // Echoed in the matching Response.
+    uint32 id = 1;
+    oneof msg {
+        GetInfoRequest get_info = 2;
+        ScanWifiRequest scan_wifi = 3;
+        JoinWifiRequest join_wifi = 4;
+        AdoptRequest adopt = 5;
+        AuthenticateRequest authenticate = 6;
+    }
+}
+
+message Response {
+    uint32 id = 1;
+    // Set when the request failed; msg is then unset.
+    Error error = 2;
+    oneof msg {
+        GetInfoResponse get_info = 3;
+        ScanWifiResponse scan_wifi = 4;
+        JoinWifiResponse join_wifi = 5;
+        AdoptResponse adopt = 6;
+        AuthenticateResponse authenticate = 7;
+    }
+}
+
+message Error {
+    enum Code {
+        CODE_UNSPECIFIED = 0;
+        // The session is not allowed to make this request in the current state.
+        UNAUTHENTICATED = 1;
+        INVALID_ARGUMENT = 2;
+        // The device is in the wrong state, e.g. Adopt on an adopted device.
+        FAILED_PRECONDITION = 3;
+        // Too many attempts; try again later.
+        RESOURCE_EXHAUSTED = 4;
+        INTERNAL = 5;
+    }
+    Code code = 1;
+    string message = 2;
+}
+
+enum DeviceState {
+    DEVICE_STATE_UNSPECIFIED = 0;
+    // Fresh or factory reset. Setup window open.
+    DEVICE_STATE_UNADOPTED = 1;
+    // Adopted and online. Provisioning transports are normally off.
+    DEVICE_STATE_ADOPTED = 2;
+    // Adopted, but the saved network is unreachable. Transports are back on,
+    // with writes restricted to authenticated sessions.
+    DEVICE_STATE_RECOVERY = 3;
+}
+
+message GetInfoRequest {}
+
+message GetInfoResponse {
+    DeviceState state = 1;
+    // Stable short device identifier (end of the board serial).
+    string device_id = 2;
+    string hostname = 3;
+    string board = 4;
+    string os_version = 5;
+    // True if this session may make write requests.
+    bool authorized = 6;
+    WifiStatus wifi = 7;
+    bool ethernet_connected = 8;
+}
+
+message WifiStatus {
+    bool connected = 1;
+    string ssid = 2;
+    repeated string addresses = 3;
+}
+
+enum WifiSecurity {
+    WIFI_SECURITY_UNSPECIFIED = 0;
+    WIFI_SECURITY_OPEN = 1;
+    WIFI_SECURITY_WPA_PSK = 2;  // WPA/WPA2 personal
+    WIFI_SECURITY_SAE = 3;      // WPA3 personal
+    WIFI_SECURITY_WEP = 4;      // not supported for joining
+    WIFI_SECURITY_ENTERPRISE = 5;  // not supported for joining
+}
+
+message ScanWifiRequest {}
+
+message ScanWifiResponse {
+    repeated WifiNetwork networks = 1;
+}
+
+message WifiNetwork {
+    string ssid = 1;
+    // Signal strength, 0-100.
+    uint32 signal = 2;
+    WifiSecurity security = 3;
+    uint32 frequency_mhz = 4;
+}
+
+message JoinWifiRequest {
+    string ssid = 1;
+    // Empty for open networks.
+    string password = 2;
+    bool hidden = 3;
+    // ISO 3166-1 alpha-2 regulatory domain, e.g. "GB". Optional.
+    string country = 4;
+}
+
+message JoinWifiResponse {
+    enum Result {
+        RESULT_UNSPECIFIED = 0;
+        RESULT_CONNECTED = 1;
+        RESULT_WRONG_PASSWORD = 2;
+        RESULT_NOT_FOUND = 3;
+        // Associated, but no IP address (DHCP) in time.
+        RESULT_NO_ADDRESS = 4;
+        RESULT_TIMEOUT = 5;
+        RESULT_UNSUPPORTED_SECURITY = 6;
+        RESULT_FAILED = 7;
+    }
+    Result result = 1;
+    WifiStatus wifi = 2;
+    // Human readable detail for RESULT_FAILED.
+    string message = 3;
+}
+
+message AdoptRequest {
+    // The first administrator account on the device's woodhouse-core.
+    string admin_username = 1;
+    string admin_password = 2;
+    // Optional; defaults to the hostname.
+    string instance_name = 3;
+}
+
+message AdoptResponse {
+    string hostname = 1;
+    uint32 api_port = 2;
+    uint32 web_port = 3;
+    // DER of core's gRPC leaf certificate. The app pins this directly instead
+    // of trusting it on first use, because it arrived over the authenticated
+    // provisioning session.
+    bytes api_certificate = 4;
+}
+
+message AuthenticateRequest {
+    string username = 1;
+    string password = 2;
+    // Also pin this phone's Noise static key as an admin key, so later
+    // sessions from it are authorized without a password.
+    bool remember_phone = 3;
+}
+
+message AuthenticateResponse {}
