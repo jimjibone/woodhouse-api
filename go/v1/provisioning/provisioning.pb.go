@@ -692,8 +692,14 @@ type GetInfoResponse struct {
 	LastJoin *JoinWifiResponse `protobuf:"bytes,9,opt,name=last_join,json=lastJoin,proto3" json:"last_join,omitempty"`
 	// True while the setup access point is up.
 	SetupApActive bool `protobuf:"varint,10,opt,name=setup_ap_active,json=setupApActive,proto3" json:"setup_ap_active,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Where to reach core once the device is back on a network, as in
+	// AdoptResponse. Only set for an adopted device and an authorized
+	// session, so a phone that recovers the device without having set it up
+	// can pin core's certificate instead of trusting it on first use.
+	ApiPort        uint32 `protobuf:"varint,11,opt,name=api_port,json=apiPort,proto3" json:"api_port,omitempty"`
+	ApiCertificate []byte `protobuf:"bytes,12,opt,name=api_certificate,json=apiCertificate,proto3" json:"api_certificate,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *GetInfoResponse) Reset() {
@@ -794,6 +800,20 @@ func (x *GetInfoResponse) GetSetupApActive() bool {
 		return x.SetupApActive
 	}
 	return false
+}
+
+func (x *GetInfoResponse) GetApiPort() uint32 {
+	if x != nil {
+		return x.ApiPort
+	}
+	return 0
+}
+
+func (x *GetInfoResponse) GetApiCertificate() []byte {
+	if x != nil {
+		return x.ApiCertificate
+	}
+	return nil
 }
 
 type WifiStatus struct {
@@ -1400,7 +1420,7 @@ const file_provisioning_provisioning_proto_rawDesc = "" +
 	"\x13FAILED_PRECONDITION\x10\x03\x12\x16\n" +
 	"\x12RESOURCE_EXHAUSTED\x10\x04\x12\f\n" +
 	"\bINTERNAL\x10\x05\"\x10\n" +
-	"\x0eGetInfoRequest\"\xc5\x03\n" +
+	"\x0eGetInfoRequest\"\x89\x04\n" +
 	"\x0fGetInfoResponse\x12@\n" +
 	"\x05state\x18\x01 \x01(\x0e2*.woodhouse.api.v1.provisioning.DeviceStateR\x05state\x12\x1b\n" +
 	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\x12\x1a\n" +
@@ -1415,7 +1435,9 @@ const file_provisioning_provisioning_proto_rawDesc = "" +
 	"\x12ethernet_connected\x18\b \x01(\bR\x11ethernetConnected\x12L\n" +
 	"\tlast_join\x18\t \x01(\v2/.woodhouse.api.v1.provisioning.JoinWifiResponseR\blastJoin\x12&\n" +
 	"\x0fsetup_ap_active\x18\n" +
-	" \x01(\bR\rsetupApActive\"\\\n" +
+	" \x01(\bR\rsetupApActive\x12\x19\n" +
+	"\bapi_port\x18\v \x01(\rR\aapiPort\x12'\n" +
+	"\x0fapi_certificate\x18\f \x01(\fR\x0eapiCertificate\"\\\n" +
 	"\n" +
 	"WifiStatus\x12\x1c\n" +
 	"\tconnected\x18\x01 \x01(\bR\tconnected\x12\x12\n" +

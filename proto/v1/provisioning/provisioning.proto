@@ -98,6 +98,12 @@ message GetInfoResponse {
     JoinWifiResponse last_join = 9;
     // True while the setup access point is up.
     bool setup_ap_active = 10;
+    // Where to reach core once the device is back on a network, as in
+    // AdoptResponse. Only set for an adopted device and an authorized
+    // session, so a phone that recovers the device without having set it up
+    // can pin core's certificate instead of trusting it on first use.
+    uint32 api_port = 11;
+    bytes api_certificate = 12;
 }
 
 message WifiStatus {
