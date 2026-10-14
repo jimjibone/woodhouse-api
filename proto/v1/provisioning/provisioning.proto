@@ -24,6 +24,13 @@ option go_package = "github.com/jimjibone/woodhouse-api/go/v1/provisioning;provi
 message Request {
     // Echoed in the matching Response.
     uint32 id = 1;
+    // The phone's clock, in milliseconds since the Unix epoch. A Raspberry
+    // Pi has no real-time clock, so a fresh device runs on a stale date
+    // until it reaches a time server, and anything it stamps before then
+    // (login tokens) is already expired. On a session allowed to make
+    // write requests, the device moves its clock forward to this if it has
+    // not synchronized yet and is behind. 0 = not sent.
+    int64 phone_time_unix_ms = 15;
     oneof msg {
         GetInfoRequest get_info = 2;
         ScanWifiRequest scan_wifi = 3;

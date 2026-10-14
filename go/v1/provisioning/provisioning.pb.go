@@ -291,6 +291,13 @@ type Request struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Echoed in the matching Response.
 	Id uint32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// The phone's clock, in milliseconds since the Unix epoch. A Raspberry
+	// Pi has no real-time clock, so a fresh device runs on a stale date
+	// until it reaches a time server, and anything it stamps before then
+	// (login tokens) is already expired. On a session allowed to make
+	// write requests, the device moves its clock forward to this if it has
+	// not synchronized yet and is behind. 0 = not sent.
+	PhoneTimeUnixMs int64 `protobuf:"varint,15,opt,name=phone_time_unix_ms,json=phoneTimeUnixMs,proto3" json:"phone_time_unix_ms,omitempty"`
 	// Types that are valid to be assigned to Msg:
 	//
 	//	*Request_GetInfo
@@ -336,6 +343,13 @@ func (*Request) Descriptor() ([]byte, []int) {
 func (x *Request) GetId() uint32 {
 	if x != nil {
 		return x.Id
+	}
+	return 0
+}
+
+func (x *Request) GetPhoneTimeUnixMs() int64 {
+	if x != nil {
+		return x.PhoneTimeUnixMs
 	}
 	return 0
 }
@@ -1357,9 +1371,10 @@ var File_provisioning_provisioning_proto protoreflect.FileDescriptor
 
 const file_provisioning_provisioning_proto_rawDesc = "" +
 	"\n" +
-	"\x1fprovisioning/provisioning.proto\x12\x1dwoodhouse.api.v1.provisioning\"\xa9\x03\n" +
+	"\x1fprovisioning/provisioning.proto\x12\x1dwoodhouse.api.v1.provisioning\"\xd6\x03\n" +
 	"\aRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12J\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\x12+\n" +
+	"\x12phone_time_unix_ms\x18\x0f \x01(\x03R\x0fphoneTimeUnixMs\x12J\n" +
 	"\bget_info\x18\x02 \x01(\v2-.woodhouse.api.v1.provisioning.GetInfoRequestH\x00R\agetInfo\x12M\n" +
 	"\tscan_wifi\x18\x03 \x01(\v2..woodhouse.api.v1.provisioning.ScanWifiRequestH\x00R\bscanWifi\x12M\n" +
 	"\tjoin_wifi\x18\x04 \x01(\v2..woodhouse.api.v1.provisioning.JoinWifiRequestH\x00R\bjoinWifi\x12C\n" +
