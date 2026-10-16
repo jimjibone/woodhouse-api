@@ -24,6 +24,10 @@ service SystemService {
     rpc Reboot(RebootRequest) returns (RebootResponse) {};
     // Erase all data (users, devices, WiFi, settings) and reboot into setup.
     rpc FactoryReset(FactoryResetRequest) returns (FactoryResetResponse) {};
+    // Turn remote support (a Tailscale connection that lets the developers
+    // reach the device) on with an auth key, or off. Off logs the device out
+    // of the tailnet, which revokes it.
+    rpc SetRemoteSupport(SetRemoteSupportRequest) returns (SetRemoteSupportResponse) {};
 }
 
 message GetSystemInfoRequest {}
@@ -37,6 +41,17 @@ message GetSystemInfoResponse {
     // OS slots (A/B). The booted slot runs now; the primary slot boots next.
     repeated SystemSlot slots = 6;
     bool ssh_enabled = 7;
+    RemoteSupport remote_support = 8;
+}
+
+message RemoteSupport {
+    // Enrolled and meant to be connected.
+    bool enabled = 1;
+    // Currently connected to the tailnet.
+    bool online = 2;
+    // The device's name and addresses on the tailnet, when online.
+    string hostname = 3;
+    repeated string addresses = 4;
 }
 
 message SystemSlot {
@@ -129,3 +144,12 @@ message FactoryResetRequest {
 }
 
 message FactoryResetResponse {}
+
+message SetRemoteSupportRequest {
+    bool enabled = 1;
+    // A Tailscale auth key, required to turn remote support on (it decides
+    // the tailnet and the device's tags). Ignored when turning it off.
+    string auth_key = 2;
+}
+
+message SetRemoteSupportResponse {}

@@ -33,6 +33,7 @@ const (
 	SystemService_SetSSH_FullMethodName           = "/woodhouse.api.v1.clients.SystemService/SetSSH"
 	SystemService_Reboot_FullMethodName           = "/woodhouse.api.v1.clients.SystemService/Reboot"
 	SystemService_FactoryReset_FullMethodName     = "/woodhouse.api.v1.clients.SystemService/FactoryReset"
+	SystemService_SetRemoteSupport_FullMethodName = "/woodhouse.api.v1.clients.SystemService/SetRemoteSupport"
 )
 
 // SystemServiceClient is the client API for SystemService service.
@@ -54,6 +55,10 @@ type SystemServiceClient interface {
 	Reboot(ctx context.Context, in *RebootRequest, opts ...grpc.CallOption) (*RebootResponse, error)
 	// Erase all data (users, devices, WiFi, settings) and reboot into setup.
 	FactoryReset(ctx context.Context, in *FactoryResetRequest, opts ...grpc.CallOption) (*FactoryResetResponse, error)
+	// Turn remote support (a Tailscale connection that lets the developers
+	// reach the device) on with an auth key, or off. Off logs the device out
+	// of the tailnet, which revokes it.
+	SetRemoteSupport(ctx context.Context, in *SetRemoteSupportRequest, opts ...grpc.CallOption) (*SetRemoteSupportResponse, error)
 }
 
 type systemServiceClient struct {
@@ -144,6 +149,16 @@ func (c *systemServiceClient) FactoryReset(ctx context.Context, in *FactoryReset
 	return out, nil
 }
 
+func (c *systemServiceClient) SetRemoteSupport(ctx context.Context, in *SetRemoteSupportRequest, opts ...grpc.CallOption) (*SetRemoteSupportResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetRemoteSupportResponse)
+	err := c.cc.Invoke(ctx, SystemService_SetRemoteSupport_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SystemServiceServer is the server API for SystemService service.
 // All implementations must embed UnimplementedSystemServiceServer
 // for forward compatibility.
@@ -163,6 +178,10 @@ type SystemServiceServer interface {
 	Reboot(context.Context, *RebootRequest) (*RebootResponse, error)
 	// Erase all data (users, devices, WiFi, settings) and reboot into setup.
 	FactoryReset(context.Context, *FactoryResetRequest) (*FactoryResetResponse, error)
+	// Turn remote support (a Tailscale connection that lets the developers
+	// reach the device) on with an auth key, or off. Off logs the device out
+	// of the tailnet, which revokes it.
+	SetRemoteSupport(context.Context, *SetRemoteSupportRequest) (*SetRemoteSupportResponse, error)
 	mustEmbedUnimplementedSystemServiceServer()
 }
 
@@ -196,6 +215,9 @@ func (UnimplementedSystemServiceServer) Reboot(context.Context, *RebootRequest) 
 }
 func (UnimplementedSystemServiceServer) FactoryReset(context.Context, *FactoryResetRequest) (*FactoryResetResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method FactoryReset not implemented")
+}
+func (UnimplementedSystemServiceServer) SetRemoteSupport(context.Context, *SetRemoteSupportRequest) (*SetRemoteSupportResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetRemoteSupport not implemented")
 }
 func (UnimplementedSystemServiceServer) mustEmbedUnimplementedSystemServiceServer() {}
 func (UnimplementedSystemServiceServer) testEmbeddedByValue()                       {}
@@ -362,6 +384,24 @@ func _SystemService_FactoryReset_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SystemService_SetRemoteSupport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetRemoteSupportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServiceServer).SetRemoteSupport(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SystemService_SetRemoteSupport_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServiceServer).SetRemoteSupport(ctx, req.(*SetRemoteSupportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SystemService_ServiceDesc is the grpc.ServiceDesc for SystemService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -400,6 +440,10 @@ var SystemService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FactoryReset",
 			Handler:    _SystemService_FactoryReset_Handler,
+		},
+		{
+			MethodName: "SetRemoteSupport",
+			Handler:    _SystemService_SetRemoteSupport_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

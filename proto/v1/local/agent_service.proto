@@ -17,4 +17,5 @@ service AgentService {
     rpc SetSSH(woodhouse.api.v1.clients.SetSSHRequest) returns (woodhouse.api.v1.clients.SetSSHResponse) {};
     rpc Reboot(woodhouse.api.v1.clients.RebootRequest) returns (woodhouse.api.v1.clients.RebootResponse) {};
     rpc FactoryReset(woodhouse.api.v1.clients.FactoryResetRequest) returns (woodhouse.api.v1.clients.FactoryResetResponse) {};
+    rpc SetRemoteSupport(woodhouse.api.v1.clients.SetRemoteSupportRequest) returns (woodhouse.api.v1.clients.SetRemoteSupportResponse) {};
 }

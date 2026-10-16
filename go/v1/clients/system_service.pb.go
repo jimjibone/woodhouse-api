@@ -71,8 +71,9 @@ type GetSystemInfoResponse struct {
 	DeviceId      string                 `protobuf:"bytes,4,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
 	UptimeSeconds uint64                 `protobuf:"varint,5,opt,name=uptime_seconds,json=uptimeSeconds,proto3" json:"uptime_seconds,omitempty"`
 	// OS slots (A/B). The booted slot runs now; the primary slot boots next.
-	Slots         []*SystemSlot `protobuf:"bytes,6,rep,name=slots,proto3" json:"slots,omitempty"`
-	SshEnabled    bool          `protobuf:"varint,7,opt,name=ssh_enabled,json=sshEnabled,proto3" json:"ssh_enabled,omitempty"`
+	Slots         []*SystemSlot  `protobuf:"bytes,6,rep,name=slots,proto3" json:"slots,omitempty"`
+	SshEnabled    bool           `protobuf:"varint,7,opt,name=ssh_enabled,json=sshEnabled,proto3" json:"ssh_enabled,omitempty"`
+	RemoteSupport *RemoteSupport `protobuf:"bytes,8,opt,name=remote_support,json=remoteSupport,proto3" json:"remote_support,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -156,6 +157,84 @@ func (x *GetSystemInfoResponse) GetSshEnabled() bool {
 	return false
 }
 
+func (x *GetSystemInfoResponse) GetRemoteSupport() *RemoteSupport {
+	if x != nil {
+		return x.RemoteSupport
+	}
+	return nil
+}
+
+type RemoteSupport struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Enrolled and meant to be connected.
+	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	// Currently connected to the tailnet.
+	Online bool `protobuf:"varint,2,opt,name=online,proto3" json:"online,omitempty"`
+	// The device's name and addresses on the tailnet, when online.
+	Hostname      string   `protobuf:"bytes,3,opt,name=hostname,proto3" json:"hostname,omitempty"`
+	Addresses     []string `protobuf:"bytes,4,rep,name=addresses,proto3" json:"addresses,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RemoteSupport) Reset() {
+	*x = RemoteSupport{}
+	mi := &file_clients_system_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RemoteSupport) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RemoteSupport) ProtoMessage() {}
+
+func (x *RemoteSupport) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_system_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RemoteSupport.ProtoReflect.Descriptor instead.
+func (*RemoteSupport) Descriptor() ([]byte, []int) {
+	return file_clients_system_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *RemoteSupport) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *RemoteSupport) GetOnline() bool {
+	if x != nil {
+		return x.Online
+	}
+	return false
+}
+
+func (x *RemoteSupport) GetHostname() string {
+	if x != nil {
+		return x.Hostname
+	}
+	return ""
+}
+
+func (x *RemoteSupport) GetAddresses() []string {
+	if x != nil {
+		return x.Addresses
+	}
+	return nil
+}
+
 type SystemSlot struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Name  string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"` // "A" or "B"
@@ -171,7 +250,7 @@ type SystemSlot struct {
 
 func (x *SystemSlot) Reset() {
 	*x = SystemSlot{}
-	mi := &file_clients_system_service_proto_msgTypes[2]
+	mi := &file_clients_system_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -183,7 +262,7 @@ func (x *SystemSlot) String() string {
 func (*SystemSlot) ProtoMessage() {}
 
 func (x *SystemSlot) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[2]
+	mi := &file_clients_system_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -196,7 +275,7 @@ func (x *SystemSlot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SystemSlot.ProtoReflect.Descriptor instead.
 func (*SystemSlot) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{2}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *SystemSlot) GetName() string {
@@ -242,7 +321,7 @@ type GetUpdateReportsRequest struct {
 
 func (x *GetUpdateReportsRequest) Reset() {
 	*x = GetUpdateReportsRequest{}
-	mi := &file_clients_system_service_proto_msgTypes[3]
+	mi := &file_clients_system_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -254,7 +333,7 @@ func (x *GetUpdateReportsRequest) String() string {
 func (*GetUpdateReportsRequest) ProtoMessage() {}
 
 func (x *GetUpdateReportsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[3]
+	mi := &file_clients_system_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -267,7 +346,7 @@ func (x *GetUpdateReportsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUpdateReportsRequest.ProtoReflect.Descriptor instead.
 func (*GetUpdateReportsRequest) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{3}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{4}
 }
 
 type GetUpdateReportsResponse struct {
@@ -279,7 +358,7 @@ type GetUpdateReportsResponse struct {
 
 func (x *GetUpdateReportsResponse) Reset() {
 	*x = GetUpdateReportsResponse{}
-	mi := &file_clients_system_service_proto_msgTypes[4]
+	mi := &file_clients_system_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -291,7 +370,7 @@ func (x *GetUpdateReportsResponse) String() string {
 func (*GetUpdateReportsResponse) ProtoMessage() {}
 
 func (x *GetUpdateReportsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[4]
+	mi := &file_clients_system_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -304,7 +383,7 @@ func (x *GetUpdateReportsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUpdateReportsResponse.ProtoReflect.Descriptor instead.
 func (*GetUpdateReportsResponse) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{4}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetUpdateReportsResponse) GetReports() []*UpdateReport {
@@ -331,7 +410,7 @@ type UpdateReport struct {
 
 func (x *UpdateReport) Reset() {
 	*x = UpdateReport{}
-	mi := &file_clients_system_service_proto_msgTypes[5]
+	mi := &file_clients_system_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -343,7 +422,7 @@ func (x *UpdateReport) String() string {
 func (*UpdateReport) ProtoMessage() {}
 
 func (x *UpdateReport) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[5]
+	mi := &file_clients_system_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -356,7 +435,7 @@ func (x *UpdateReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateReport.ProtoReflect.Descriptor instead.
 func (*UpdateReport) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{5}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *UpdateReport) GetTime() string {
@@ -409,7 +488,7 @@ type GetWifiStatusRequest struct {
 
 func (x *GetWifiStatusRequest) Reset() {
 	*x = GetWifiStatusRequest{}
-	mi := &file_clients_system_service_proto_msgTypes[6]
+	mi := &file_clients_system_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -421,7 +500,7 @@ func (x *GetWifiStatusRequest) String() string {
 func (*GetWifiStatusRequest) ProtoMessage() {}
 
 func (x *GetWifiStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[6]
+	mi := &file_clients_system_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -434,7 +513,7 @@ func (x *GetWifiStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWifiStatusRequest.ProtoReflect.Descriptor instead.
 func (*GetWifiStatusRequest) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{6}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{7}
 }
 
 type GetWifiStatusResponse struct {
@@ -451,7 +530,7 @@ type GetWifiStatusResponse struct {
 
 func (x *GetWifiStatusResponse) Reset() {
 	*x = GetWifiStatusResponse{}
-	mi := &file_clients_system_service_proto_msgTypes[7]
+	mi := &file_clients_system_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -463,7 +542,7 @@ func (x *GetWifiStatusResponse) String() string {
 func (*GetWifiStatusResponse) ProtoMessage() {}
 
 func (x *GetWifiStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[7]
+	mi := &file_clients_system_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -476,7 +555,7 @@ func (x *GetWifiStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWifiStatusResponse.ProtoReflect.Descriptor instead.
 func (*GetWifiStatusResponse) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{7}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetWifiStatusResponse) GetConnected() bool {
@@ -527,7 +606,7 @@ type SystemJoinResult struct {
 
 func (x *SystemJoinResult) Reset() {
 	*x = SystemJoinResult{}
-	mi := &file_clients_system_service_proto_msgTypes[8]
+	mi := &file_clients_system_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -539,7 +618,7 @@ func (x *SystemJoinResult) String() string {
 func (*SystemJoinResult) ProtoMessage() {}
 
 func (x *SystemJoinResult) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[8]
+	mi := &file_clients_system_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -552,7 +631,7 @@ func (x *SystemJoinResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SystemJoinResult.ProtoReflect.Descriptor instead.
 func (*SystemJoinResult) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{8}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *SystemJoinResult) GetResult() string {
@@ -584,7 +663,7 @@ type SystemScanWifiRequest struct {
 
 func (x *SystemScanWifiRequest) Reset() {
 	*x = SystemScanWifiRequest{}
-	mi := &file_clients_system_service_proto_msgTypes[9]
+	mi := &file_clients_system_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -596,7 +675,7 @@ func (x *SystemScanWifiRequest) String() string {
 func (*SystemScanWifiRequest) ProtoMessage() {}
 
 func (x *SystemScanWifiRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[9]
+	mi := &file_clients_system_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -609,7 +688,7 @@ func (x *SystemScanWifiRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SystemScanWifiRequest.ProtoReflect.Descriptor instead.
 func (*SystemScanWifiRequest) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{9}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{10}
 }
 
 type SystemScanWifiResponse struct {
@@ -621,7 +700,7 @@ type SystemScanWifiResponse struct {
 
 func (x *SystemScanWifiResponse) Reset() {
 	*x = SystemScanWifiResponse{}
-	mi := &file_clients_system_service_proto_msgTypes[10]
+	mi := &file_clients_system_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -633,7 +712,7 @@ func (x *SystemScanWifiResponse) String() string {
 func (*SystemScanWifiResponse) ProtoMessage() {}
 
 func (x *SystemScanWifiResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[10]
+	mi := &file_clients_system_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -646,7 +725,7 @@ func (x *SystemScanWifiResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SystemScanWifiResponse.ProtoReflect.Descriptor instead.
 func (*SystemScanWifiResponse) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{10}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SystemScanWifiResponse) GetNetworks() []*SystemWifiNetwork {
@@ -670,7 +749,7 @@ type SystemWifiNetwork struct {
 
 func (x *SystemWifiNetwork) Reset() {
 	*x = SystemWifiNetwork{}
-	mi := &file_clients_system_service_proto_msgTypes[11]
+	mi := &file_clients_system_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -682,7 +761,7 @@ func (x *SystemWifiNetwork) String() string {
 func (*SystemWifiNetwork) ProtoMessage() {}
 
 func (x *SystemWifiNetwork) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[11]
+	mi := &file_clients_system_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -695,7 +774,7 @@ func (x *SystemWifiNetwork) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SystemWifiNetwork.ProtoReflect.Descriptor instead.
 func (*SystemWifiNetwork) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{11}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *SystemWifiNetwork) GetSsid() string {
@@ -738,7 +817,7 @@ type SystemJoinWifiRequest struct {
 
 func (x *SystemJoinWifiRequest) Reset() {
 	*x = SystemJoinWifiRequest{}
-	mi := &file_clients_system_service_proto_msgTypes[12]
+	mi := &file_clients_system_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -750,7 +829,7 @@ func (x *SystemJoinWifiRequest) String() string {
 func (*SystemJoinWifiRequest) ProtoMessage() {}
 
 func (x *SystemJoinWifiRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[12]
+	mi := &file_clients_system_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -763,7 +842,7 @@ func (x *SystemJoinWifiRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SystemJoinWifiRequest.ProtoReflect.Descriptor instead.
 func (*SystemJoinWifiRequest) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{12}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *SystemJoinWifiRequest) GetSsid() string {
@@ -802,7 +881,7 @@ type SystemJoinWifiResponse struct {
 
 func (x *SystemJoinWifiResponse) Reset() {
 	*x = SystemJoinWifiResponse{}
-	mi := &file_clients_system_service_proto_msgTypes[13]
+	mi := &file_clients_system_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -814,7 +893,7 @@ func (x *SystemJoinWifiResponse) String() string {
 func (*SystemJoinWifiResponse) ProtoMessage() {}
 
 func (x *SystemJoinWifiResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[13]
+	mi := &file_clients_system_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -827,7 +906,7 @@ func (x *SystemJoinWifiResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SystemJoinWifiResponse.ProtoReflect.Descriptor instead.
 func (*SystemJoinWifiResponse) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{13}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{14}
 }
 
 type SetSSHRequest struct {
@@ -842,7 +921,7 @@ type SetSSHRequest struct {
 
 func (x *SetSSHRequest) Reset() {
 	*x = SetSSHRequest{}
-	mi := &file_clients_system_service_proto_msgTypes[14]
+	mi := &file_clients_system_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -854,7 +933,7 @@ func (x *SetSSHRequest) String() string {
 func (*SetSSHRequest) ProtoMessage() {}
 
 func (x *SetSSHRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[14]
+	mi := &file_clients_system_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -867,7 +946,7 @@ func (x *SetSSHRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetSSHRequest.ProtoReflect.Descriptor instead.
 func (*SetSSHRequest) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{14}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *SetSSHRequest) GetEnabled() bool {
@@ -892,7 +971,7 @@ type SetSSHResponse struct {
 
 func (x *SetSSHResponse) Reset() {
 	*x = SetSSHResponse{}
-	mi := &file_clients_system_service_proto_msgTypes[15]
+	mi := &file_clients_system_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -904,7 +983,7 @@ func (x *SetSSHResponse) String() string {
 func (*SetSSHResponse) ProtoMessage() {}
 
 func (x *SetSSHResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[15]
+	mi := &file_clients_system_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -917,7 +996,7 @@ func (x *SetSSHResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetSSHResponse.ProtoReflect.Descriptor instead.
 func (*SetSSHResponse) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{15}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{16}
 }
 
 type RebootRequest struct {
@@ -928,7 +1007,7 @@ type RebootRequest struct {
 
 func (x *RebootRequest) Reset() {
 	*x = RebootRequest{}
-	mi := &file_clients_system_service_proto_msgTypes[16]
+	mi := &file_clients_system_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -940,7 +1019,7 @@ func (x *RebootRequest) String() string {
 func (*RebootRequest) ProtoMessage() {}
 
 func (x *RebootRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[16]
+	mi := &file_clients_system_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -953,7 +1032,7 @@ func (x *RebootRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RebootRequest.ProtoReflect.Descriptor instead.
 func (*RebootRequest) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{16}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{17}
 }
 
 type RebootResponse struct {
@@ -964,7 +1043,7 @@ type RebootResponse struct {
 
 func (x *RebootResponse) Reset() {
 	*x = RebootResponse{}
-	mi := &file_clients_system_service_proto_msgTypes[17]
+	mi := &file_clients_system_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -976,7 +1055,7 @@ func (x *RebootResponse) String() string {
 func (*RebootResponse) ProtoMessage() {}
 
 func (x *RebootResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[17]
+	mi := &file_clients_system_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -989,7 +1068,7 @@ func (x *RebootResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RebootResponse.ProtoReflect.Descriptor instead.
 func (*RebootResponse) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{17}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{18}
 }
 
 type FactoryResetRequest struct {
@@ -1002,7 +1081,7 @@ type FactoryResetRequest struct {
 
 func (x *FactoryResetRequest) Reset() {
 	*x = FactoryResetRequest{}
-	mi := &file_clients_system_service_proto_msgTypes[18]
+	mi := &file_clients_system_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1014,7 +1093,7 @@ func (x *FactoryResetRequest) String() string {
 func (*FactoryResetRequest) ProtoMessage() {}
 
 func (x *FactoryResetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[18]
+	mi := &file_clients_system_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1027,7 +1106,7 @@ func (x *FactoryResetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FactoryResetRequest.ProtoReflect.Descriptor instead.
 func (*FactoryResetRequest) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{18}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *FactoryResetRequest) GetConfirm() bool {
@@ -1045,7 +1124,7 @@ type FactoryResetResponse struct {
 
 func (x *FactoryResetResponse) Reset() {
 	*x = FactoryResetResponse{}
-	mi := &file_clients_system_service_proto_msgTypes[19]
+	mi := &file_clients_system_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1057,7 +1136,7 @@ func (x *FactoryResetResponse) String() string {
 func (*FactoryResetResponse) ProtoMessage() {}
 
 func (x *FactoryResetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clients_system_service_proto_msgTypes[19]
+	mi := &file_clients_system_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1070,7 +1149,97 @@ func (x *FactoryResetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FactoryResetResponse.ProtoReflect.Descriptor instead.
 func (*FactoryResetResponse) Descriptor() ([]byte, []int) {
-	return file_clients_system_service_proto_rawDescGZIP(), []int{19}
+	return file_clients_system_service_proto_rawDescGZIP(), []int{20}
+}
+
+type SetRemoteSupportRequest struct {
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	Enabled bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	// A Tailscale auth key, required to turn remote support on (it decides
+	// the tailnet and the device's tags). Ignored when turning it off.
+	AuthKey       string `protobuf:"bytes,2,opt,name=auth_key,json=authKey,proto3" json:"auth_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetRemoteSupportRequest) Reset() {
+	*x = SetRemoteSupportRequest{}
+	mi := &file_clients_system_service_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetRemoteSupportRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetRemoteSupportRequest) ProtoMessage() {}
+
+func (x *SetRemoteSupportRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_system_service_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetRemoteSupportRequest.ProtoReflect.Descriptor instead.
+func (*SetRemoteSupportRequest) Descriptor() ([]byte, []int) {
+	return file_clients_system_service_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *SetRemoteSupportRequest) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *SetRemoteSupportRequest) GetAuthKey() string {
+	if x != nil {
+		return x.AuthKey
+	}
+	return ""
+}
+
+type SetRemoteSupportResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetRemoteSupportResponse) Reset() {
+	*x = SetRemoteSupportResponse{}
+	mi := &file_clients_system_service_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetRemoteSupportResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetRemoteSupportResponse) ProtoMessage() {}
+
+func (x *SetRemoteSupportResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_system_service_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetRemoteSupportResponse.ProtoReflect.Descriptor instead.
+func (*SetRemoteSupportResponse) Descriptor() ([]byte, []int) {
+	return file_clients_system_service_proto_rawDescGZIP(), []int{22}
 }
 
 var File_clients_system_service_proto protoreflect.FileDescriptor
@@ -1078,7 +1247,7 @@ var File_clients_system_service_proto protoreflect.FileDescriptor
 const file_clients_system_service_proto_rawDesc = "" +
 	"\n" +
 	"\x1cclients/system_service.proto\x12\x18woodhouse.api.v1.clients\"\x16\n" +
-	"\x14GetSystemInfoRequest\"\x89\x02\n" +
+	"\x14GetSystemInfoRequest\"\xd9\x02\n" +
 	"\x15GetSystemInfoResponse\x12\x1d\n" +
 	"\n" +
 	"os_version\x18\x01 \x01(\tR\tosVersion\x12\x14\n" +
@@ -1088,7 +1257,13 @@ const file_clients_system_service_proto_rawDesc = "" +
 	"\x0euptime_seconds\x18\x05 \x01(\x04R\ruptimeSeconds\x12:\n" +
 	"\x05slots\x18\x06 \x03(\v2$.woodhouse.api.v1.clients.SystemSlotR\x05slots\x12\x1f\n" +
 	"\vssh_enabled\x18\a \x01(\bR\n" +
-	"sshEnabled\"\x82\x01\n" +
+	"sshEnabled\x12N\n" +
+	"\x0eremote_support\x18\b \x01(\v2'.woodhouse.api.v1.clients.RemoteSupportR\rremoteSupport\"{\n" +
+	"\rRemoteSupport\x12\x18\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x12\x16\n" +
+	"\x06online\x18\x02 \x01(\bR\x06online\x12\x1a\n" +
+	"\bhostname\x18\x03 \x01(\tR\bhostname\x12\x1c\n" +
+	"\taddresses\x18\x04 \x03(\tR\taddresses\"\x82\x01\n" +
 	"\n" +
 	"SystemSlot\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
@@ -1139,7 +1314,11 @@ const file_clients_system_service_proto_rawDesc = "" +
 	"\x0eRebootResponse\"/\n" +
 	"\x13FactoryResetRequest\x12\x18\n" +
 	"\aconfirm\x18\x01 \x01(\bR\aconfirm\"\x16\n" +
-	"\x14FactoryResetResponse2\x85\a\n" +
+	"\x14FactoryResetResponse\"N\n" +
+	"\x17SetRemoteSupportRequest\x12\x18\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x12\x19\n" +
+	"\bauth_key\x18\x02 \x01(\tR\aauthKey\"\x1a\n" +
+	"\x18SetRemoteSupportResponse2\x82\b\n" +
 	"\rSystemService\x12r\n" +
 	"\rGetSystemInfo\x12..woodhouse.api.v1.clients.GetSystemInfoRequest\x1a/.woodhouse.api.v1.clients.GetSystemInfoResponse\"\x00\x12{\n" +
 	"\x10GetUpdateReports\x121.woodhouse.api.v1.clients.GetUpdateReportsRequest\x1a2.woodhouse.api.v1.clients.GetUpdateReportsResponse\"\x00\x12r\n" +
@@ -1148,7 +1327,8 @@ const file_clients_system_service_proto_rawDesc = "" +
 	"\bJoinWifi\x12/.woodhouse.api.v1.clients.SystemJoinWifiRequest\x1a0.woodhouse.api.v1.clients.SystemJoinWifiResponse\"\x00\x12]\n" +
 	"\x06SetSSH\x12'.woodhouse.api.v1.clients.SetSSHRequest\x1a(.woodhouse.api.v1.clients.SetSSHResponse\"\x00\x12]\n" +
 	"\x06Reboot\x12'.woodhouse.api.v1.clients.RebootRequest\x1a(.woodhouse.api.v1.clients.RebootResponse\"\x00\x12o\n" +
-	"\fFactoryReset\x12-.woodhouse.api.v1.clients.FactoryResetRequest\x1a..woodhouse.api.v1.clients.FactoryResetResponse\"\x00B=Z;github.com/jimjibone/woodhouse-api/go/v1/clients;clientsapib\x06proto3"
+	"\fFactoryReset\x12-.woodhouse.api.v1.clients.FactoryResetRequest\x1a..woodhouse.api.v1.clients.FactoryResetResponse\"\x00\x12{\n" +
+	"\x10SetRemoteSupport\x121.woodhouse.api.v1.clients.SetRemoteSupportRequest\x1a2.woodhouse.api.v1.clients.SetRemoteSupportResponse\"\x00B=Z;github.com/jimjibone/woodhouse-api/go/v1/clients;clientsapib\x06proto3"
 
 var (
 	file_clients_system_service_proto_rawDescOnce sync.Once
@@ -1162,55 +1342,61 @@ func file_clients_system_service_proto_rawDescGZIP() []byte {
 	return file_clients_system_service_proto_rawDescData
 }
 
-var file_clients_system_service_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_clients_system_service_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_clients_system_service_proto_goTypes = []any{
 	(*GetSystemInfoRequest)(nil),     // 0: woodhouse.api.v1.clients.GetSystemInfoRequest
 	(*GetSystemInfoResponse)(nil),    // 1: woodhouse.api.v1.clients.GetSystemInfoResponse
-	(*SystemSlot)(nil),               // 2: woodhouse.api.v1.clients.SystemSlot
-	(*GetUpdateReportsRequest)(nil),  // 3: woodhouse.api.v1.clients.GetUpdateReportsRequest
-	(*GetUpdateReportsResponse)(nil), // 4: woodhouse.api.v1.clients.GetUpdateReportsResponse
-	(*UpdateReport)(nil),             // 5: woodhouse.api.v1.clients.UpdateReport
-	(*GetWifiStatusRequest)(nil),     // 6: woodhouse.api.v1.clients.GetWifiStatusRequest
-	(*GetWifiStatusResponse)(nil),    // 7: woodhouse.api.v1.clients.GetWifiStatusResponse
-	(*SystemJoinResult)(nil),         // 8: woodhouse.api.v1.clients.SystemJoinResult
-	(*SystemScanWifiRequest)(nil),    // 9: woodhouse.api.v1.clients.SystemScanWifiRequest
-	(*SystemScanWifiResponse)(nil),   // 10: woodhouse.api.v1.clients.SystemScanWifiResponse
-	(*SystemWifiNetwork)(nil),        // 11: woodhouse.api.v1.clients.SystemWifiNetwork
-	(*SystemJoinWifiRequest)(nil),    // 12: woodhouse.api.v1.clients.SystemJoinWifiRequest
-	(*SystemJoinWifiResponse)(nil),   // 13: woodhouse.api.v1.clients.SystemJoinWifiResponse
-	(*SetSSHRequest)(nil),            // 14: woodhouse.api.v1.clients.SetSSHRequest
-	(*SetSSHResponse)(nil),           // 15: woodhouse.api.v1.clients.SetSSHResponse
-	(*RebootRequest)(nil),            // 16: woodhouse.api.v1.clients.RebootRequest
-	(*RebootResponse)(nil),           // 17: woodhouse.api.v1.clients.RebootResponse
-	(*FactoryResetRequest)(nil),      // 18: woodhouse.api.v1.clients.FactoryResetRequest
-	(*FactoryResetResponse)(nil),     // 19: woodhouse.api.v1.clients.FactoryResetResponse
+	(*RemoteSupport)(nil),            // 2: woodhouse.api.v1.clients.RemoteSupport
+	(*SystemSlot)(nil),               // 3: woodhouse.api.v1.clients.SystemSlot
+	(*GetUpdateReportsRequest)(nil),  // 4: woodhouse.api.v1.clients.GetUpdateReportsRequest
+	(*GetUpdateReportsResponse)(nil), // 5: woodhouse.api.v1.clients.GetUpdateReportsResponse
+	(*UpdateReport)(nil),             // 6: woodhouse.api.v1.clients.UpdateReport
+	(*GetWifiStatusRequest)(nil),     // 7: woodhouse.api.v1.clients.GetWifiStatusRequest
+	(*GetWifiStatusResponse)(nil),    // 8: woodhouse.api.v1.clients.GetWifiStatusResponse
+	(*SystemJoinResult)(nil),         // 9: woodhouse.api.v1.clients.SystemJoinResult
+	(*SystemScanWifiRequest)(nil),    // 10: woodhouse.api.v1.clients.SystemScanWifiRequest
+	(*SystemScanWifiResponse)(nil),   // 11: woodhouse.api.v1.clients.SystemScanWifiResponse
+	(*SystemWifiNetwork)(nil),        // 12: woodhouse.api.v1.clients.SystemWifiNetwork
+	(*SystemJoinWifiRequest)(nil),    // 13: woodhouse.api.v1.clients.SystemJoinWifiRequest
+	(*SystemJoinWifiResponse)(nil),   // 14: woodhouse.api.v1.clients.SystemJoinWifiResponse
+	(*SetSSHRequest)(nil),            // 15: woodhouse.api.v1.clients.SetSSHRequest
+	(*SetSSHResponse)(nil),           // 16: woodhouse.api.v1.clients.SetSSHResponse
+	(*RebootRequest)(nil),            // 17: woodhouse.api.v1.clients.RebootRequest
+	(*RebootResponse)(nil),           // 18: woodhouse.api.v1.clients.RebootResponse
+	(*FactoryResetRequest)(nil),      // 19: woodhouse.api.v1.clients.FactoryResetRequest
+	(*FactoryResetResponse)(nil),     // 20: woodhouse.api.v1.clients.FactoryResetResponse
+	(*SetRemoteSupportRequest)(nil),  // 21: woodhouse.api.v1.clients.SetRemoteSupportRequest
+	(*SetRemoteSupportResponse)(nil), // 22: woodhouse.api.v1.clients.SetRemoteSupportResponse
 }
 var file_clients_system_service_proto_depIdxs = []int32{
-	2,  // 0: woodhouse.api.v1.clients.GetSystemInfoResponse.slots:type_name -> woodhouse.api.v1.clients.SystemSlot
-	5,  // 1: woodhouse.api.v1.clients.GetUpdateReportsResponse.reports:type_name -> woodhouse.api.v1.clients.UpdateReport
-	8,  // 2: woodhouse.api.v1.clients.GetWifiStatusResponse.last_join:type_name -> woodhouse.api.v1.clients.SystemJoinResult
-	11, // 3: woodhouse.api.v1.clients.SystemScanWifiResponse.networks:type_name -> woodhouse.api.v1.clients.SystemWifiNetwork
-	0,  // 4: woodhouse.api.v1.clients.SystemService.GetSystemInfo:input_type -> woodhouse.api.v1.clients.GetSystemInfoRequest
-	3,  // 5: woodhouse.api.v1.clients.SystemService.GetUpdateReports:input_type -> woodhouse.api.v1.clients.GetUpdateReportsRequest
-	6,  // 6: woodhouse.api.v1.clients.SystemService.GetWifiStatus:input_type -> woodhouse.api.v1.clients.GetWifiStatusRequest
-	9,  // 7: woodhouse.api.v1.clients.SystemService.ScanWifi:input_type -> woodhouse.api.v1.clients.SystemScanWifiRequest
-	12, // 8: woodhouse.api.v1.clients.SystemService.JoinWifi:input_type -> woodhouse.api.v1.clients.SystemJoinWifiRequest
-	14, // 9: woodhouse.api.v1.clients.SystemService.SetSSH:input_type -> woodhouse.api.v1.clients.SetSSHRequest
-	16, // 10: woodhouse.api.v1.clients.SystemService.Reboot:input_type -> woodhouse.api.v1.clients.RebootRequest
-	18, // 11: woodhouse.api.v1.clients.SystemService.FactoryReset:input_type -> woodhouse.api.v1.clients.FactoryResetRequest
-	1,  // 12: woodhouse.api.v1.clients.SystemService.GetSystemInfo:output_type -> woodhouse.api.v1.clients.GetSystemInfoResponse
-	4,  // 13: woodhouse.api.v1.clients.SystemService.GetUpdateReports:output_type -> woodhouse.api.v1.clients.GetUpdateReportsResponse
-	7,  // 14: woodhouse.api.v1.clients.SystemService.GetWifiStatus:output_type -> woodhouse.api.v1.clients.GetWifiStatusResponse
-	10, // 15: woodhouse.api.v1.clients.SystemService.ScanWifi:output_type -> woodhouse.api.v1.clients.SystemScanWifiResponse
-	13, // 16: woodhouse.api.v1.clients.SystemService.JoinWifi:output_type -> woodhouse.api.v1.clients.SystemJoinWifiResponse
-	15, // 17: woodhouse.api.v1.clients.SystemService.SetSSH:output_type -> woodhouse.api.v1.clients.SetSSHResponse
-	17, // 18: woodhouse.api.v1.clients.SystemService.Reboot:output_type -> woodhouse.api.v1.clients.RebootResponse
-	19, // 19: woodhouse.api.v1.clients.SystemService.FactoryReset:output_type -> woodhouse.api.v1.clients.FactoryResetResponse
-	12, // [12:20] is the sub-list for method output_type
-	4,  // [4:12] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	3,  // 0: woodhouse.api.v1.clients.GetSystemInfoResponse.slots:type_name -> woodhouse.api.v1.clients.SystemSlot
+	2,  // 1: woodhouse.api.v1.clients.GetSystemInfoResponse.remote_support:type_name -> woodhouse.api.v1.clients.RemoteSupport
+	6,  // 2: woodhouse.api.v1.clients.GetUpdateReportsResponse.reports:type_name -> woodhouse.api.v1.clients.UpdateReport
+	9,  // 3: woodhouse.api.v1.clients.GetWifiStatusResponse.last_join:type_name -> woodhouse.api.v1.clients.SystemJoinResult
+	12, // 4: woodhouse.api.v1.clients.SystemScanWifiResponse.networks:type_name -> woodhouse.api.v1.clients.SystemWifiNetwork
+	0,  // 5: woodhouse.api.v1.clients.SystemService.GetSystemInfo:input_type -> woodhouse.api.v1.clients.GetSystemInfoRequest
+	4,  // 6: woodhouse.api.v1.clients.SystemService.GetUpdateReports:input_type -> woodhouse.api.v1.clients.GetUpdateReportsRequest
+	7,  // 7: woodhouse.api.v1.clients.SystemService.GetWifiStatus:input_type -> woodhouse.api.v1.clients.GetWifiStatusRequest
+	10, // 8: woodhouse.api.v1.clients.SystemService.ScanWifi:input_type -> woodhouse.api.v1.clients.SystemScanWifiRequest
+	13, // 9: woodhouse.api.v1.clients.SystemService.JoinWifi:input_type -> woodhouse.api.v1.clients.SystemJoinWifiRequest
+	15, // 10: woodhouse.api.v1.clients.SystemService.SetSSH:input_type -> woodhouse.api.v1.clients.SetSSHRequest
+	17, // 11: woodhouse.api.v1.clients.SystemService.Reboot:input_type -> woodhouse.api.v1.clients.RebootRequest
+	19, // 12: woodhouse.api.v1.clients.SystemService.FactoryReset:input_type -> woodhouse.api.v1.clients.FactoryResetRequest
+	21, // 13: woodhouse.api.v1.clients.SystemService.SetRemoteSupport:input_type -> woodhouse.api.v1.clients.SetRemoteSupportRequest
+	1,  // 14: woodhouse.api.v1.clients.SystemService.GetSystemInfo:output_type -> woodhouse.api.v1.clients.GetSystemInfoResponse
+	5,  // 15: woodhouse.api.v1.clients.SystemService.GetUpdateReports:output_type -> woodhouse.api.v1.clients.GetUpdateReportsResponse
+	8,  // 16: woodhouse.api.v1.clients.SystemService.GetWifiStatus:output_type -> woodhouse.api.v1.clients.GetWifiStatusResponse
+	11, // 17: woodhouse.api.v1.clients.SystemService.ScanWifi:output_type -> woodhouse.api.v1.clients.SystemScanWifiResponse
+	14, // 18: woodhouse.api.v1.clients.SystemService.JoinWifi:output_type -> woodhouse.api.v1.clients.SystemJoinWifiResponse
+	16, // 19: woodhouse.api.v1.clients.SystemService.SetSSH:output_type -> woodhouse.api.v1.clients.SetSSHResponse
+	18, // 20: woodhouse.api.v1.clients.SystemService.Reboot:output_type -> woodhouse.api.v1.clients.RebootResponse
+	20, // 21: woodhouse.api.v1.clients.SystemService.FactoryReset:output_type -> woodhouse.api.v1.clients.FactoryResetResponse
+	22, // 22: woodhouse.api.v1.clients.SystemService.SetRemoteSupport:output_type -> woodhouse.api.v1.clients.SetRemoteSupportResponse
+	14, // [14:23] is the sub-list for method output_type
+	5,  // [5:14] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_clients_system_service_proto_init() }
@@ -1224,7 +1410,7 @@ func file_clients_system_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_clients_system_service_proto_rawDesc), len(file_clients_system_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   20,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

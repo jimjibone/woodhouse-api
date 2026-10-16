@@ -32,6 +32,7 @@ const (
 	AgentService_SetSSH_FullMethodName           = "/woodhouse.api.v1.local.AgentService/SetSSH"
 	AgentService_Reboot_FullMethodName           = "/woodhouse.api.v1.local.AgentService/Reboot"
 	AgentService_FactoryReset_FullMethodName     = "/woodhouse.api.v1.local.AgentService/FactoryReset"
+	AgentService_SetRemoteSupport_FullMethodName = "/woodhouse.api.v1.local.AgentService/SetRemoteSupport"
 )
 
 // AgentServiceClient is the client API for AgentService service.
@@ -46,6 +47,7 @@ type AgentServiceClient interface {
 	SetSSH(ctx context.Context, in *clients.SetSSHRequest, opts ...grpc.CallOption) (*clients.SetSSHResponse, error)
 	Reboot(ctx context.Context, in *clients.RebootRequest, opts ...grpc.CallOption) (*clients.RebootResponse, error)
 	FactoryReset(ctx context.Context, in *clients.FactoryResetRequest, opts ...grpc.CallOption) (*clients.FactoryResetResponse, error)
+	SetRemoteSupport(ctx context.Context, in *clients.SetRemoteSupportRequest, opts ...grpc.CallOption) (*clients.SetRemoteSupportResponse, error)
 }
 
 type agentServiceClient struct {
@@ -136,6 +138,16 @@ func (c *agentServiceClient) FactoryReset(ctx context.Context, in *clients.Facto
 	return out, nil
 }
 
+func (c *agentServiceClient) SetRemoteSupport(ctx context.Context, in *clients.SetRemoteSupportRequest, opts ...grpc.CallOption) (*clients.SetRemoteSupportResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(clients.SetRemoteSupportResponse)
+	err := c.cc.Invoke(ctx, AgentService_SetRemoteSupport_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AgentServiceServer is the server API for AgentService service.
 // All implementations must embed UnimplementedAgentServiceServer
 // for forward compatibility.
@@ -148,6 +160,7 @@ type AgentServiceServer interface {
 	SetSSH(context.Context, *clients.SetSSHRequest) (*clients.SetSSHResponse, error)
 	Reboot(context.Context, *clients.RebootRequest) (*clients.RebootResponse, error)
 	FactoryReset(context.Context, *clients.FactoryResetRequest) (*clients.FactoryResetResponse, error)
+	SetRemoteSupport(context.Context, *clients.SetRemoteSupportRequest) (*clients.SetRemoteSupportResponse, error)
 	mustEmbedUnimplementedAgentServiceServer()
 }
 
@@ -181,6 +194,9 @@ func (UnimplementedAgentServiceServer) Reboot(context.Context, *clients.RebootRe
 }
 func (UnimplementedAgentServiceServer) FactoryReset(context.Context, *clients.FactoryResetRequest) (*clients.FactoryResetResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method FactoryReset not implemented")
+}
+func (UnimplementedAgentServiceServer) SetRemoteSupport(context.Context, *clients.SetRemoteSupportRequest) (*clients.SetRemoteSupportResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetRemoteSupport not implemented")
 }
 func (UnimplementedAgentServiceServer) mustEmbedUnimplementedAgentServiceServer() {}
 func (UnimplementedAgentServiceServer) testEmbeddedByValue()                      {}
@@ -347,6 +363,24 @@ func _AgentService_FactoryReset_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AgentService_SetRemoteSupport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clients.SetRemoteSupportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServiceServer).SetRemoteSupport(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AgentService_SetRemoteSupport_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServiceServer).SetRemoteSupport(ctx, req.(*clients.SetRemoteSupportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AgentService_ServiceDesc is the grpc.ServiceDesc for AgentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -385,6 +419,10 @@ var AgentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FactoryReset",
 			Handler:    _AgentService_FactoryReset_Handler,
+		},
+		{
+			MethodName: "SetRemoteSupport",
+			Handler:    _AgentService_SetRemoteSupport_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

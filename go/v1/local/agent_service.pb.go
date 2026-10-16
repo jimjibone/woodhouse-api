@@ -29,7 +29,7 @@ var File_local_agent_service_proto protoreflect.FileDescriptor
 
 const file_local_agent_service_proto_rawDesc = "" +
 	"\n" +
-	"\x19local/agent_service.proto\x12\x16woodhouse.api.v1.local\x1a\x1cclients/system_service.proto2\x84\a\n" +
+	"\x19local/agent_service.proto\x12\x16woodhouse.api.v1.local\x1a\x1cclients/system_service.proto2\x81\b\n" +
 	"\fAgentService\x12r\n" +
 	"\rGetSystemInfo\x12..woodhouse.api.v1.clients.GetSystemInfoRequest\x1a/.woodhouse.api.v1.clients.GetSystemInfoResponse\"\x00\x12{\n" +
 	"\x10GetUpdateReports\x121.woodhouse.api.v1.clients.GetUpdateReportsRequest\x1a2.woodhouse.api.v1.clients.GetUpdateReportsResponse\"\x00\x12r\n" +
@@ -38,7 +38,8 @@ const file_local_agent_service_proto_rawDesc = "" +
 	"\bJoinWifi\x12/.woodhouse.api.v1.clients.SystemJoinWifiRequest\x1a0.woodhouse.api.v1.clients.SystemJoinWifiResponse\"\x00\x12]\n" +
 	"\x06SetSSH\x12'.woodhouse.api.v1.clients.SetSSHRequest\x1a(.woodhouse.api.v1.clients.SetSSHResponse\"\x00\x12]\n" +
 	"\x06Reboot\x12'.woodhouse.api.v1.clients.RebootRequest\x1a(.woodhouse.api.v1.clients.RebootResponse\"\x00\x12o\n" +
-	"\fFactoryReset\x12-.woodhouse.api.v1.clients.FactoryResetRequest\x1a..woodhouse.api.v1.clients.FactoryResetResponse\"\x00B9Z7github.com/jimjibone/woodhouse-api/go/v1/local;localapib\x06proto3"
+	"\fFactoryReset\x12-.woodhouse.api.v1.clients.FactoryResetRequest\x1a..woodhouse.api.v1.clients.FactoryResetResponse\"\x00\x12{\n" +
+	"\x10SetRemoteSupport\x121.woodhouse.api.v1.clients.SetRemoteSupportRequest\x1a2.woodhouse.api.v1.clients.SetRemoteSupportResponse\"\x00B9Z7github.com/jimjibone/woodhouse-api/go/v1/local;localapib\x06proto3"
 
 var file_local_agent_service_proto_goTypes = []any{
 	(*clients.GetSystemInfoRequest)(nil),     // 0: woodhouse.api.v1.clients.GetSystemInfoRequest
@@ -49,14 +50,16 @@ var file_local_agent_service_proto_goTypes = []any{
 	(*clients.SetSSHRequest)(nil),            // 5: woodhouse.api.v1.clients.SetSSHRequest
 	(*clients.RebootRequest)(nil),            // 6: woodhouse.api.v1.clients.RebootRequest
 	(*clients.FactoryResetRequest)(nil),      // 7: woodhouse.api.v1.clients.FactoryResetRequest
-	(*clients.GetSystemInfoResponse)(nil),    // 8: woodhouse.api.v1.clients.GetSystemInfoResponse
-	(*clients.GetUpdateReportsResponse)(nil), // 9: woodhouse.api.v1.clients.GetUpdateReportsResponse
-	(*clients.GetWifiStatusResponse)(nil),    // 10: woodhouse.api.v1.clients.GetWifiStatusResponse
-	(*clients.SystemScanWifiResponse)(nil),   // 11: woodhouse.api.v1.clients.SystemScanWifiResponse
-	(*clients.SystemJoinWifiResponse)(nil),   // 12: woodhouse.api.v1.clients.SystemJoinWifiResponse
-	(*clients.SetSSHResponse)(nil),           // 13: woodhouse.api.v1.clients.SetSSHResponse
-	(*clients.RebootResponse)(nil),           // 14: woodhouse.api.v1.clients.RebootResponse
-	(*clients.FactoryResetResponse)(nil),     // 15: woodhouse.api.v1.clients.FactoryResetResponse
+	(*clients.SetRemoteSupportRequest)(nil),  // 8: woodhouse.api.v1.clients.SetRemoteSupportRequest
+	(*clients.GetSystemInfoResponse)(nil),    // 9: woodhouse.api.v1.clients.GetSystemInfoResponse
+	(*clients.GetUpdateReportsResponse)(nil), // 10: woodhouse.api.v1.clients.GetUpdateReportsResponse
+	(*clients.GetWifiStatusResponse)(nil),    // 11: woodhouse.api.v1.clients.GetWifiStatusResponse
+	(*clients.SystemScanWifiResponse)(nil),   // 12: woodhouse.api.v1.clients.SystemScanWifiResponse
+	(*clients.SystemJoinWifiResponse)(nil),   // 13: woodhouse.api.v1.clients.SystemJoinWifiResponse
+	(*clients.SetSSHResponse)(nil),           // 14: woodhouse.api.v1.clients.SetSSHResponse
+	(*clients.RebootResponse)(nil),           // 15: woodhouse.api.v1.clients.RebootResponse
+	(*clients.FactoryResetResponse)(nil),     // 16: woodhouse.api.v1.clients.FactoryResetResponse
+	(*clients.SetRemoteSupportResponse)(nil), // 17: woodhouse.api.v1.clients.SetRemoteSupportResponse
 }
 var file_local_agent_service_proto_depIdxs = []int32{
 	0,  // 0: woodhouse.api.v1.local.AgentService.GetSystemInfo:input_type -> woodhouse.api.v1.clients.GetSystemInfoRequest
@@ -67,16 +70,18 @@ var file_local_agent_service_proto_depIdxs = []int32{
 	5,  // 5: woodhouse.api.v1.local.AgentService.SetSSH:input_type -> woodhouse.api.v1.clients.SetSSHRequest
 	6,  // 6: woodhouse.api.v1.local.AgentService.Reboot:input_type -> woodhouse.api.v1.clients.RebootRequest
 	7,  // 7: woodhouse.api.v1.local.AgentService.FactoryReset:input_type -> woodhouse.api.v1.clients.FactoryResetRequest
-	8,  // 8: woodhouse.api.v1.local.AgentService.GetSystemInfo:output_type -> woodhouse.api.v1.clients.GetSystemInfoResponse
-	9,  // 9: woodhouse.api.v1.local.AgentService.GetUpdateReports:output_type -> woodhouse.api.v1.clients.GetUpdateReportsResponse
-	10, // 10: woodhouse.api.v1.local.AgentService.GetWifiStatus:output_type -> woodhouse.api.v1.clients.GetWifiStatusResponse
-	11, // 11: woodhouse.api.v1.local.AgentService.ScanWifi:output_type -> woodhouse.api.v1.clients.SystemScanWifiResponse
-	12, // 12: woodhouse.api.v1.local.AgentService.JoinWifi:output_type -> woodhouse.api.v1.clients.SystemJoinWifiResponse
-	13, // 13: woodhouse.api.v1.local.AgentService.SetSSH:output_type -> woodhouse.api.v1.clients.SetSSHResponse
-	14, // 14: woodhouse.api.v1.local.AgentService.Reboot:output_type -> woodhouse.api.v1.clients.RebootResponse
-	15, // 15: woodhouse.api.v1.local.AgentService.FactoryReset:output_type -> woodhouse.api.v1.clients.FactoryResetResponse
-	8,  // [8:16] is the sub-list for method output_type
-	0,  // [0:8] is the sub-list for method input_type
+	8,  // 8: woodhouse.api.v1.local.AgentService.SetRemoteSupport:input_type -> woodhouse.api.v1.clients.SetRemoteSupportRequest
+	9,  // 9: woodhouse.api.v1.local.AgentService.GetSystemInfo:output_type -> woodhouse.api.v1.clients.GetSystemInfoResponse
+	10, // 10: woodhouse.api.v1.local.AgentService.GetUpdateReports:output_type -> woodhouse.api.v1.clients.GetUpdateReportsResponse
+	11, // 11: woodhouse.api.v1.local.AgentService.GetWifiStatus:output_type -> woodhouse.api.v1.clients.GetWifiStatusResponse
+	12, // 12: woodhouse.api.v1.local.AgentService.ScanWifi:output_type -> woodhouse.api.v1.clients.SystemScanWifiResponse
+	13, // 13: woodhouse.api.v1.local.AgentService.JoinWifi:output_type -> woodhouse.api.v1.clients.SystemJoinWifiResponse
+	14, // 14: woodhouse.api.v1.local.AgentService.SetSSH:output_type -> woodhouse.api.v1.clients.SetSSHResponse
+	15, // 15: woodhouse.api.v1.local.AgentService.Reboot:output_type -> woodhouse.api.v1.clients.RebootResponse
+	16, // 16: woodhouse.api.v1.local.AgentService.FactoryReset:output_type -> woodhouse.api.v1.clients.FactoryResetResponse
+	17, // 17: woodhouse.api.v1.local.AgentService.SetRemoteSupport:output_type -> woodhouse.api.v1.clients.SetRemoteSupportResponse
+	9,  // [9:18] is the sub-list for method output_type
+	0,  // [0:9] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
