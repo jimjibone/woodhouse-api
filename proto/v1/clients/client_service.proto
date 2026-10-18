@@ -41,6 +41,11 @@ message Empty {}
 message StatusUpdate {
     ClientInfo client_info = 1;
     repeated Device device_info = 2;
+
+    // IDs of devices the client no longer provides (e.g. unpaired). The server
+    // removes them, even if online. Only devices owned by the sending client
+    // are removed; other IDs are ignored. Processed after device_info.
+    repeated string removed_device_ids = 3;
 }
 
 message ActionRequest {

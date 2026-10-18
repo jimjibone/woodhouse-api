@@ -490,11 +490,15 @@ func (*Empty) Descriptor() ([]byte, []int) {
 }
 
 type StatusUpdate struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ClientInfo    *ClientInfo            `protobuf:"bytes,1,opt,name=client_info,json=clientInfo,proto3" json:"client_info,omitempty"`
-	DeviceInfo    []*Device              `protobuf:"bytes,2,rep,name=device_info,json=deviceInfo,proto3" json:"device_info,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	ClientInfo *ClientInfo            `protobuf:"bytes,1,opt,name=client_info,json=clientInfo,proto3" json:"client_info,omitempty"`
+	DeviceInfo []*Device              `protobuf:"bytes,2,rep,name=device_info,json=deviceInfo,proto3" json:"device_info,omitempty"`
+	// IDs of devices the client no longer provides (e.g. unpaired). The server
+	// removes them, even if online. Only devices owned by the sending client
+	// are removed; other IDs are ignored. Processed after device_info.
+	RemovedDeviceIds []string `protobuf:"bytes,3,rep,name=removed_device_ids,json=removedDeviceIds,proto3" json:"removed_device_ids,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *StatusUpdate) Reset() {
@@ -537,6 +541,13 @@ func (x *StatusUpdate) GetClientInfo() *ClientInfo {
 func (x *StatusUpdate) GetDeviceInfo() []*Device {
 	if x != nil {
 		return x.DeviceInfo
+	}
+	return nil
+}
+
+func (x *StatusUpdate) GetRemovedDeviceIds() []string {
+	if x != nil {
+		return x.RemovedDeviceIds
 	}
 	return nil
 }
@@ -2458,12 +2469,13 @@ var File_clients_client_service_proto protoreflect.FileDescriptor
 const file_clients_client_service_proto_rawDesc = "" +
 	"\n" +
 	"\x1cclients/client_service.proto\x12\x18woodhouse.api.v1.clients\"\a\n" +
-	"\x05Empty\"\x98\x01\n" +
+	"\x05Empty\"\xc6\x01\n" +
 	"\fStatusUpdate\x12E\n" +
 	"\vclient_info\x18\x01 \x01(\v2$.woodhouse.api.v1.clients.ClientInfoR\n" +
 	"clientInfo\x12A\n" +
 	"\vdevice_info\x18\x02 \x03(\v2 .woodhouse.api.v1.clients.DeviceR\n" +
-	"deviceInfo\"\xa1\x01\n" +
+	"deviceInfo\x12,\n" +
+	"\x12removed_device_ids\x18\x03 \x03(\tR\x10removedDeviceIds\"\xa1\x01\n" +
 	"\rActionRequest\x12\x1b\n" +
 	"\taction_id\x18\x01 \x01(\tR\bactionId\x12\x1b\n" +
 	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\x12\x1d\n" +
