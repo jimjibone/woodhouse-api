@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserAuthService_Login_FullMethodName   = "/woodhouse.api.v1.clients.UserAuthService/Login"
-	UserAuthService_Refresh_FullMethodName = "/woodhouse.api.v1.clients.UserAuthService/Refresh"
-	UserAuthService_Logout_FullMethodName  = "/woodhouse.api.v1.clients.UserAuthService/Logout"
+	UserAuthService_Login_FullMethodName        = "/woodhouse.api.v1.clients.UserAuthService/Login"
+	UserAuthService_Refresh_FullMethodName      = "/woodhouse.api.v1.clients.UserAuthService/Refresh"
+	UserAuthService_Logout_FullMethodName       = "/woodhouse.api.v1.clients.UserAuthService/Logout"
+	UserAuthService_AcceptInvite_FullMethodName = "/woodhouse.api.v1.clients.UserAuthService/AcceptInvite"
 )
 
 // UserAuthServiceClient is the client API for UserAuthService service.
@@ -31,6 +32,13 @@ type UserAuthServiceClient interface {
 	Login(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
 	Refresh(ctx context.Context, in *UserRefreshRequest, opts ...grpc.CallOption) (*UserRefreshResponse, error)
 	Logout(ctx context.Context, in *UserLogoutRequest, opts ...grpc.CallOption) (*UserLogoutResponse, error)
+	// Create an account from an invite (UserService.CreateInvite) and log in
+	// with it. Needs no session: the invite token is the authorization. It is
+	// rate limited like Login. An invite works once and expires 24 hours
+	// after it was created. Fails with NOT_FOUND for an unknown, used, revoked
+	// or expired token (all alike), and ALREADY_EXISTS if the username is
+	// taken.
+	AcceptInvite(ctx context.Context, in *AcceptInviteRequest, opts ...grpc.CallOption) (*AcceptInviteResponse, error)
 }
 
 type userAuthServiceClient struct {
@@ -71,6 +79,16 @@ func (c *userAuthServiceClient) Logout(ctx context.Context, in *UserLogoutReques
 	return out, nil
 }
 
+func (c *userAuthServiceClient) AcceptInvite(ctx context.Context, in *AcceptInviteRequest, opts ...grpc.CallOption) (*AcceptInviteResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AcceptInviteResponse)
+	err := c.cc.Invoke(ctx, UserAuthService_AcceptInvite_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserAuthServiceServer is the server API for UserAuthService service.
 // All implementations must embed UnimplementedUserAuthServiceServer
 // for forward compatibility.
@@ -78,6 +96,13 @@ type UserAuthServiceServer interface {
 	Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
 	Refresh(context.Context, *UserRefreshRequest) (*UserRefreshResponse, error)
 	Logout(context.Context, *UserLogoutRequest) (*UserLogoutResponse, error)
+	// Create an account from an invite (UserService.CreateInvite) and log in
+	// with it. Needs no session: the invite token is the authorization. It is
+	// rate limited like Login. An invite works once and expires 24 hours
+	// after it was created. Fails with NOT_FOUND for an unknown, used, revoked
+	// or expired token (all alike), and ALREADY_EXISTS if the username is
+	// taken.
+	AcceptInvite(context.Context, *AcceptInviteRequest) (*AcceptInviteResponse, error)
 	mustEmbedUnimplementedUserAuthServiceServer()
 }
 
@@ -96,6 +121,9 @@ func (UnimplementedUserAuthServiceServer) Refresh(context.Context, *UserRefreshR
 }
 func (UnimplementedUserAuthServiceServer) Logout(context.Context, *UserLogoutRequest) (*UserLogoutResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedUserAuthServiceServer) AcceptInvite(context.Context, *AcceptInviteRequest) (*AcceptInviteResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AcceptInvite not implemented")
 }
 func (UnimplementedUserAuthServiceServer) mustEmbedUnimplementedUserAuthServiceServer() {}
 func (UnimplementedUserAuthServiceServer) testEmbeddedByValue()                         {}
@@ -172,6 +200,24 @@ func _UserAuthService_Logout_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserAuthService_AcceptInvite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AcceptInviteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserAuthServiceServer).AcceptInvite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserAuthService_AcceptInvite_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserAuthServiceServer).AcceptInvite(ctx, req.(*AcceptInviteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserAuthService_ServiceDesc is the grpc.ServiceDesc for UserAuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -190,6 +236,10 @@ var UserAuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Logout",
 			Handler:    _UserAuthService_Logout_Handler,
+		},
+		{
+			MethodName: "AcceptInvite",
+			Handler:    _UserAuthService_AcceptInvite_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

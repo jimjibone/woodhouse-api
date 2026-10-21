@@ -309,6 +309,120 @@ func (*UserLogoutResponse) Descriptor() ([]byte, []int) {
 	return file_clients_user_auth_service_proto_rawDescGZIP(), []int{5}
 }
 
+type AcceptInviteRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Token string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	// Defaults to the username the admin chose for the invite; the invitee
+	// may pick another.
+	Username      string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Password      string `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcceptInviteRequest) Reset() {
+	*x = AcceptInviteRequest{}
+	mi := &file_clients_user_auth_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcceptInviteRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcceptInviteRequest) ProtoMessage() {}
+
+func (x *AcceptInviteRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_auth_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcceptInviteRequest.ProtoReflect.Descriptor instead.
+func (*AcceptInviteRequest) Descriptor() ([]byte, []int) {
+	return file_clients_user_auth_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *AcceptInviteRequest) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *AcceptInviteRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *AcceptInviteRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+type AcceptInviteResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	AccessToken   string                 `protobuf:"bytes,2,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcceptInviteResponse) Reset() {
+	*x = AcceptInviteResponse{}
+	mi := &file_clients_user_auth_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcceptInviteResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcceptInviteResponse) ProtoMessage() {}
+
+func (x *AcceptInviteResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clients_user_auth_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcceptInviteResponse.ProtoReflect.Descriptor instead.
+func (*AcceptInviteResponse) Descriptor() ([]byte, []int) {
+	return file_clients_user_auth_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *AcceptInviteResponse) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+func (x *AcceptInviteResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
 var File_clients_user_auth_service_proto protoreflect.FileDescriptor
 
 const file_clients_user_auth_service_proto_rawDesc = "" +
@@ -328,11 +442,19 @@ const file_clients_user_auth_service_proto_rawDesc = "" +
 	"\faccess_token\x18\x02 \x01(\tR\vaccessToken\"8\n" +
 	"\x11UserLogoutRequest\x12#\n" +
 	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"\x14\n" +
-	"\x12UserLogoutResponse2\xc6\x02\n" +
+	"\x12UserLogoutResponse\"c\n" +
+	"\x13AcceptInviteRequest\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12\x1a\n" +
+	"\busername\x18\x02 \x01(\tR\busername\x12\x1a\n" +
+	"\bpassword\x18\x03 \x01(\tR\bpassword\"^\n" +
+	"\x14AcceptInviteResponse\x12#\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\x12!\n" +
+	"\faccess_token\x18\x02 \x01(\tR\vaccessToken2\xb7\x03\n" +
 	"\x0fUserAuthService\x12b\n" +
 	"\x05Login\x12*.woodhouse.api.v1.clients.UserLoginRequest\x1a+.woodhouse.api.v1.clients.UserLoginResponse\"\x00\x12h\n" +
 	"\aRefresh\x12,.woodhouse.api.v1.clients.UserRefreshRequest\x1a-.woodhouse.api.v1.clients.UserRefreshResponse\"\x00\x12e\n" +
-	"\x06Logout\x12+.woodhouse.api.v1.clients.UserLogoutRequest\x1a,.woodhouse.api.v1.clients.UserLogoutResponse\"\x00B=Z;github.com/jimjibone/woodhouse-api/go/v1/clients;clientsapib\x06proto3"
+	"\x06Logout\x12+.woodhouse.api.v1.clients.UserLogoutRequest\x1a,.woodhouse.api.v1.clients.UserLogoutResponse\"\x00\x12o\n" +
+	"\fAcceptInvite\x12-.woodhouse.api.v1.clients.AcceptInviteRequest\x1a..woodhouse.api.v1.clients.AcceptInviteResponse\"\x00B=Z;github.com/jimjibone/woodhouse-api/go/v1/clients;clientsapib\x06proto3"
 
 var (
 	file_clients_user_auth_service_proto_rawDescOnce sync.Once
@@ -346,24 +468,28 @@ func file_clients_user_auth_service_proto_rawDescGZIP() []byte {
 	return file_clients_user_auth_service_proto_rawDescData
 }
 
-var file_clients_user_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_clients_user_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_clients_user_auth_service_proto_goTypes = []any{
-	(*UserLoginRequest)(nil),    // 0: woodhouse.api.v1.clients.UserLoginRequest
-	(*UserLoginResponse)(nil),   // 1: woodhouse.api.v1.clients.UserLoginResponse
-	(*UserRefreshRequest)(nil),  // 2: woodhouse.api.v1.clients.UserRefreshRequest
-	(*UserRefreshResponse)(nil), // 3: woodhouse.api.v1.clients.UserRefreshResponse
-	(*UserLogoutRequest)(nil),   // 4: woodhouse.api.v1.clients.UserLogoutRequest
-	(*UserLogoutResponse)(nil),  // 5: woodhouse.api.v1.clients.UserLogoutResponse
+	(*UserLoginRequest)(nil),     // 0: woodhouse.api.v1.clients.UserLoginRequest
+	(*UserLoginResponse)(nil),    // 1: woodhouse.api.v1.clients.UserLoginResponse
+	(*UserRefreshRequest)(nil),   // 2: woodhouse.api.v1.clients.UserRefreshRequest
+	(*UserRefreshResponse)(nil),  // 3: woodhouse.api.v1.clients.UserRefreshResponse
+	(*UserLogoutRequest)(nil),    // 4: woodhouse.api.v1.clients.UserLogoutRequest
+	(*UserLogoutResponse)(nil),   // 5: woodhouse.api.v1.clients.UserLogoutResponse
+	(*AcceptInviteRequest)(nil),  // 6: woodhouse.api.v1.clients.AcceptInviteRequest
+	(*AcceptInviteResponse)(nil), // 7: woodhouse.api.v1.clients.AcceptInviteResponse
 }
 var file_clients_user_auth_service_proto_depIdxs = []int32{
 	0, // 0: woodhouse.api.v1.clients.UserAuthService.Login:input_type -> woodhouse.api.v1.clients.UserLoginRequest
 	2, // 1: woodhouse.api.v1.clients.UserAuthService.Refresh:input_type -> woodhouse.api.v1.clients.UserRefreshRequest
 	4, // 2: woodhouse.api.v1.clients.UserAuthService.Logout:input_type -> woodhouse.api.v1.clients.UserLogoutRequest
-	1, // 3: woodhouse.api.v1.clients.UserAuthService.Login:output_type -> woodhouse.api.v1.clients.UserLoginResponse
-	3, // 4: woodhouse.api.v1.clients.UserAuthService.Refresh:output_type -> woodhouse.api.v1.clients.UserRefreshResponse
-	5, // 5: woodhouse.api.v1.clients.UserAuthService.Logout:output_type -> woodhouse.api.v1.clients.UserLogoutResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	6, // 3: woodhouse.api.v1.clients.UserAuthService.AcceptInvite:input_type -> woodhouse.api.v1.clients.AcceptInviteRequest
+	1, // 4: woodhouse.api.v1.clients.UserAuthService.Login:output_type -> woodhouse.api.v1.clients.UserLoginResponse
+	3, // 5: woodhouse.api.v1.clients.UserAuthService.Refresh:output_type -> woodhouse.api.v1.clients.UserRefreshResponse
+	5, // 6: woodhouse.api.v1.clients.UserAuthService.Logout:output_type -> woodhouse.api.v1.clients.UserLogoutResponse
+	7, // 7: woodhouse.api.v1.clients.UserAuthService.AcceptInvite:output_type -> woodhouse.api.v1.clients.AcceptInviteResponse
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -380,7 +506,7 @@ func file_clients_user_auth_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_clients_user_auth_service_proto_rawDesc), len(file_clients_user_auth_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

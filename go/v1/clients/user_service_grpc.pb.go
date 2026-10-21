@@ -52,6 +52,9 @@ const (
 	UserService_AddUser_FullMethodName                  = "/woodhouse.api.v1.clients.UserService/AddUser"
 	UserService_UpdateUser_FullMethodName               = "/woodhouse.api.v1.clients.UserService/UpdateUser"
 	UserService_RemoveUser_FullMethodName               = "/woodhouse.api.v1.clients.UserService/RemoveUser"
+	UserService_CreateInvite_FullMethodName             = "/woodhouse.api.v1.clients.UserService/CreateInvite"
+	UserService_ListInvites_FullMethodName              = "/woodhouse.api.v1.clients.UserService/ListInvites"
+	UserService_RevokeInvite_FullMethodName             = "/woodhouse.api.v1.clients.UserService/RevokeInvite"
 	UserService_GetSettings_FullMethodName              = "/woodhouse.api.v1.clients.UserService/GetSettings"
 	UserService_UpdateSettings_FullMethodName           = "/woodhouse.api.v1.clients.UserService/UpdateSettings"
 )
@@ -157,6 +160,17 @@ type UserServiceClient interface {
 	AddUser(ctx context.Context, in *AddUserRequest, opts ...grpc.CallOption) (*AddUserResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	RemoveUser(ctx context.Context, in *RemoveUserRequest, opts ...grpc.CallOption) (*RemoveUserResponse, error)
+	// Invite someone to this server. The response carries the invite token,
+	// which is only ever returned here (the server keeps a hash); the app
+	// shares it with the invitee, who redeems it with
+	// UserAuthService.AcceptInvite. An invite works once and expires 24
+	// hours after it was created. Fails with ALREADY_EXISTS if the username
+	// belongs to a user or to another pending invite.
+	CreateInvite(ctx context.Context, in *CreateInviteRequest, opts ...grpc.CallOption) (*CreateInviteResponse, error)
+	// The pending invites: not yet accepted, revoked or expired.
+	ListInvites(ctx context.Context, in *ListInvitesRequest, opts ...grpc.CallOption) (*ListInvitesResponse, error)
+	// Cancel a pending invite. Revoking an unknown invite succeeds.
+	RevokeInvite(ctx context.Context, in *RevokeInviteRequest, opts ...grpc.CallOption) (*RevokeInviteResponse, error)
 	// Get the current server settings.
 	GetSettings(ctx context.Context, in *GetSettingsRequest, opts ...grpc.CallOption) (*GetSettingsResponse, error)
 	// Update the server settings. Only the fields present in the request are
@@ -619,6 +633,36 @@ func (c *userServiceClient) RemoveUser(ctx context.Context, in *RemoveUserReques
 	return out, nil
 }
 
+func (c *userServiceClient) CreateInvite(ctx context.Context, in *CreateInviteRequest, opts ...grpc.CallOption) (*CreateInviteResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateInviteResponse)
+	err := c.cc.Invoke(ctx, UserService_CreateInvite_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ListInvites(ctx context.Context, in *ListInvitesRequest, opts ...grpc.CallOption) (*ListInvitesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListInvitesResponse)
+	err := c.cc.Invoke(ctx, UserService_ListInvites_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) RevokeInvite(ctx context.Context, in *RevokeInviteRequest, opts ...grpc.CallOption) (*RevokeInviteResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RevokeInviteResponse)
+	err := c.cc.Invoke(ctx, UserService_RevokeInvite_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) GetSettings(ctx context.Context, in *GetSettingsRequest, opts ...grpc.CallOption) (*GetSettingsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetSettingsResponse)
@@ -740,6 +784,17 @@ type UserServiceServer interface {
 	AddUser(context.Context, *AddUserRequest) (*AddUserResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	RemoveUser(context.Context, *RemoveUserRequest) (*RemoveUserResponse, error)
+	// Invite someone to this server. The response carries the invite token,
+	// which is only ever returned here (the server keeps a hash); the app
+	// shares it with the invitee, who redeems it with
+	// UserAuthService.AcceptInvite. An invite works once and expires 24
+	// hours after it was created. Fails with ALREADY_EXISTS if the username
+	// belongs to a user or to another pending invite.
+	CreateInvite(context.Context, *CreateInviteRequest) (*CreateInviteResponse, error)
+	// The pending invites: not yet accepted, revoked or expired.
+	ListInvites(context.Context, *ListInvitesRequest) (*ListInvitesResponse, error)
+	// Cancel a pending invite. Revoking an unknown invite succeeds.
+	RevokeInvite(context.Context, *RevokeInviteRequest) (*RevokeInviteResponse, error)
 	// Get the current server settings.
 	GetSettings(context.Context, *GetSettingsRequest) (*GetSettingsResponse, error)
 	// Update the server settings. Only the fields present in the request are
@@ -853,6 +908,15 @@ func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserReq
 }
 func (UnimplementedUserServiceServer) RemoveUser(context.Context, *RemoveUserRequest) (*RemoveUserResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RemoveUser not implemented")
+}
+func (UnimplementedUserServiceServer) CreateInvite(context.Context, *CreateInviteRequest) (*CreateInviteResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateInvite not implemented")
+}
+func (UnimplementedUserServiceServer) ListInvites(context.Context, *ListInvitesRequest) (*ListInvitesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListInvites not implemented")
+}
+func (UnimplementedUserServiceServer) RevokeInvite(context.Context, *RevokeInviteRequest) (*RevokeInviteResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RevokeInvite not implemented")
 }
 func (UnimplementedUserServiceServer) GetSettings(context.Context, *GetSettingsRequest) (*GetSettingsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetSettings not implemented")
@@ -1384,6 +1448,60 @@ func _UserService_RemoveUser_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_CreateInvite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateInviteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateInvite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreateInvite_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateInvite(ctx, req.(*CreateInviteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ListInvites_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListInvitesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListInvites(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ListInvites_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListInvites(ctx, req.(*ListInvitesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_RevokeInvite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeInviteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RevokeInvite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_RevokeInvite_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RevokeInvite(ctx, req.(*RevokeInviteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_GetSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetSettingsRequest)
 	if err := dec(in); err != nil {
@@ -1506,6 +1624,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveUser",
 			Handler:    _UserService_RemoveUser_Handler,
+		},
+		{
+			MethodName: "CreateInvite",
+			Handler:    _UserService_CreateInvite_Handler,
+		},
+		{
+			MethodName: "ListInvites",
+			Handler:    _UserService_ListInvites_Handler,
+		},
+		{
+			MethodName: "RevokeInvite",
+			Handler:    _UserService_RevokeInvite_Handler,
 		},
 		{
 			MethodName: "GetSettings",

@@ -23,6 +23,21 @@ User apps communicate via the `UserService` and `UserAuthService`. This provides
 a typical user authentication service and methods for accessing the core server
 in a user optimised way.
 
+## Discovery
+
+The core server advertises its user API over mDNS/Bonjour as
+`_woodhouse._tcp`. The instance name is the server's instance name
+(`Settings.instance_name`) and the port is the gRPC API port. The TXT record
+carries:
+
+| Key | Value |
+|---|---|
+| `fp` | Lowercase hex SHA-256 of the API's TLS leaf certificate (DER). Lets an app recognise a server it has already pinned, whatever its address. |
+| `setup` | `1` on a woodhouse-os device that has not been adopted yet (no admin). Absent otherwise. Such a device is set up with the provisioning protocol, not by logging in. |
+
+TXT records are unauthenticated: clients use them to match and label
+servers, never in place of verifying the pinned certificate.
+
 ## Building
 
 There is currently support for generating gRPC and protobuf code for the Go

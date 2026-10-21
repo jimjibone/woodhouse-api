@@ -132,6 +132,20 @@ service UserService {
     rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
     rpc RemoveUser(RemoveUserRequest) returns (RemoveUserResponse);
 
+    // Invite someone to this server. The response carries the invite token,
+    // which is only ever returned here (the server keeps a hash); the app
+    // shares it with the invitee, who redeems it with
+    // UserAuthService.AcceptInvite. An invite works once and expires 24
+    // hours after it was created. Fails with ALREADY_EXISTS if the username
+    // belongs to a user or to another pending invite.
+    rpc CreateInvite(CreateInviteRequest) returns (CreateInviteResponse);
+
+    // The pending invites: not yet accepted, revoked or expired.
+    rpc ListInvites(ListInvitesRequest) returns (ListInvitesResponse);
+
+    // Cancel a pending invite. Revoking an unknown invite succeeds.
+    rpc RevokeInvite(RevokeInviteRequest) returns (RevokeInviteResponse);
+
     // Get the current server settings.
     rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
 
@@ -441,6 +455,41 @@ message RemoveUserRequest {
     string username = 1;
 }
 message RemoveUserResponse {}
+
+// A pending invite. The token is not part of it: only CreateInvite returns
+// that.
+message Invite {
+    string   id         = 1;
+    // The username the admin chose. The invitee may change it on accepting.
+    string   username   = 2;
+    string   fullname   = 3;
+    UserRole role       = 4;
+    // The admin who created it.
+    string   created_by = 5;
+    int64    created_at = 6; // Unix milliseconds.
+    int64    expires_at = 7; // Unix milliseconds.
+}
+
+message CreateInviteRequest {
+    string   username = 1;
+    string   fullname = 2; // Optional.
+    UserRole role     = 3;
+}
+message CreateInviteResponse {
+    Invite invite = 1;
+    // The secret the invitee needs. Shown once; not recoverable afterwards.
+    string token  = 2;
+}
+
+message ListInvitesRequest {}
+message ListInvitesResponse {
+    repeated Invite invites = 1; // Oldest first.
+}
+
+message RevokeInviteRequest {
+    string id = 1;
+}
+message RevokeInviteResponse {}
 
 message ImagesStreamRequest {
     // A list of device IDs to subscribe to. Subscribes to all cameras if empty.
