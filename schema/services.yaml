@@ -29,7 +29,9 @@
 #       required: true if always present (attributes) or must be given
 #                 (params, fields). Default false.
 #       features: list of feature names; the field is present when any of them
-#                 is enabled. Mutually exclusive with required.
+#                 is enabled. Mutually exclusive with required. A color field
+#                 tied to features accepts hue/saturation when a feature named
+#                 "hs" is enabled and CIE xy when one named "xy" is.
 #       min, max, step: int, float, duration constraints. Durations are Go
 #                 duration strings ("300s", "24h").
 #       unit:     a Unit enum name in snake_case without the UNIT_ prefix
