@@ -25,7 +25,9 @@
 #       desc:     optional description.
 #       type:     bool | int | float | text | duration | time | color | enum |
 #                 image | list | struct
-#       perms:    ro | rw (attributes only, default ro).
+#       perms:    ro | rw (attributes only, default ro). rw means the attribute
+#                 may be written; a provider may expose it ro when its device
+#                 cannot be (e.g. info.name without rename support).
 #       required: true if always present (attributes) or must be given
 #                 (params, fields). Default false.
 #       features: list of feature names; the field is present when any of them
@@ -374,6 +376,8 @@ services:
       - name: start
         params:
           - { name: duration, type: duration, features: [timed_window], min: 0s, max: 1h, step: 1s }
+        result:
+          - { name: ends, type: time, features: [timed_window], desc: "When the pairing window closes." }
       - { name: stop }
       - name: submit_code
         features: [code_entry]
