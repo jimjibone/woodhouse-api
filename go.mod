@@ -3,6 +3,7 @@ module github.com/jimjibone/woodhouse-api
 go 1.26.3
 
 require (
+	go.yaml.in/yaml/v3 v3.0.5
 	google.golang.org/grpc v1.81.1
 	google.golang.org/protobuf v1.36.11
 )

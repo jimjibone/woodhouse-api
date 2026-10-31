@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package woodhouse.api.v2.clients;
+option go_package = "github.com/jimjibone/woodhouse-api/go/v2/clients;clientsapi";
+
+service UserAuthService {
+    rpc Login(UserLoginRequest) returns (UserLoginResponse) {};
+    rpc Refresh(UserRefreshRequest) returns (UserRefreshResponse) {};
+    rpc Logout(UserLogoutRequest) returns (UserLogoutResponse) {};
+
+    // Create an account from an invite (UserService.CreateInvite) and log in
+    // with it. Needs no session: the invite token is the authorization. It is
+    // rate limited like Login. An invite works once and expires 24 hours
+    // after it was created. Fails with NOT_FOUND for an unknown, used, revoked
+    // or expired token (all alike), and ALREADY_EXISTS if the username is
+    // taken.
+    rpc AcceptInvite(AcceptInviteRequest) returns (AcceptInviteResponse) {};
+}
+
+message UserLoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message UserLoginResponse {
+    string refresh_token = 1;
+    string access_token = 2;
+}
+
+message UserRefreshRequest {
+    string refresh_token = 1;
+    uint32 renew_threshold = 2; // Days remaining before expiry to cause the refresh token to be renewed. Set to zero to always renew.
+}
+
+message UserRefreshResponse {
+    string refresh_token = 1;
+    string access_token = 2;
+}
+
+message UserLogoutRequest {
+    string refresh_token = 1;
+}
+
+message UserLogoutResponse {}
+
+message AcceptInviteRequest {
+    string token    = 1;
+    // Defaults to the username the admin chose for the invite; the invitee
+    // may pick another.
+    string username = 2;
+    string password = 3;
+}
+
+message AcceptInviteResponse {
+    string refresh_token = 1;
+    string access_token  = 2;
+}

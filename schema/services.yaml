@@ -1,0 +1,412 @@
+# Woodhouse service schema.
+#
+# This file is the single source of truth for service types, their attributes,
+# commands, events and feature flags. It is embedded and validated by the Go
+# package github.com/jimjibone/woodhouse-api/schema. Code generators (wh, the
+# webui and the iOS app) read this file or that package.
+#
+# When changing a service type here, also update the Service.ServiceType enum
+# in proto/v2/clients/client_service.proto. The schema package tests fail if
+# the two disagree.
+#
+# Grammar
+#
+#   services[]:
+#     name:       snake_case service type name (proto enum value is its
+#                 UPPER_SNAKE form).
+#     desc:       what the service represents.
+#     open:       true if the service accepts any attributes, commands and
+#                 events beyond those listed (only "generic").
+#     features[]: { name, desc } optional capabilities. A feature implies its
+#                 attributes, commands and events (those that name it).
+#     attributes[], commands[].params[], commands[].result[], events[].fields[]
+#     and struct fields[] are all fields:
+#       name:     snake_case id.
+#       desc:     optional description.
+#       type:     bool | int | float | text | duration | time | color | enum |
+#                 image | list | struct
+#       perms:    ro | rw (attributes only, default ro).
+#       required: true if always present (attributes) or must be given
+#                 (params, fields). Default false.
+#       features: list of feature names; the field is present when any of them
+#                 is enabled. Mutually exclusive with required.
+#       min, max, step: int, float, duration constraints. Durations are Go
+#                 duration strings ("300s", "24h").
+#       unit:     a Unit enum name in snake_case without the UNIT_ prefix
+#                 (percentage, celsius, ...). int and float only.
+#       options:  enum options. Omitted when the bridge supplies them at run
+#                 time (e.g. the keys of a TV remote).
+#       item:     list item field (name may be omitted).
+#       fields:   struct fields.
+#       min_items, max_items: list length constraints.
+#     commands[]: { name, desc, features, params[], result[] }
+#     events[]:   { name, desc, features, fields[] }
+#
+# A field that is neither required nor tied to a feature is optional: a bridge
+# includes it when the device supports it.
+
+version: 2
+
+services:
+  # --- Device-wide services (normally on the root endpoint "0") ---
+
+  - name: info
+    desc: Static information about the device.
+    attributes:
+      - { name: name,             type: text, perms: rw, required: true, desc: "Name of the device." }
+      - { name: model,            type: text, desc: "Model name." }
+      - { name: manufacturer,     type: text, desc: "Manufacturer." }
+      - { name: serial_number,    type: text, desc: "Serial number." }
+      - { name: firmware_version, type: text, desc: "Firmware version." }
+      - { name: web_url,          type: text, desc: "URL of the device's own web interface." }
+
+  - name: online
+    desc: Whether the device is reachable and when it was last seen.
+    attributes:
+      - { name: online,    type: bool, required: true }
+      - { name: last_seen, type: time, required: true }
+
+  - name: identify
+    desc: Makes the device identify itself, typically by flashing a light.
+    attributes:
+      - { name: identifying, type: bool, required: true }
+    commands:
+      - name: identify
+        params:
+          - { name: duration, type: duration, min: 0s, max: 300s, step: 1s, desc: "How long to identify for. Device default when omitted." }
+
+  - name: update
+    desc: Firmware update information and control.
+    attributes:
+      - { name: available,       type: bool, required: true }
+      - { name: current_version, type: text }
+      - { name: update_version,  type: text }
+      - { name: updating,        type: bool }
+      - { name: progress,        type: int, min: 0, max: 100, step: 1, unit: percentage }
+      - { name: remaining,       type: duration, min: 0s, max: 1h, step: 1s }
+    commands:
+      - { name: start, desc: "Start installing the available update." }
+
+  - name: battery
+    desc: Battery state.
+    attributes:
+      - { name: level,    type: int, required: true, min: 0, max: 100, step: 1, unit: percentage }
+      - { name: voltage,  type: float, unit: volts }
+      - { name: charging, type: bool }
+
+  - name: device_temperature
+    desc: The device's own internal temperature.
+    attributes:
+      - { name: temperature, type: float, required: true, unit: celsius }
+
+  # --- Outputs ---
+
+  - name: on_off
+    desc: A switchable output such as a relay, plug or virtual switch.
+    attributes:
+      - { name: "on", type: bool, perms: rw, required: true }
+    commands:
+      - { name: toggle }
+
+  - name: light
+    desc: A light with optional brightness and colour control.
+    features:
+      - { name: brightness, desc: "Dimmable." }
+      - { name: color_temp, desc: "Colour temperature control." }
+      - { name: hs,         desc: "Hue/saturation colour control." }
+      - { name: xy,         desc: "CIE 1931 xy colour control." }
+    attributes:
+      - { name: "on",       type: bool,  perms: rw, required: true }
+      - { name: brightness, type: int,   perms: rw, features: [brightness], min: 0, max: 100, step: 1, unit: percentage }
+      - { name: color_temp, type: int,   perms: rw, features: [color_temp], min: 1000, max: 10000, step: 1, unit: kelvin, desc: "Outer bounds; bridges narrow min/max to the device's range." }
+      - { name: color,      type: color, perms: rw, features: [hs, xy] }
+      - name: color_mode
+        type: enum
+        options: [color_temp, color]
+        desc: "Which of color_temp or color the light applied last. Present when the light has both."
+    commands:
+      - name: set
+        desc: "Change several values at once, optionally with a transition."
+        params:
+          - { name: "on",       type: bool }
+          - { name: brightness, type: int,   features: [brightness], min: 0, max: 100, step: 1, unit: percentage }
+          - { name: color_temp, type: int,   features: [color_temp], min: 1000, max: 10000, step: 1, unit: kelvin }
+          - { name: color,      type: color, features: [hs, xy] }
+          - { name: transition, type: duration, min: 0s, max: 300s, step: 1s }
+
+  - name: cover
+    desc: A motorised cover such as a blind, shade, gate or garage door.
+    features:
+      - { name: position, desc: "Can move to a position." }
+      - { name: tilt,     desc: "Can tilt (slats)." }
+    attributes:
+      - { name: state,    type: enum, required: true, options: [opening, closing, stopped, open, closed] }
+      - { name: position, type: int, features: [position], min: 0, max: 100, step: 1, unit: percentage, desc: "0 closed, 100 open." }
+      - { name: tilt,     type: int, features: [tilt],     min: 0, max: 100, step: 1, unit: percentage }
+    commands:
+      - { name: open }
+      - { name: close }
+      - { name: stop }
+      - name: go_to
+        features: [position]
+        params:
+          - { name: position, type: int, required: true, min: 0, max: 100, step: 1, unit: percentage }
+      - name: tilt_to
+        features: [tilt]
+        params:
+          - { name: tilt, type: int, required: true, min: 0, max: 100, step: 1, unit: percentage }
+
+  - name: thermostat
+    desc: Heating control for an area or radiator.
+    features:
+      - { name: schedule, desc: "Holds a heating schedule." }
+    attributes:
+      - { name: heating_setpoint,  type: float, perms: rw, required: true, min: 5, max: 30, step: 0.5, unit: celsius }
+      - { name: local_temperature, type: float, required: true, unit: celsius }
+      - { name: heating_demand,    type: bool }
+      - { name: pi_heating_demand, type: int, min: 0, max: 100, step: 1, unit: percentage }
+      - { name: valve_position,    type: int, perms: rw, min: 0, max: 100, step: 1, unit: percentage }
+      - name: schedule
+        type: list
+        features: [schedule]
+        item: &schedule_entry
+          type: struct
+          fields:
+            - name: days
+              type: list
+              required: true
+              min_items: 1
+              max_items: 7
+              item: { type: enum, options: [mon, tue, wed, thu, fri, sat, sun] }
+            - { name: start,    type: duration, required: true, min: 0s, max: 24h, step: 1m, desc: "Time of day the entry starts." }
+            - { name: setpoint, type: float, required: true, min: 5, max: 30, step: 0.5, unit: celsius }
+    commands:
+      - name: set_schedule
+        features: [schedule]
+        params:
+          - name: schedule
+            type: list
+            required: true
+            item: *schedule_entry
+
+  # --- Inputs and sensors ---
+
+  - name: binary_input
+    desc: A raw on/off input signal of unknown meaning, such as a wired switch input.
+    attributes:
+      - { name: "on", type: bool, required: true }
+    events:
+      - name: changed
+        fields:
+          - { name: "on", type: bool, required: true }
+
+  - name: analog_input
+    desc: A raw analogue input signal.
+    features:
+      - { name: range_map, desc: "Maps the 0-100% reading onto a configured range." }
+    attributes:
+      - { name: value,  type: float, required: true, min: 0, max: 100, unit: percentage }
+      - { name: mapped, type: float, features: [range_map], desc: "The reading mapped onto range_map." }
+      - name: range_map
+        type: struct
+        perms: rw
+        features: [range_map]
+        fields:
+          - { name: min, type: float, required: true }
+          - { name: max, type: float, required: true }
+
+  - name: button
+    desc: A momentary button. Each press is an event; last_event holds the latest for display.
+    attributes:
+      - { name: last_event,    type: enum, required: true, desc: "Options are the event names this button emits." }
+      - { name: last_duration, type: duration, desc: "Hold duration of the last long press." }
+    events:
+      - { name: press }
+      - { name: release }
+      - { name: hold }
+      - name: long_release
+        fields:
+          - { name: duration, type: duration, required: true }
+      - name: multi_press
+        fields:
+          - { name: count, type: int, required: true, min: 1, max: 10, step: 1 }
+
+  - name: contact
+    desc: A contact sensor, e.g. on a door or window.
+    attributes:
+      - { name: closed, type: bool, required: true }
+
+  - name: motion
+    desc: A motion sensor, typically PIR.
+    attributes:
+      - { name: motion, type: bool, required: true }
+    events:
+      - { name: detected }
+
+  - name: presence
+    desc: A presence sensor that detects still targets, typically mmWave.
+    features:
+      - { name: distance, desc: "Reports the distance to the target." }
+    attributes:
+      - { name: presence, type: bool, required: true }
+      - { name: distance, type: float, features: [distance], min: 0, max: 100, step: 0.01, unit: meters }
+
+  - name: temperature
+    desc: An ambient temperature sensor.
+    attributes:
+      - { name: temperature, type: float, required: true, unit: celsius }
+
+  - name: humidity
+    desc: A relative humidity sensor.
+    attributes:
+      - { name: humidity, type: float, required: true, min: 0, max: 100, unit: percentage }
+
+  - name: pressure
+    desc: An atmospheric pressure sensor.
+    attributes:
+      - { name: pressure, type: float, required: true, unit: hectopascal }
+
+  - name: power_meter
+    desc: Electrical measurements of a circuit or output.
+    attributes:
+      - { name: voltage, type: float, unit: volts }
+      - { name: current, type: float, unit: amps }
+      - { name: power,   type: float, unit: watts }
+      - { name: energy,  type: float, unit: kilowatt_hours, desc: "Total energy since the device's counter last reset." }
+
+  - name: camera
+    desc: A camera.
+    features:
+      - { name: snapshot, desc: "Provides still images." }
+    attributes:
+      - { name: image, type: image, features: [snapshot] }
+    events:
+      - name: detection
+        fields:
+          - { name: label, type: text, required: true, desc: "What was detected, e.g. person or car." }
+          - { name: score, type: float, min: 0, max: 1 }
+          - { name: zone,  type: text }
+
+  # --- Media ---
+
+  - name: media_playback
+    desc: Media playback state and transport controls.
+    attributes:
+      - { name: state,       type: enum, required: true, options: [playing, paused, stopped, transitioning] }
+      - { name: now_playing, type: text, desc: "One-line summary for display." }
+      - { name: title,       type: text }
+      - { name: artist,      type: text }
+      - { name: album,       type: text }
+      - { name: elapsed,     type: duration }
+      - { name: duration,    type: duration }
+      - { name: art,         type: image }
+    commands:
+      - { name: play }
+      - { name: pause }
+      - { name: stop }
+      - { name: next }
+      - { name: previous }
+
+  - name: volume
+    desc: Audio volume.
+    features:
+      - { name: group, desc: "Also controls the volume of a speaker group." }
+    attributes:
+      - { name: level,       type: int,  perms: rw, required: true, min: 0, max: 100, step: 1, unit: percentage }
+      - { name: muted,       type: bool, perms: rw }
+      - { name: group_level, type: int,  perms: rw, features: [group], min: 0, max: 100, step: 1, unit: percentage }
+      - { name: group_muted, type: bool, perms: rw, features: [group] }
+    commands:
+      - name: step
+        params:
+          - { name: delta, type: int, required: true, min: -100, max: 100, step: 1, unit: percentage }
+
+  - name: media_sources
+    desc: Things that can be played, such as favourites or playlists.
+    attributes:
+      - name: sources
+        type: list
+        required: true
+        item:
+          type: struct
+          fields:
+            - { name: id,   type: text, required: true }
+            - { name: name, type: text, required: true }
+    commands:
+      - name: play
+        params:
+          - { name: id, type: text, required: true, desc: "id of an entry in sources." }
+
+  - name: remote
+    desc: Sends remote control key presses.
+    commands:
+      - name: send_key
+        params:
+          - { name: key, type: enum, required: true, desc: "Options are the keys the device accepts, set by the bridge." }
+
+  # --- Pairing and sharing ---
+
+  - name: pairing
+    desc: Adds new devices to a bridge or network.
+    features:
+      - { name: timed_window, desc: "Pairing stays open for a limited time." }
+      - { name: code_entry,   desc: "New devices are added by entering a setup code or PIN." }
+    attributes:
+      - { name: state,      type: enum, required: true, options: [idle, open, busy] }
+      - { name: ends,       type: time,     features: [timed_window] }
+      - { name: remaining,  type: duration, features: [timed_window] }
+      - { name: last_error, type: text }
+      - name: recent
+        type: list
+        required: true
+        desc: "Recent pairing attempts, newest first."
+        item:
+          type: struct
+          fields:
+            - { name: device_id, type: text, required: true, desc: "Woodhouse device id, for linking to the device." }
+            - { name: name,      type: text }
+            - { name: state,     type: enum, required: true, options: [joining, interviewing, paired, failed] }
+            - { name: error,     type: text }
+            - { name: time,      type: time, required: true }
+    commands:
+      - name: start
+        params:
+          - { name: duration, type: duration, features: [timed_window], min: 0s, max: 1h, step: 1s }
+      - { name: stop }
+      - name: submit_code
+        features: [code_entry]
+        params:
+          - { name: code, type: text, required: true }
+    events:
+      - name: paired
+        fields:
+          - { name: device_id, type: text, required: true }
+          - { name: name,      type: text }
+      - name: failed
+        fields:
+          - { name: device_id, type: text }
+          - { name: error,     type: text, required: true }
+
+  - name: sharing
+    desc: Lets another controller or ecosystem add this device (e.g. a Matter commissioning window).
+    attributes:
+      - { name: open, type: bool, required: true }
+      - { name: code, type: text }
+      - { name: qr,   type: text }
+      - { name: ends, type: time }
+    commands:
+      - name: open
+        params:
+          - { name: timeout, type: duration, min: 0s, max: 1h, step: 1s }
+      - { name: close }
+
+  # --- Other ---
+
+  - name: mode
+    desc: Selects one of a set of modes.
+    attributes:
+      - { name: value, type: enum, perms: rw, required: true, desc: "Options are set by the provider." }
+
+  - name: generic
+    desc: Any attributes, commands and events. For things no other service describes.
+    open: true

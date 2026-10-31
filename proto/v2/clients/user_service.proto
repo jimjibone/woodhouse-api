@@ -1,0 +1,608 @@
+syntax = "proto3";
+
+package woodhouse.api.v2.clients;
+option go_package = "github.com/jimjibone/woodhouse-api/go/v2/clients;clientsapi";
+
+import "clients/client.proto";
+import "clients/client_service.proto";
+import "clients/group.proto";
+import "clients/zone.proto";
+
+service UserService {
+    // Get the current Client states. This returns a stream of Clients which
+    // will close once all Clients are sent. Use ClientsStream method to get a
+    // stream of current Client states and updates.
+    rpc GetClients(GetClientsRequest) returns (stream Client);
+
+    // Get a stream of Client updates. The first batch of replies will be the
+    // current state of the clients, followed by updates when they occur. The
+    // stream also includes a 10 second heartbeat (an empty response) which
+    // should be ignored, but can be used to monitor the stream for disconnects.
+    rpc ClientsStream(ClientsStreamRequest) returns (stream ClientsStreamResponse);
+
+    // Get a stream of pending pairing requests and updates. The first batch of
+    // replies will be the current set, followed by updates when they occur. The
+    // stream also includes a 10 second heartbeat (an empty response) which should
+    // be ignored, but can be used to monitor the stream for disconnects.
+    rpc PairingRequestsStream(PairingRequestsStreamRequest) returns (stream PairingRequestsStreamResponse);
+
+    // Approve a pairing request.
+    rpc ApprovePairing(ApprovePairingRequest) returns (ApprovePairingResponse);
+
+    // Deny a pairing request.
+    rpc DenyPairing(DenyPairingRequest) returns (DenyPairingResponse);
+
+    // Unpair a client and invalidate auth tokens.
+    rpc UnpairClient(UnpairClientRequest) returns (UnpairClientResponse);
+
+    // Forget a client (unpair then forget).
+    rpc ForgetClient(ForgetClientRequest) returns (ForgetClientResponse);
+
+    // Get the current device states. This returns a stream of devices which
+    // will close once all devices are sent. Use DevicesStream method to get a
+    // stream of current device states and updates.
+    rpc GetDevices(GetDevicesRequest) returns (stream Device);
+
+    // Get a stream of Device updates. The first batch of replies will be the
+    // current state of the devices, followed by updates when they occur. The
+    // stream also includes a 10 second heartbeat (an empty Device) which should
+    // be ignored, but can be used to monitor the stream for disconnects.
+    rpc DevicesStream(DevicesStreamRequest) returns (stream DevicesStreamResponse);
+
+    // Remove a device. This will remove the device from the system.
+    rpc RemoveDevice(RemoveDeviceRequest) returns (RemoveDeviceResponse);
+
+    // Set or clear the user's label for an endpoint. It is sent as
+    // Endpoint.user_label on the devices stream and overrides the bridge's
+    // label.
+    rpc SetEndpointLabel(SetEndpointLabelRequest) returns (SetEndpointLabelResponse);
+
+    // Get a stream of DeviceService updates for favorites. The first batch of
+    // replies will be the current state of the favorites, followed by updates
+    // when they occur. The stream also includes a 10 second heartbeat (an empty
+    // response) which should be ignored, but can be used to monitor the stream
+    // for disconnects.
+    rpc FavoritesStream(FavoritesStreamRequest) returns (stream FavoritesStreamResponse);
+
+    rpc AddFavorite(AddFavoriteRequest) returns (AddFavoriteResponse);
+    rpc RemoveFavorite(RemoveFavoriteRequest) returns (RemoveFavoriteResponse);
+
+    // Get a stream of Group updates for groups. The first batch of replies will
+    // be the current state of the group infos, followed by updates when they
+    // occur. The stream also includes a 10 second heartbeat (an empty response)
+    // which should be ignored, but can be used to monitor the stream for
+    // disconnects.
+    rpc GroupsStream(GroupsStreamRequest) returns (stream GroupsStreamResponse);
+
+    rpc AddGroup(AddGroupRequest) returns (AddGroupResponse);
+    rpc UpdateGroup(UpdateGroupRequest) returns (UpdateGroupResponse);
+    rpc RemoveGroup(RemoveGroupRequest) returns (RemoveGroupResponse);
+
+    // Get a stream of Zone updates. The first batch of replies will be the
+    // current state of the zones, followed by updates when they occur. The
+    // stream also includes a 10 second heartbeat which should be ignored, but
+    // can be used to monitor the stream for disconnects. Readable by every
+    // user; only admins may change zones.
+    rpc ZonesStream(ZonesStreamRequest) returns (stream ZonesStreamResponse);
+
+    rpc AddZone(AddZoneRequest) returns (AddZoneResponse);
+    rpc UpdateZone(UpdateZoneRequest) returns (UpdateZoneResponse);
+    rpc RemoveZone(RemoveZoneRequest) returns (RemoveZoneResponse);
+
+    // Get a stream of Notifications addressed to the calling user. The first
+    // batch is the stored history they can still see, followed by updates as
+    // they occur. Every response carries `read` for the calling user only, so
+    // two users on the same notification see different values. The stream also
+    // includes a 10 second heartbeat; the first one ends the initial batch.
+    rpc NotificationsStream(NotificationsStreamRequest) returns (stream NotificationsStreamResponse);
+
+    // Mark one notification read for the calling user. Idempotent.
+    rpc MarkNotificationRead(MarkNotificationReadRequest) returns (MarkNotificationReadResponse);
+
+    // Mark every notification currently visible to the calling user read.
+    rpc MarkAllNotificationsRead(MarkAllNotificationsReadRequest) returns (MarkAllNotificationsReadResponse);
+
+    // Dismiss one notification for the calling user. It leaves their inbox but
+    // stays in the history for everybody else in its audience.
+    rpc DismissNotification(DismissNotificationRequest) returns (DismissNotificationResponse);
+
+    // Send a test notification. Admin only; it exists so the delivery path can
+    // be exercised before anything in the system generates notifications of
+    // its own.
+    rpc SendTestNotification(SendTestNotificationRequest) returns (SendTestNotificationResponse);
+
+    // Send an action to a device service.
+    rpc SendAction(ActionRequest) returns (stream ActionResponse);
+
+    // Send an image request to a device service. This will also update the
+    // server-side image cache and push the new image to all ImagesStream
+    // subscribers. The optional width and height fields act as a size hint;
+    // the server will resize the image before caching and streaming.
+    rpc SendImageRequest(UserImageRequest) returns (stream ImageResponse);
+
+    // Get a stream of camera image updates. The first batch of replies will be
+    // the current cached image for each known camera, followed by updates as
+    // the server polls cameras on a schedule or a user triggers a refresh via
+    // SendImageRequest. The stream also includes a 10 second heartbeat (an
+    // empty response) which should be ignored.
+    rpc ImagesStream(ImagesStreamRequest) returns (stream ImagesStreamResponse);
+
+    // Get a stream of User updates. The first batch of replies will be the
+    // current state of the users, followed by updates when they occur. The
+    // stream also includes a 10 second heartbeat (an empty User) which should
+    // be ignored, but can be used to monitor the stream for disconnects.
+    rpc UsersStream(UsersStreamRequest) returns (stream UsersStreamResponse);
+
+    rpc AddUser(AddUserRequest) returns (AddUserResponse);
+    rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+    rpc RemoveUser(RemoveUserRequest) returns (RemoveUserResponse);
+
+    // Invite someone to this server. The response carries the invite token,
+    // which is only ever returned here (the server keeps a hash); the app
+    // shares it with the invitee, who redeems it with
+    // UserAuthService.AcceptInvite. An invite works once and expires 24
+    // hours after it was created. Fails with ALREADY_EXISTS if the username
+    // belongs to a user or to another pending invite.
+    rpc CreateInvite(CreateInviteRequest) returns (CreateInviteResponse);
+
+    // The pending invites: not yet accepted, revoked or expired.
+    rpc ListInvites(ListInvitesRequest) returns (ListInvitesResponse);
+
+    // Cancel a pending invite. Revoking an unknown invite succeeds.
+    rpc RevokeInvite(RevokeInviteRequest) returns (RevokeInviteResponse);
+
+    // Get the current server settings.
+    rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
+
+    // Update the server settings. Only the fields present in the request are
+    // applied. Returns the settings as stored, after normalisation.
+    rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
+}
+
+message GetClientsRequest {}
+
+message ClientsStreamRequest {}
+message ClientsStreamResponse {
+    Client client = 1; // Optional: A client update, possibly containing the full state.
+    string client_removed = 2; // Optional: Indicates the client_id of a client that was removed.
+}
+
+message PairingRequestsStreamRequest {}
+message PairingRequestsStreamResponse {
+    PairingRequest pairing_request = 1; // Optional: A pairing request update, possibly containing the full state.
+    string pairing_removed = 2; // Optional: Indicates the request_id of a pairing request that was removed.
+}
+
+message ApprovePairingRequest {
+    string client_id = 1; // Informational: the client_id being confirmed.
+    string request_id = 3; // Identifies the specific pairing attempt to confirm.
+    reserved 2; // was 'pairing_code'; SAS is now compared, not entered.
+    reserved "pairing_code";
+}
+message ApprovePairingResponse {}
+
+message DenyPairingRequest {
+    string client_id = 1; // Informational: the client_id being denied.
+    string request_id = 2; // Identifies the specific pairing attempt to deny.
+}
+message DenyPairingResponse {}
+
+message UnpairClientRequest {
+    string client_id = 1;
+}
+message UnpairClientResponse {}
+
+message ForgetClientRequest {
+    string client_id = 1;
+}
+message ForgetClientResponse {}
+
+message GetDevicesRequest {}
+
+message DevicesStreamRequest {
+    // A list of device IDs to include in the steam. Sends all devices if empty.
+    repeated string include_device_ids = 1;
+
+    // Optional: replay buffered events newer than this cursor before live
+    // events. Replayed events have replayed set. An empty epoch replays the
+    // whole buffer (e.g. a device page's recent events). Unset means live
+    // events only.
+    EventCursor events_since = 2;
+}
+message DevicesStreamResponse {
+    Device device         = 1; // Optional: A device update, possibly containing the full state.
+    string device_removed = 2; // Optional: Indicates the device_id of a device that was removed.
+
+    // Set on the first response when events_since was requested but some
+    // events since that cursor are no longer available.
+    bool events_lost = 3;
+}
+
+message RemoveDeviceRequest {
+    string device_id = 1;
+}
+message RemoveDeviceResponse {}
+
+message SetEndpointLabelRequest {
+    string device_id   = 1;
+    string endpoint_id = 2;
+    string label       = 3; // Empty clears the user's label.
+}
+message SetEndpointLabelResponse {}
+
+message DeviceService {
+    string key = 1; // The key is a combined version of the device, endpoint and service IDs.
+
+    string device_id   = 2; // The device ID.
+    string endpoint_id = 14; // The endpoint the service belongs to.
+    bool   full_state  = 3; // Indicates that this message contains the entire state of the device.
+
+    // The endpoint label (user label if set, else the bridge's). May not be set
+    // if the value has not changed and full_state is false.
+    optional string endpoint_label = 15;
+
+    // The device name from the info service. May not be set if the value has not changed and full_state is false.
+    optional string device_name = 5;
+
+    // The device online state from the online service. May not be set if the value has not changed and full_state is
+    // false.
+    optional bool online = 7;
+
+    // The device last seen time from the online service. May not be set if the last_seen value has not changed and
+    // full_state is false.
+    optional TimeValue last_seen = 9;
+
+    // The device battery level state from the battery service. May not be set if the battery_level value has not
+    // changed and full_state is false, or if the device does not have the battery service.
+    optional int64 battery_level = 11;
+
+    Service service = 12; // A service belonging to the device.
+
+    // The general type of the device the service belongs to (helps with classification in user interfaces). May not be
+    // set if the value has not changed and full_state is false.
+    optional Device.DeviceType device_type = 13;
+}
+
+message FavoritesStreamRequest {}
+message FavoritesStreamResponse {
+    DeviceService device_service = 1; // Optional: A DeviceService update, possibly containing the full state.
+    string        key_removed    = 2; // Optional: Indicates the key of a DeviceService that was was removed.
+}
+
+message AddFavoriteRequest {
+    string device_id   = 1;
+    string endpoint_id = 3;
+    string service_id  = 2;
+}
+message AddFavoriteResponse {}
+
+message RemoveFavoriteRequest {
+    string device_id   = 1;
+    string endpoint_id = 3;
+    string service_id  = 2;
+}
+message RemoveFavoriteResponse {}
+
+message GroupsStreamRequest {}
+message GroupsStreamResponse {
+    Group  group_update = 1; // Optional: A Group update.
+    string removed_id   = 2; // Optional: Indicates the group ID of a Group that was removed.
+}
+
+message AddGroupRequest {
+    string name = 1;
+    Service.ServiceType type = 2;
+    repeated GroupMember members = 3;
+}
+message AddGroupResponse {
+    Group group = 1; // The added group, including the generated ID.
+}
+
+message UpdateGroupRequest {
+    string id = 1;
+    optional string name = 2; // Optional: If not set, the name will not be updated.
+    repeated GroupMember members = 3; // The full list of members for the group. If empty, the members will not be updated.
+}
+message UpdateGroupResponse {}
+
+message RemoveGroupRequest {
+    string id = 1;
+}
+message RemoveGroupResponse {}
+
+// Heartbeat is the empty keepalive a server stream sends every 10 seconds. The
+// first one also marks the end of the initial batch of state.
+message Heartbeat {}
+
+message ZonesStreamRequest {}
+message ZonesStreamResponse {
+    // Exactly one of these is set on every response. A oneof rather than
+    // optional fields plus sentinels: it makes an ambiguous or empty response
+    // unrepresentable, and separates a removal from a heartbeat without
+    // leaning on an empty string.
+    oneof update {
+        Zone      zone_update = 1; // A Zone was added or changed.
+        string    removed_id  = 2; // The zone ID of a Zone that was removed.
+        Heartbeat heartbeat   = 3; // Keepalive. The first one also ends the initial batch.
+    }
+}
+
+message AddZoneRequest {
+    string               name       = 1;
+    string               icon       = 2;
+    repeated string      device_ids = 3;
+    repeated EndpointRef endpoints  = 4; // Endpoint overrides, see Zone.endpoints.
+}
+message AddZoneResponse {
+    Zone zone = 1; // The added zone, including the generated ID.
+}
+
+message UpdateZoneRequest {
+    string          id   = 1;
+    optional string name = 2; // Optional: If not set, the name will not be updated.
+    optional string icon = 3; // Optional: If not set, the icon will not be updated.
+
+    // Membership is only touched when set_devices is true, in which case
+    // device_ids replaces it in full - including with an empty list, which
+    // empties the zone.
+    bool            set_devices = 4;
+    repeated string device_ids  = 5;
+
+    // Endpoint overrides are only touched when set_endpoints is true, in which
+    // case endpoints replaces them in full.
+    bool                 set_endpoints = 6;
+    repeated EndpointRef endpoints     = 7;
+}
+message UpdateZoneResponse {}
+
+message RemoveZoneRequest {
+    string id = 1;
+}
+message RemoveZoneResponse {}
+
+enum NotificationLevel {
+    NOTIFICATION_LEVEL_UNSPECIFIED = 0;
+    NOTIFICATION_LEVEL_INFO        = 1;
+    NOTIFICATION_LEVEL_SUCCESS     = 2;
+    NOTIFICATION_LEVEL_WARNING     = 3;
+    NOTIFICATION_LEVEL_ERROR       = 4;
+}
+
+// Who a notification is for. An enum plus its operand rather than a oneof: the
+// audience is data the server stores and evaluates, not a discriminator
+// between unrelated payloads, and it round-trips through JSON on disk. An
+// unspecified kind matches nobody, so an audience that fails to decode fails
+// closed rather than reaching everyone.
+message NotificationAudience {
+    enum Kind {
+        KIND_UNSPECIFIED = 0;
+        KIND_ALL         = 1; // Every user.
+        KIND_ROLE        = 2; // Every user holding `role`.
+        KIND_USER        = 3; // The single user named by `username`.
+    }
+    Kind     kind     = 1;
+    UserRole role     = 2; // Only meaningful when kind is KIND_ROLE.
+    string   username = 3; // Only meaningful when kind is KIND_USER.
+}
+
+message Notification {
+    string            id         = 1; // Server-generated, unique.
+    int64             created_at = 2; // Unix milliseconds.
+    NotificationLevel level      = 3;
+    string            title      = 4; // One short line.
+    string            body       = 5; // Optional detail. May be empty.
+
+    // An opaque origin key, e.g. "settings-test" or "device-offline". For
+    // grouping and filtering, not for display.
+    string source = 6;
+    // A coarse bucket for future per-user preferences, e.g. "system",
+    // "devices", "security". May be empty.
+    string category = 7;
+    // Optional. A new notification carrying the same non-empty collapse_key
+    // replaces the previous one, so a flapping sensor does not accumulate a
+    // hundred rows. Empty means never collapse.
+    string collapse_key = 8;
+
+    NotificationAudience audience = 9;
+
+    // Read by the user whose stream this is, and nobody else. It is a
+    // projection of per-user state rather than a property of the notification,
+    // which is why the same notification arrives with different values on two
+    // users' streams.
+    bool read = 10;
+
+    // Optional client-relative link opened when the notification is activated,
+    // e.g. "/devices/00158d00045c089f". Never absolute.
+    string link = 11;
+}
+
+message NotificationsStreamRequest {}
+message NotificationsStreamResponse {
+    // Exactly one of these is set on every response, for the same reasons as
+    // ZonesStreamResponse above.
+    oneof update {
+        // A Notification was added, changed, or had its read state flipped for
+        // the user this stream belongs to.
+        Notification notification_update = 1;
+        // The ID of a Notification that left this user's inbox, either trimmed
+        // from the history or dismissed by them.
+        string    removed_id = 2;
+        Heartbeat heartbeat  = 3; // Keepalive. The first one also ends the initial batch.
+    }
+}
+
+message MarkNotificationReadRequest {
+    string id = 1;
+}
+message MarkNotificationReadResponse {}
+
+message MarkAllNotificationsReadRequest {}
+message MarkAllNotificationsReadResponse {}
+
+message DismissNotificationRequest {
+    string id = 1;
+}
+message DismissNotificationResponse {}
+
+message SendTestNotificationRequest {
+    optional string            title = 1; // Optional: falls back to a canned test title.
+    optional string            body  = 2; // Optional: falls back to a canned test body.
+    optional NotificationLevel level = 3; // Optional: defaults to info.
+
+    // Optional. Defaults to KIND_USER targeting the calling admin, so pressing
+    // "send test" on a shared instance does not notify the whole household by
+    // accident.
+    NotificationAudience audience = 4;
+}
+message SendTestNotificationResponse {
+    Notification notification = 1; // The notification as stored, including the generated ID.
+}
+
+message UsersStreamRequest {}
+message UsersStreamResponse {
+    User   user         = 1; // Optional: A User update, possibly containing the full state.
+    string user_removed = 2; // Optional: Indicates the key of a User that was removed.
+}
+
+message AddUserRequest {
+    string   username         = 1;
+    string   fullname        = 2;
+    UserRole role             = 3;
+    string   initial_password = 4;
+}
+message AddUserResponse {}
+
+message UpdateUserRequest {
+    string            username  = 1;
+    optional string   fullname = 2;
+    optional UserRole role      = 3;
+    optional string   password  = 4;
+    // Required when `password` is set and the caller is changing their own
+    // password: the caller's existing password, re-entered. Without it a
+    // stolen session could change the password and lock the real owner out.
+    // Ignored when an admin resets another user's password - that path
+    // forces `reset_password` on the target instead.
+    optional string   current_password = 5;
+}
+message UpdateUserResponse {}
+
+message RemoveUserRequest {
+    string username = 1;
+}
+message RemoveUserResponse {}
+
+// A pending invite. The token is not part of it: only CreateInvite returns
+// that.
+message Invite {
+    string   id         = 1;
+    // The username the admin chose. The invitee may change it on accepting.
+    string   username   = 2;
+    string   fullname   = 3;
+    UserRole role       = 4;
+    // The admin who created it.
+    string   created_by = 5;
+    int64    created_at = 6; // Unix milliseconds.
+    int64    expires_at = 7; // Unix milliseconds.
+}
+
+message CreateInviteRequest {
+    string   username = 1;
+    string   fullname = 2; // Optional.
+    UserRole role     = 3;
+}
+message CreateInviteResponse {
+    Invite invite = 1;
+    // The secret the invitee needs. Shown once; not recoverable afterwards.
+    string token  = 2;
+}
+
+message ListInvitesRequest {}
+message ListInvitesResponse {
+    repeated Invite invites = 1; // Oldest first.
+}
+
+message RevokeInviteRequest {
+    string id = 1;
+}
+message RevokeInviteResponse {}
+
+message ImagesStreamRequest {
+    // A list of device IDs to subscribe to. Subscribes to all cameras if empty.
+    repeated string device_ids = 1;
+    // Per-camera size hints. The server uses the maximum width/height seen
+    // across all connected subscribers when resizing cached images.
+    repeated ImageSizeHint size_hints = 2;
+}
+
+// ImageSizeHint tells the server the rendered pixel size of a specific camera
+// attribute so it can resize the cached image to the appropriate resolution.
+message ImageSizeHint {
+    string device_id    = 1;
+    string endpoint_id  = 6;
+    string service_id   = 2;
+    string attribute_id = 3;
+    uint32 width        = 4; // Rendered pixel width.  0 = full resolution.
+    uint32 height       = 5; // Rendered pixel height. 0 = full resolution.
+}
+
+// UserImageRequest is like ImageRequest but with an optional size hint for
+// server-side resizing. The size hint is not forwarded to the bridge.
+message UserImageRequest {
+    string device_id    = 1;
+    string endpoint_id  = 6;
+    string service_id   = 2;
+    string attribute_id = 3;
+    uint32 width        = 4; // Desired pixel width.  0 = full resolution.
+    uint32 height       = 5; // Desired pixel height. 0 = full resolution.
+}
+
+message ImagesStreamResponse {
+    string device_id    = 1;
+    string endpoint_id  = 7;
+    string service_id   = 2;
+    string attribute_id = 3;
+    bytes  data         = 4;
+    string mime_type    = 5;
+    int64  fetched_at   = 6; // Unix milliseconds.
+}
+
+message User {
+    string   username  = 1;
+    string   fullname = 2;
+    UserRole role      = 3;
+    // True while the user still holds a password an admin set for them (a
+    // newly created account, or one an admin has reset). The webui blocks
+    // the app behind a password change until they clear it.
+    bool     reset_password = 4;
+}
+
+enum UserRole {
+    USER_ROLE_UNDEFINED = 0;
+    USER_ROLE_ADMIN     = 1;
+    USER_ROLE_USER      = 2;
+}
+
+// Settings holds the server-wide configuration that can be changed at runtime.
+message Settings {
+    // The name this server advertises on the local network (mDNS/Bonjour). It
+    // is what users see when discovering this server from a client app.
+    string instance_name = 1;
+
+    // Whether the admin interface should show the instance name in place of
+    // the Woodhouse product name. Off by default; useful when running more
+    // than one instance.
+    bool show_instance_name = 2;
+}
+
+message GetSettingsRequest {}
+message GetSettingsResponse {
+    Settings settings = 1;
+}
+
+message UpdateSettingsRequest {
+    optional string instance_name = 1; // Optional: If not set, the instance name will not be updated.
+    optional bool show_instance_name = 2; // Optional: If not set, this preference will not be updated.
+}
+message UpdateSettingsResponse {
+    Settings settings = 1; // The settings as stored, after normalisation.
+}

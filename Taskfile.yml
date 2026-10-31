@@ -3,7 +3,7 @@ version: '3'
 tasks:
   default:
     deps:
-      - proto-go-v1
+      - proto-go-v2
 
   proto-go-plugins:
     run: when_changed
@@ -15,14 +15,14 @@ tasks:
       - go build -o .bin/protoc-gen-go google.golang.org/protobuf/cmd/protoc-gen-go
       - go build -o .bin/protoc-gen-go-grpc google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
-  proto-go-v1:
+  proto-go-v2:
     run: when_changed
     deps:
       - proto-go-plugins
     sources:
-      - ./proto/v1/*/*.proto
+      - ./proto/v2/*/*.proto
     generates:
-      - ./go/v1/*/*.pb.go
+      - ./go/v2/*/*.pb.go
     cmds:
-      - cd proto && protoc --plugin=../.bin/protoc-gen-go -I./v1 --go_out=../go/v1 --go_opt=module=github.com/jimjibone/woodhouse-api/go/v1 ./v1/*/*.proto
-      - cd proto && protoc --plugin=../.bin/protoc-gen-go-grpc -I./v1 --go-grpc_out=../go/v1 --go-grpc_opt=module=github.com/jimjibone/woodhouse-api/go/v1 ./v1/*/*_service.proto
+      - cd proto && protoc --plugin=../.bin/protoc-gen-go -I./v2 --go_out=../go/v2 --go_opt=module=github.com/jimjibone/woodhouse-api/go/v2 ./v2/*/*.proto
+      - cd proto && protoc --plugin=../.bin/protoc-gen-go-grpc -I./v2 --go-grpc_out=../go/v2 --go-grpc_opt=module=github.com/jimjibone/woodhouse-api/go/v2 ./v2/*/*_service.proto

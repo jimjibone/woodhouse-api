@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package woodhouse.api.v2.clients;
+option go_package = "github.com/jimjibone/woodhouse-api/go/v2/clients;clientsapi";
+
+service AuthService {
+    // Pair with (login to) the woodhouse core server. The bi-directional stream
+    // is normally used in 'insecure' mode (i.e. use 'insecure skip verify' TLS
+    // option); the channel is authenticated by a commitment-based Short
+    // Authentication String (SAS) that the user compares on both the client CLI
+    // and the server web UI. The pattern is:
+    // 1. The client starts the stream by sending its client_id and an ephemeral
+    //    X25519 client_pubkey (PKa).
+    // 2. The server replies with KeyExchange, carrying its ephemeral X25519
+    //    server_pubkey (PKb) and a commitment to its 32-byte nonce Nb:
+    //    commitment = SHA256(len‖PKb ‖ len‖PKa ‖ len‖client_id ‖ len‖Nb).
+    // 3. The client sends its own 32-byte nonce Na (client_nonce).
+    // 4. The server replies with Reveal, carrying server_nonce = Nb.
+    // 5. The client verifies the commitment, then both sides compute the shared
+    //    ECDH secret and derive, via HKDF with distinct info labels:
+    //      - an 8-digit SAS (displayed on both ends for the user to compare);
+    //      - a 32-byte AES-256 session key.
+    // 6. The server stores the SAS on the pairing request (shown in the web UI)
+    //    and sends periodic Pending keepalives while awaiting the user.
+    // 7. The user compares the two 8-digit codes and clicks Confirm (or Deny).
+    // 8. On confirm the server sends Confirmed with data = Encrypt(cert), then a
+    //    further message with data = Encrypt(refresh token), each AES-256-GCM
+    //    encrypted under the session key. On deny/timeout it returns
+    //    PermissionDenied and sends nothing.
+    rpc Pair (stream PairRequest) returns (stream PairResponse);
+
+    // Refresh session auth tokens. Should be called regularly before tokens
+    // expire.
+    rpc Refresh (RefreshRequest) returns (RefreshResponse);
+
+    // Logout the session.
+    rpc Logout (LogoutRequest) returns (LogoutResponse);
+
+    // A simple ping of the server.
+    rpc Ping (PingRequest) returns (PingResponse);
+}
+
+message PairRequest {
+    string client_id          = 1; // Only needed in the first message.
+    string client_name        = 3; // Only needed in the first message.
+    string client_description = 4; // Only needed in the first message.
+    string client_version     = 5; // Only needed in the first message.
+    bytes  client_pubkey      = 6; // Ephemeral X25519 public key PKa (first message).
+    bytes  client_nonce       = 7; // 32-byte SAS nonce Na.
+    reserved 2;                    // was 'bytes data' (PAKE handshake blob).
+    reserved "data";
+}
+
+message PairResponse {
+    enum State {
+        Undefined   = 0;
+        Pending     = 1; // Keepalive while awaiting the user's confirm/deny.
+        KeyExchange = 2; // Carries server_pubkey and commitment.
+        Reveal      = 3; // Carries server_nonce.
+        Confirmed   = 4; // Carries the first encrypted payload (the cert).
+    }
+    State state         = 1;
+    bytes data          = 2; // Encrypted cert / refresh-token payloads.
+    bytes server_pubkey = 3; // Ephemeral X25519 public key PKb (KeyExchange).
+    bytes commitment    = 4; // SHA-256 commitment to server_nonce (KeyExchange).
+    bytes server_nonce  = 5; // 32-byte SAS nonce Nb, revealed (Reveal).
+}
+
+message RefreshRequest {
+    string refresh_token = 1;
+}
+
+message RefreshResponse {
+    string refresh_token = 1;
+    string access_token  = 2;
+}
+
+message LogoutRequest {
+    string refresh_token = 1;
+}
+
+message LogoutResponse {}
+
+message PingRequest {}
+message PingResponse {}

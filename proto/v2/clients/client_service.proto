@@ -1,0 +1,467 @@
+syntax = "proto3";
+
+package woodhouse.api.v2.clients;
+option go_package = "github.com/jimjibone/woodhouse-api/go/v2/clients;clientsapi";
+
+// Every call to ClientService and UserService must carry the gRPC metadata key
+// "woodhouse-schema-version" set to the version in schema/services.yaml the
+// client was built against. The server rejects a missing or different version.
+
+//****************************** Client Service ******************************//
+
+service ClientService {
+    // StatusStream allows the client to stream StatusUpdates to the server. The
+    // first StatusUpdate should contain the full state of the client and any
+    // subsequent update should only contain diffs - i.e. include the
+    // client_info and all devices. See the Device type for what to include in a
+    // full state update.
+    rpc StatusStream (stream StatusUpdate) returns (Empty);
+
+    // ActionStream allows the client to receive ActionRequests from the server
+    // (when they are created by users or automations). The client must
+    // eventually respond to all ActionRequests by sending an ActionResponse
+    // with the same ID and the current status of the action (this allows for
+    // reactive user interfaces and automations to implement retries, etc).
+    rpc ActionStream (stream ActionResponse) returns (stream ActionRequest);
+
+    rpc ImageStream (stream ImageResponse) returns (stream ImageRequest);
+
+    // Get a stream of Device updates. The first batch of replies will be the
+    // current state of the devices, followed by updates when they occur. The
+    // stream also includes a 10 second heartbeat (an empty Device) which should
+    // be ignored, but can be used to monitor the stream for disconnects.
+    rpc DeviceStream (stream DeviceStreamRequest) returns (stream DeviceStreamResponse);
+
+    // Send an action to a device service.
+    rpc SendAction(ActionRequest) returns (stream ActionResponse);
+
+    // Send an image request to a device service.
+    rpc SendImageRequest(ImageRequest) returns (stream ImageResponse);
+}
+
+// Empty message is intentionally empty - i.e. it will never contain any data.
+message Empty {}
+
+message StatusUpdate {
+    ClientInfo client_info = 1;
+    repeated Device device_info = 2;
+
+    // IDs of devices the client no longer provides (e.g. unpaired). The server
+    // removes them, even if online. Only devices owned by the sending client
+    // are removed; other IDs are ignored. Processed after device_info.
+    repeated string removed_device_ids = 3;
+}
+
+// ActionRequest either writes attribute values or invokes a command on one
+// service.
+message ActionRequest {
+    string action_id   = 1; // Set by the server.
+    string device_id   = 2; // ID of the device to send the action to.
+    string endpoint_id = 4; // ID of the endpoint the service belongs to.
+    string service_id  = 3; // ID of the service to control.
+
+    oneof action {
+        WriteAction   write   = 5; // Write attribute values.
+        CommandAction command = 6; // Invoke a command.
+    }
+}
+
+// WriteAction writes one or more read-write attributes of a service.
+message WriteAction {
+    repeated FieldValue values = 1; // Attribute ID and new value.
+}
+
+// CommandAction invokes a command of a service. The command and its params
+// must match the service's CommandSpec.
+message CommandAction {
+    string              id     = 1; // Command ID.
+    repeated FieldValue params = 2; // Command parameters by ID.
+}
+
+message ActionResponse {
+    enum ActionStatus {
+        UNDEFINED    = 0;  // No status defined.
+        QUEUED       = 1;  // The action is queued for transmission to the device.
+        SENT         = 2;  // The action has been sent to the device.
+
+        // Note all enums beyond this point indicate a final response.
+        COMPLETE     = 3;  // The action was completed by the device.
+        TIMEOUT      = 4;  // The action was not acknowledged by the device before the timeout.
+        CANCELED     = 5;  // The action was canceled before a final response was received.
+        ERROR        = 6;  // The action failed due to an error. See details.
+        ERR_READONLY = 7;  // The action contained a write to a read only attribute.
+        ERR_INVALID  = 8;  // The action named an unknown attribute or command, or its values or params do not match the spec. See details.
+    }
+
+    string              action_id = 1;
+    ActionStatus        status    = 2;
+    string              details   = 3;
+    repeated FieldValue result    = 4; // Command result, set on COMPLETE when the command declares one.
+}
+
+message ClientInfo {
+    string id          = 1; // The client ID (e.g. "zigbee").
+    string name        = 2; // Name of the client (e.g. "Zigbee").
+    string description = 3; // Description of the client (e.g. "Provides support for Zigbee devices via zigbee2mqtt").
+    string version     = 4; // Version of the client (e.g. "0.1.0").
+}
+
+// EventCursor identifies a position in the server's event history. epoch
+// changes every time the server starts, seq increases with every event.
+message EventCursor {
+    string epoch = 1;
+    uint64 seq   = 2;
+}
+
+message DeviceStreamRequest {
+    // A list of device IDs to include in the steam. Sends all devices if empty.
+    // repeated string include_device_ids = 1;
+
+    // Optional request for a full device state to be sent on the stream. Useful
+    // where a device state was previously ignored but is now required, without
+    // having to restart the stream. The requested device state may not be sent
+    // immediately but will be sent when the server is ready.
+    string get_device_id = 1;
+
+    // Optional, first request only: replay buffered events newer than this
+    // cursor before live events. Replayed events have replayed set. An empty
+    // epoch replays the whole buffer. Unset means live events only.
+    EventCursor events_since = 2;
+}
+message DeviceStreamResponse {
+    Device device         = 1; // Optional: A device update, possibly containing the full state.
+    string device_removed = 2; // Optional: Indicates the device_id of a device that was removed.
+
+    // Set on the first response when events_since was requested but some
+    // events since that cursor are no longer available (server restarted, or
+    // the buffer no longer reaches back that far).
+    bool events_lost = 3;
+}
+
+message ImageRequest {
+    string request_id   = 1; // Set by the server.
+    string device_id    = 2; // ID of the device to send the action to.
+    string endpoint_id  = 5; // ID of the endpoint the service belongs to.
+    string service_id   = 3; // ID of the service to request an image from.
+    string attribute_id = 4; // ID of the image attribute to request an image from.
+}
+
+message ImageResponse {
+    enum ImageStatus {
+        UNDEFINED    = 0;  // No status defined.
+        PENDING      = 1;  // The action is queued for transmission to the device.
+        SENT         = 2;  // The action has been sent to the device.
+
+        // Note all enums beyond this point indicate a final response.
+        COMPLETE     = 3;  // The action was completed by the device.
+        TIMEOUT      = 4;  // The action was not acknowledged by the device before the timeout.
+        CANCELED     = 5;  // The action was canceled before a final response was received.
+        ERROR        = 6;  // The action failed due to an error. See details.
+    }
+
+    string      request_id = 1;
+    ImageStatus status     = 2;
+    string      details    = 3;
+    bytes       data       = 4;
+}
+
+//********************************* Devices *********************************//
+
+// Device contains either the full or partial (update) state of a device. The id
+// field must always be set. All devices are required to implement the Info and
+// Online services on the root endpoint "0", so if full_state is set to true
+// these services must be included.
+//
+// In a partial update, an endpoint is listed when one of its services changed,
+// and a service is listed with only its changed attributes. Endpoints,
+// services and attributes are only removed by a full_state update that no
+// longer includes them.
+message Device {
+    enum DeviceType {
+        UNDEFINED  = 0;
+        BRIDGE     = 1;
+        REACTOR    = 2;
+        DEVICE     = 3;
+        GROUPED    = 4;
+    }
+
+    string            id         = 1; // The device ID, "<protocol><unique-id>", lowercase [a-z0-9] (e.g. "zigbee00158d00045c089f"). Stable for the life of the device.
+    bool              full_state = 2; // Indicates that this message contains the entire state of the device.
+    DeviceType        typ        = 3; // The general type of this device (helps with classification in user interfaces).
+    repeated Endpoint endpoints  = 4; // The endpoints of the device and their services.
+    string            client_id  = 5; // The ID of the client that provides this device. This is set by the core.
+
+    // Events that occurred since the last update. Events are never part of the
+    // device state: the server forwards them but does not include them in a
+    // full_state snapshot.
+    repeated Event events = 6;
+}
+
+// Endpoint groups the services of one physical or logical unit of a device,
+// such as one output of a two-channel relay. Endpoint "0" is the root and
+// holds device-wide services (info, online, update, ...).
+message Endpoint {
+    string           id         = 1; // Unique within the device and stable, e.g. "0", "1", "l1".
+    string           label      = 2; // Optional label from the bridge, e.g. "Output 1".
+    string           user_label = 3; // Set by the server on user streams: the user's override of label, empty if none.
+    repeated Service services   = 4; // The services of this endpoint.
+}
+
+//********************************* Services *********************************//
+
+message Service {
+    // Service types. Must match schema/services.yaml (enum value = upper case
+    // schema name). The schema package tests enforce this.
+    enum ServiceType {
+        UNDEFINED          = 0;
+        INFO               = 1;
+        ONLINE             = 2;
+        IDENTIFY           = 3;
+        UPDATE             = 4;
+        BATTERY            = 5;
+        DEVICE_TEMPERATURE = 6;
+        ON_OFF             = 7;
+        LIGHT              = 8;
+        COVER              = 9;
+        THERMOSTAT         = 10;
+        BINARY_INPUT       = 11;
+        ANALOG_INPUT       = 12;
+        BUTTON             = 13;
+        CONTACT            = 14;
+        MOTION             = 15;
+        PRESENCE           = 16;
+        TEMPERATURE        = 17;
+        HUMIDITY           = 18;
+        PRESSURE           = 19;
+        POWER_METER        = 20;
+        CAMERA             = 21;
+        MEDIA_PLAYBACK     = 22;
+        VOLUME             = 23;
+        MEDIA_SOURCES      = 24;
+        REMOTE             = 25;
+        PAIRING            = 26;
+        SHARING            = 27;
+        MODE               = 28;
+        GENERIC            = 29;
+    }
+
+    string      id              = 1; // The service ID, unique within the endpoint (typically the service type name, e.g. "light").
+    ServiceType typ             = 2; // The type of the service.
+    string      alias           = 3; // Optional alias, sometimes used to differentiate between multiple services of the same type on a single endpoint.
+    repeated    Attribute attrs = 4; // The attributes that make up this service.
+    bool        favorite        = 5; // Indicates if this service is a favorite.
+
+    // The following describe the service and are required in a full_state
+    // update. They may be omitted from partial updates when unchanged.
+    repeated string      features = 6; // Enabled feature flags (see schema/services.yaml).
+    repeated CommandSpec commands = 7; // Commands the service accepts.
+    repeated EventSpec   events   = 8; // Events the service emits.
+}
+
+message Attribute {
+    string      id    = 1; // ID of the attribute.
+    Permissions perms = 2;
+
+    // Type and constraints. Required in a full_state update and whenever it
+    // changes (e.g. new enum options); may be omitted otherwise.
+    Spec spec = 3;
+
+    // The current value. Unset while the value is not known yet.
+    Value value = 4;
+
+    // When the value was observed. Set by the bridge when the device reports
+    // its own sample time; otherwise set by the server when it receives the
+    // update.
+    TimeValue time = 5;
+}
+
+// CommandSpec describes a command a service accepts.
+message CommandSpec {
+    string             id     = 1;
+    repeated FieldSpec params = 2;
+    repeated FieldSpec result = 3;
+}
+
+// EventSpec describes an event a service emits.
+message EventSpec {
+    string             id     = 1;
+    repeated FieldSpec fields = 2;
+}
+
+// Event is one occurrence of an event. Bridges set endpoint_id through time;
+// the server sets epoch, seq and replayed.
+message Event {
+    string              endpoint_id = 1;
+    string              service_id  = 2;
+    string              id          = 3; // Event ID, as in the service's EventSpec.
+    repeated FieldValue fields      = 4;
+    TimeValue           time        = 5; // When the bridge saw the event.
+
+    string epoch    = 6; // Server epoch, see EventCursor.
+    uint64 seq      = 7; // Server sequence number, see EventCursor.
+    bool   replayed = 8; // The event was sent from the server's buffer, not live.
+}
+
+//****************************** Specs and values ******************************//
+
+enum Permissions {
+    PERM_UNDEFINED = 0;
+    PERM_READONLY  = 1;
+    PERM_READWRITE = 2;
+}
+
+enum Unit {
+    UNIT_UNDEFINED                  = 0;
+    UNIT_PERCENTAGE                 = 1;   // %
+    UNIT_ARC_DEGREES                = 2;   // degrees
+    UNIT_CELSIUS                    = 3;   // degrees C
+    UNIT_LUX                        = 4;   // lux
+    UNIT_SECONDS                    = 5;   // seconds
+    UNIT_PPM                        = 6;   // ppm
+    UNIT_MICROGRAMS_PER_CUBIC_METER = 7;   // micrograms/m^3
+    UNIT_VOLTS                      = 8;   // volts
+    UNIT_AMPS                       = 9;   // amps
+    UNIT_WATTS                      = 10;  // watts
+    UNIT_KELVIN                     = 11;  // K
+    UNIT_HECTOPASCAL                = 12;  // hPa
+    UNIT_METERS                     = 13;  // meters
+    UNIT_KILOWATT_HOURS             = 14;  // kWh
+}
+
+// FieldSpec describes a named field: a command parameter or result, an event
+// field or a struct field.
+message FieldSpec {
+    string id       = 1;
+    Spec   spec     = 2;
+    bool   required = 3;
+}
+
+// Spec is the type and constraints of a value. Exactly one kind is set.
+message Spec {
+    oneof kind {
+        BoolSpec     bool     = 1;
+        IntSpec      int      = 2;
+        FloatSpec    float    = 3;
+        TextSpec     text     = 4;
+        DurationSpec duration = 5;
+        TimeSpec     time     = 6;
+        ColorSpec    color    = 7;
+        EnumSpec     enum     = 8;
+        ImageSpec    image    = 9;
+        ListSpec     list     = 10;
+        StructSpec   struct   = 11;
+    }
+}
+
+message BoolSpec {}
+
+message IntSpec {
+    optional sint64 min  = 1;
+    optional sint64 max  = 2;
+    optional uint64 step = 3;
+    Unit            unit = 4;
+}
+
+message FloatSpec {
+    optional double min  = 1;
+    optional double max  = 2;
+    optional double step = 3;
+    Unit            unit = 4;
+}
+
+message TextSpec {}
+
+message DurationSpec {
+    optional sint64 min  = 1; // millis.
+    optional sint64 max  = 2; // millis.
+    optional uint64 step = 3; // millis.
+}
+
+message TimeSpec {}
+
+message ColorSpec {
+    bool hue_sat = 1; // Accepts and reports hue/saturation.
+    bool xy      = 2; // Accepts and reports CIE 1931 xy.
+}
+
+message EnumSpec {
+    repeated string options = 1;
+}
+
+message ImageSpec {}
+
+message ListSpec {
+    Spec            item      = 1;
+    optional uint32 min_items = 2;
+    optional uint32 max_items = 3;
+}
+
+message StructSpec {
+    repeated FieldSpec fields = 1;
+}
+
+// Value is a value of any Spec kind. Exactly one kind is set; none set means
+// unknown.
+message Value {
+    oneof kind {
+        bool        bool     = 1;
+        sint64      int      = 2;
+        double      float    = 3;
+        string      text     = 4;
+        sint64      duration = 5; // millis.
+        TimeValue   time     = 6;
+        ColorValue  color    = 7;
+        string      enum     = 8;
+        ImageValue  image    = 9;
+        ListValue   list     = 10;
+        StructValue struct   = 11;
+    }
+}
+
+// FieldValue is a value with the ID of the attribute, parameter or field it
+// belongs to.
+message FieldValue {
+    string id    = 1;
+    Value  value = 2;
+}
+
+message TimeValue {
+    // Represents seconds of UTC time since Unix epoch
+    // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+    // 9999-12-31T23:59:59Z inclusive.
+    sint64 seconds = 1;
+
+    // Non-negative fractions of a second at nanosecond resolution. Negative
+    // second values with fractions must still have non-negative nanos values
+    // that count forward in time. Must be from 0 to 999,999,999
+    // inclusive.
+    sint32 nanos = 2;
+}
+
+message ColorValue {
+    ColorHueSat hue_sat = 1;
+    ColorXY     xy      = 2;
+}
+
+// Color expressed as hue/saturation.
+message ColorHueSat {
+    double hue = 1; // 0-360 degrees.
+    double sat = 2; // 0-100 %.
+}
+
+// Color expressed in the CIE 1931 color space (x/y).
+message ColorXY {
+    double x = 1;
+    double y = 2;
+}
+
+// ImageValue carries no data: images are fetched with an ImageRequest.
+message ImageValue {}
+
+message ListValue {
+    repeated Value items = 1;
+}
+
+message StructValue {
+    repeated FieldValue fields = 1;
+}
