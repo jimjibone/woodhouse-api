@@ -33,7 +33,10 @@ See `Device`, `Endpoint` and `Service` in `proto/v2/clients/client_service.proto
 events and feature flags. It is the single source of truth for code
 generators. The Go package `github.com/jimjibone/woodhouse-api/schema` embeds,
 validates and exposes it; its tests check that the proto `Service.ServiceType`
-and `Unit` enums match the schema.
+and `Unit` enums match the schema. `schema/schemaspec` turns schema fields,
+commands and events into API Specs; code generators use it at generate time,
+so runtime code never parses the schema. `values` builds and reads values and
+validates them against specs, with no dependency on the schema.
 
 ### Schema version
 

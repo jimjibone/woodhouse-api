@@ -1,4 +1,8 @@
-package values
+// Package schemaspec converts the service schema's fields, commands and events
+// into API Specs, for the enabled features of a service. It is used at
+// generate time (wh's whgen) and by tests; runtime code works from the specs
+// the generated code or the wire carries, not from the schema.
+package schemaspec
 
 import (
 	"fmt"

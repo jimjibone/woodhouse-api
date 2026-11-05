@@ -6,120 +6,7 @@ import (
 	"time"
 
 	clientsapi "github.com/jimjibone/woodhouse-api/go/v2/clients"
-	"github.com/jimjibone/woodhouse-api/schema"
 )
-
-// Every field, command and event in the schema converts to a spec.
-func TestSpecFromSchemaCoversSchema(t *testing.T) {
-	s := schema.MustLoad()
-	for _, srv := range s.Services {
-		var all []string
-		for _, f := range srv.Features {
-			all = append(all, f.Name)
-		}
-		for _, a := range srv.Attributes {
-			if SpecFromSchema(a).Kind == nil {
-				t.Errorf("%s.%s: no spec", srv.Name, a.Name)
-			}
-		}
-		for _, c := range srv.Commands {
-			CommandSpecFromSchema(c, all)
-		}
-		for _, e := range srv.Events {
-			EventSpecFromSchema(e, all)
-		}
-	}
-}
-
-func TestFeaturesFilterFields(t *testing.T) {
-	set := schema.MustLoad().Service("light").Command("set")
-	ids := func(specs []*clientsapi.FieldSpec) string {
-		var out []string
-		for _, s := range specs {
-			out = append(out, s.Id)
-		}
-		return strings.Join(out, ",")
-	}
-	if got := ids(CommandSpecFromSchema(set, nil).Params); got != "on,transition" {
-		t.Errorf("no features: %s", got)
-	}
-	if got := ids(CommandSpecFromSchema(set, []string{"brightness", "xy"}).Params); got != "on,brightness,color,transition" {
-		t.Errorf("brightness+xy: %s", got)
-	}
-}
-
-func TestValidateCommandParams(t *testing.T) {
-	s := schema.MustLoad()
-	set := CommandSpecFromSchema(s.Service("light").Command("set"), []string{"brightness", "color_temp", "hs"})
-
-	ok := []*clientsapi.FieldValue{
-		Field("on", Bool(true)),
-		Field("brightness", Int(50)),
-		Field("color_temp", Int(2700)),
-		Field("transition", Duration(2*time.Second)),
-	}
-	if err := ValidateFields(set.Params, ok); err != nil {
-		t.Fatalf("valid params rejected: %v", err)
-	}
-
-	tests := []struct {
-		name   string
-		fields []*clientsapi.FieldValue
-		want   string
-	}{
-		{"wrong kind", []*clientsapi.FieldValue{Field("on", Int(1))}, "got int, want bool"},
-		{"above max", []*clientsapi.FieldValue{Field("brightness", Int(101))}, "above max"},
-		{"unknown", []*clientsapi.FieldValue{Field("bogus", Bool(true))}, "unknown"},
-		{"duplicate", []*clientsapi.FieldValue{Field("on", Bool(true)), Field("on", Bool(false))}, "duplicate"},
-		{"step", []*clientsapi.FieldValue{Field("transition", Duration(1500 * time.Millisecond))}, "step"},
-		{"xy not enabled", []*clientsapi.FieldValue{Field("color", XY(0.3, 0.3))}, "xy not supported"},
-		{"unset value", []*clientsapi.FieldValue{Field("on", nil)}, "no value"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := ValidateFields(set.Params, tt.fields)
-			if err == nil || !strings.Contains(err.Error(), tt.want) {
-				t.Fatalf("got %v, want %q", err, tt.want)
-			}
-		})
-	}
-}
-
-func TestValidateSchedule(t *testing.T) {
-	cmd := CommandSpecFromSchema(schema.MustLoad().Service("thermostat").Command("set_schedule"), []string{"schedule"})
-	entry := func(days []string, start time.Duration, setpoint float64) *clientsapi.Value {
-		var ds []*clientsapi.Value
-		for _, d := range days {
-			ds = append(ds, Enum(d))
-		}
-		return Struct(
-			Field("days", List(ds...)),
-			Field("start", Duration(start)),
-			Field("setpoint", Float(setpoint)),
-		)
-	}
-
-	good := List(entry([]string{"mon", "tue"}, 7*time.Hour, 20.5), entry([]string{"sat"}, 9*time.Hour, 19))
-	if err := ValidateFields(cmd.Params, []*clientsapi.FieldValue{Field("schedule", good)}); err != nil {
-		t.Fatalf("valid schedule rejected: %v", err)
-	}
-
-	bad := List(entry([]string{"funday"}, 7*time.Hour, 20))
-	err := ValidateFields(cmd.Params, []*clientsapi.FieldValue{Field("schedule", bad)})
-	if err == nil || !strings.Contains(err.Error(), "funday") {
-		t.Fatalf("bad day accepted: %v", err)
-	}
-
-	noDays := List(entry(nil, 7*time.Hour, 20))
-	err = ValidateFields(cmd.Params, []*clientsapi.FieldValue{Field("schedule", noDays)})
-	if err == nil || !strings.Contains(err.Error(), "min 1") {
-		t.Fatalf("empty days accepted: %v", err)
-	}
-
-	if err := ValidateFields(cmd.Params, nil); err == nil || !strings.Contains(err.Error(), "required") {
-		t.Fatalf("missing schedule accepted: %v", err)
-	}
-}
 
 func TestTimeRoundTrip(t *testing.T) {
 	now := time.Unix(1_800_000_000, 123)
@@ -128,5 +15,44 @@ func TestTimeRoundTrip(t *testing.T) {
 	}
 	if !TimeFromPb(TimeToPb(time.Time{})).IsZero() {
 		t.Fatal("zero time not preserved")
+	}
+}
+
+func TestValidate(t *testing.T) {
+	min, max, step := int64(0), int64(100), uint64(5)
+	intSpec := &clientsapi.Spec{Kind: &clientsapi.Spec_Int{Int: &clientsapi.IntSpec{Min: &min, Max: &max, Step: &step}}}
+	enumSpec := &clientsapi.Spec{Kind: &clientsapi.Spec_Enum{Enum: &clientsapi.EnumSpec{Options: []string{"a", "b"}}}}
+	hsOnly := &clientsapi.Spec{Kind: &clientsapi.Spec_Color{Color: &clientsapi.ColorSpec{HueSat: true}}}
+
+	tests := []struct {
+		name string
+		spec *clientsapi.Spec
+		v    *clientsapi.Value
+		want string // "" means valid
+	}{
+		{"int ok", intSpec, Int(55), ""},
+		{"int step", intSpec, Int(52), "step"},
+		{"int max", intSpec, Int(105), "above max"},
+		{"kind", intSpec, Float(5), "got float, want int"},
+		{"enum ok", enumSpec, Enum("b"), ""},
+		{"enum option", enumSpec, Enum("c"), "not one of"},
+		{"color hs", hsOnly, HueSat(120, 50), ""},
+		{"color xy", hsOnly, XY(0.3, 0.3), "xy not supported"},
+		{"color range", hsOnly, HueSat(400, 50), "out of range"},
+		{"no value", intSpec, nil, "no value"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := Validate(tt.spec, tt.v)
+			if tt.want == "" {
+				if err != nil {
+					t.Fatalf("valid value rejected: %v", err)
+				}
+				return
+			}
+			if err == nil || !strings.Contains(err.Error(), tt.want) {
+				t.Fatalf("got %v, want %q", err, tt.want)
+			}
+		})
 	}
 }

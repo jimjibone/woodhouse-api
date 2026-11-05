@@ -1,6 +1,7 @@
-// Package values builds and reads the API's Value, FieldValue and Spec
-// messages, converts schema fields to specs, and validates values against
-// specs. It is shared by the server, the wh client library and tools.
+// Package values builds and reads the API's Value and FieldValue messages
+// and validates values against specs. It is shared by the server, the wh
+// client library and tools. It does not depend on the service schema; see
+// schema/schemaspec for turning the schema into specs.
 package values
 
 import (
