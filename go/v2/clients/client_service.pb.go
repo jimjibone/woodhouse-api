@@ -1262,7 +1262,12 @@ type Device struct {
 	// Events that occurred since the last update. Events are never part of the
 	// device state: the server forwards them but does not include them in a
 	// full_state snapshot.
-	Events        []*Event `protobuf:"bytes,6,rep,name=events,proto3" json:"events,omitempty"`
+	Events []*Event `protobuf:"bytes,6,rep,name=events,proto3" json:"events,omitempty"`
+	// When the device was last seen: the newest of online.last_seen, the time
+	// of any other attribute update and the time of any event. Set by the
+	// server only; bridges leave it unset. Unset in a partial update means
+	// unchanged.
+	LastSeen      *TimeValue `protobuf:"bytes,7,opt,name=last_seen,json=lastSeen,proto3" json:"last_seen,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1335,6 +1340,13 @@ func (x *Device) GetClientId() string {
 func (x *Device) GetEvents() []*Event {
 	if x != nil {
 		return x.Events
+	}
+	return nil
+}
+
+func (x *Device) GetLastSeen() *TimeValue {
+	if x != nil {
+		return x.LastSeen
 	}
 	return nil
 }
@@ -3345,7 +3357,7 @@ const file_clients_client_service_proto_rawDesc = "" +
 	"\bCOMPLETE\x10\x03\x12\v\n" +
 	"\aTIMEOUT\x10\x04\x12\f\n" +
 	"\bCANCELED\x10\x05\x12\t\n" +
-	"\x05ERROR\x10\x06\"\xdd\x02\n" +
+	"\x05ERROR\x10\x06\"\x9f\x03\n" +
 	"\x06Device\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
@@ -3353,7 +3365,8 @@ const file_clients_client_service_proto_rawDesc = "" +
 	"\x03typ\x18\x03 \x01(\x0e2+.woodhouse.api.v2.clients.Device.DeviceTypeR\x03typ\x12@\n" +
 	"\tendpoints\x18\x04 \x03(\v2\".woodhouse.api.v2.clients.EndpointR\tendpoints\x12\x1b\n" +
 	"\tclient_id\x18\x05 \x01(\tR\bclientId\x127\n" +
-	"\x06events\x18\x06 \x03(\v2\x1f.woodhouse.api.v2.clients.EventR\x06events\"M\n" +
+	"\x06events\x18\x06 \x03(\v2\x1f.woodhouse.api.v2.clients.EventR\x06events\x12@\n" +
+	"\tlast_seen\x18\a \x01(\v2#.woodhouse.api.v2.clients.TimeValueR\blastSeen\"M\n" +
 	"\n" +
 	"DeviceType\x12\r\n" +
 	"\tUNDEFINED\x10\x00\x12\n" +
@@ -3654,63 +3667,64 @@ var file_clients_client_service_proto_depIdxs = []int32{
 	4,  // 11: woodhouse.api.v2.clients.Device.typ:type_name -> woodhouse.api.v2.clients.Device.DeviceType
 	19, // 12: woodhouse.api.v2.clients.Device.endpoints:type_name -> woodhouse.api.v2.clients.Endpoint
 	24, // 13: woodhouse.api.v2.clients.Device.events:type_name -> woodhouse.api.v2.clients.Event
-	20, // 14: woodhouse.api.v2.clients.Endpoint.services:type_name -> woodhouse.api.v2.clients.Service
-	5,  // 15: woodhouse.api.v2.clients.Service.typ:type_name -> woodhouse.api.v2.clients.Service.ServiceType
-	21, // 16: woodhouse.api.v2.clients.Service.attrs:type_name -> woodhouse.api.v2.clients.Attribute
-	22, // 17: woodhouse.api.v2.clients.Service.commands:type_name -> woodhouse.api.v2.clients.CommandSpec
-	23, // 18: woodhouse.api.v2.clients.Service.events:type_name -> woodhouse.api.v2.clients.EventSpec
-	0,  // 19: woodhouse.api.v2.clients.Attribute.perms:type_name -> woodhouse.api.v2.clients.Permissions
-	26, // 20: woodhouse.api.v2.clients.Attribute.spec:type_name -> woodhouse.api.v2.clients.Spec
-	38, // 21: woodhouse.api.v2.clients.Attribute.value:type_name -> woodhouse.api.v2.clients.Value
-	40, // 22: woodhouse.api.v2.clients.Attribute.time:type_name -> woodhouse.api.v2.clients.TimeValue
-	25, // 23: woodhouse.api.v2.clients.CommandSpec.params:type_name -> woodhouse.api.v2.clients.FieldSpec
-	25, // 24: woodhouse.api.v2.clients.CommandSpec.result:type_name -> woodhouse.api.v2.clients.FieldSpec
-	25, // 25: woodhouse.api.v2.clients.EventSpec.fields:type_name -> woodhouse.api.v2.clients.FieldSpec
-	39, // 26: woodhouse.api.v2.clients.Event.fields:type_name -> woodhouse.api.v2.clients.FieldValue
-	40, // 27: woodhouse.api.v2.clients.Event.time:type_name -> woodhouse.api.v2.clients.TimeValue
-	26, // 28: woodhouse.api.v2.clients.FieldSpec.spec:type_name -> woodhouse.api.v2.clients.Spec
-	27, // 29: woodhouse.api.v2.clients.Spec.bool:type_name -> woodhouse.api.v2.clients.BoolSpec
-	28, // 30: woodhouse.api.v2.clients.Spec.int:type_name -> woodhouse.api.v2.clients.IntSpec
-	29, // 31: woodhouse.api.v2.clients.Spec.float:type_name -> woodhouse.api.v2.clients.FloatSpec
-	30, // 32: woodhouse.api.v2.clients.Spec.text:type_name -> woodhouse.api.v2.clients.TextSpec
-	31, // 33: woodhouse.api.v2.clients.Spec.duration:type_name -> woodhouse.api.v2.clients.DurationSpec
-	32, // 34: woodhouse.api.v2.clients.Spec.time:type_name -> woodhouse.api.v2.clients.TimeSpec
-	33, // 35: woodhouse.api.v2.clients.Spec.color:type_name -> woodhouse.api.v2.clients.ColorSpec
-	34, // 36: woodhouse.api.v2.clients.Spec.enum:type_name -> woodhouse.api.v2.clients.EnumSpec
-	35, // 37: woodhouse.api.v2.clients.Spec.image:type_name -> woodhouse.api.v2.clients.ImageSpec
-	36, // 38: woodhouse.api.v2.clients.Spec.list:type_name -> woodhouse.api.v2.clients.ListSpec
-	37, // 39: woodhouse.api.v2.clients.Spec.struct:type_name -> woodhouse.api.v2.clients.StructSpec
-	1,  // 40: woodhouse.api.v2.clients.IntSpec.unit:type_name -> woodhouse.api.v2.clients.Unit
-	1,  // 41: woodhouse.api.v2.clients.FloatSpec.unit:type_name -> woodhouse.api.v2.clients.Unit
-	26, // 42: woodhouse.api.v2.clients.ListSpec.item:type_name -> woodhouse.api.v2.clients.Spec
-	25, // 43: woodhouse.api.v2.clients.StructSpec.fields:type_name -> woodhouse.api.v2.clients.FieldSpec
-	40, // 44: woodhouse.api.v2.clients.Value.time:type_name -> woodhouse.api.v2.clients.TimeValue
-	41, // 45: woodhouse.api.v2.clients.Value.color:type_name -> woodhouse.api.v2.clients.ColorValue
-	44, // 46: woodhouse.api.v2.clients.Value.image:type_name -> woodhouse.api.v2.clients.ImageValue
-	45, // 47: woodhouse.api.v2.clients.Value.list:type_name -> woodhouse.api.v2.clients.ListValue
-	46, // 48: woodhouse.api.v2.clients.Value.struct:type_name -> woodhouse.api.v2.clients.StructValue
-	38, // 49: woodhouse.api.v2.clients.FieldValue.value:type_name -> woodhouse.api.v2.clients.Value
-	42, // 50: woodhouse.api.v2.clients.ColorValue.hue_sat:type_name -> woodhouse.api.v2.clients.ColorHueSat
-	43, // 51: woodhouse.api.v2.clients.ColorValue.xy:type_name -> woodhouse.api.v2.clients.ColorXY
-	38, // 52: woodhouse.api.v2.clients.ListValue.items:type_name -> woodhouse.api.v2.clients.Value
-	39, // 53: woodhouse.api.v2.clients.StructValue.fields:type_name -> woodhouse.api.v2.clients.FieldValue
-	7,  // 54: woodhouse.api.v2.clients.ClientService.StatusStream:input_type -> woodhouse.api.v2.clients.StatusUpdate
-	11, // 55: woodhouse.api.v2.clients.ClientService.ActionStream:input_type -> woodhouse.api.v2.clients.ActionResponse
-	17, // 56: woodhouse.api.v2.clients.ClientService.ImageStream:input_type -> woodhouse.api.v2.clients.ImageResponse
-	14, // 57: woodhouse.api.v2.clients.ClientService.DeviceStream:input_type -> woodhouse.api.v2.clients.DeviceStreamRequest
-	8,  // 58: woodhouse.api.v2.clients.ClientService.SendAction:input_type -> woodhouse.api.v2.clients.ActionRequest
-	16, // 59: woodhouse.api.v2.clients.ClientService.SendImageRequest:input_type -> woodhouse.api.v2.clients.ImageRequest
-	6,  // 60: woodhouse.api.v2.clients.ClientService.StatusStream:output_type -> woodhouse.api.v2.clients.Empty
-	8,  // 61: woodhouse.api.v2.clients.ClientService.ActionStream:output_type -> woodhouse.api.v2.clients.ActionRequest
-	16, // 62: woodhouse.api.v2.clients.ClientService.ImageStream:output_type -> woodhouse.api.v2.clients.ImageRequest
-	15, // 63: woodhouse.api.v2.clients.ClientService.DeviceStream:output_type -> woodhouse.api.v2.clients.DeviceStreamResponse
-	11, // 64: woodhouse.api.v2.clients.ClientService.SendAction:output_type -> woodhouse.api.v2.clients.ActionResponse
-	17, // 65: woodhouse.api.v2.clients.ClientService.SendImageRequest:output_type -> woodhouse.api.v2.clients.ImageResponse
-	60, // [60:66] is the sub-list for method output_type
-	54, // [54:60] is the sub-list for method input_type
-	54, // [54:54] is the sub-list for extension type_name
-	54, // [54:54] is the sub-list for extension extendee
-	0,  // [0:54] is the sub-list for field type_name
+	40, // 14: woodhouse.api.v2.clients.Device.last_seen:type_name -> woodhouse.api.v2.clients.TimeValue
+	20, // 15: woodhouse.api.v2.clients.Endpoint.services:type_name -> woodhouse.api.v2.clients.Service
+	5,  // 16: woodhouse.api.v2.clients.Service.typ:type_name -> woodhouse.api.v2.clients.Service.ServiceType
+	21, // 17: woodhouse.api.v2.clients.Service.attrs:type_name -> woodhouse.api.v2.clients.Attribute
+	22, // 18: woodhouse.api.v2.clients.Service.commands:type_name -> woodhouse.api.v2.clients.CommandSpec
+	23, // 19: woodhouse.api.v2.clients.Service.events:type_name -> woodhouse.api.v2.clients.EventSpec
+	0,  // 20: woodhouse.api.v2.clients.Attribute.perms:type_name -> woodhouse.api.v2.clients.Permissions
+	26, // 21: woodhouse.api.v2.clients.Attribute.spec:type_name -> woodhouse.api.v2.clients.Spec
+	38, // 22: woodhouse.api.v2.clients.Attribute.value:type_name -> woodhouse.api.v2.clients.Value
+	40, // 23: woodhouse.api.v2.clients.Attribute.time:type_name -> woodhouse.api.v2.clients.TimeValue
+	25, // 24: woodhouse.api.v2.clients.CommandSpec.params:type_name -> woodhouse.api.v2.clients.FieldSpec
+	25, // 25: woodhouse.api.v2.clients.CommandSpec.result:type_name -> woodhouse.api.v2.clients.FieldSpec
+	25, // 26: woodhouse.api.v2.clients.EventSpec.fields:type_name -> woodhouse.api.v2.clients.FieldSpec
+	39, // 27: woodhouse.api.v2.clients.Event.fields:type_name -> woodhouse.api.v2.clients.FieldValue
+	40, // 28: woodhouse.api.v2.clients.Event.time:type_name -> woodhouse.api.v2.clients.TimeValue
+	26, // 29: woodhouse.api.v2.clients.FieldSpec.spec:type_name -> woodhouse.api.v2.clients.Spec
+	27, // 30: woodhouse.api.v2.clients.Spec.bool:type_name -> woodhouse.api.v2.clients.BoolSpec
+	28, // 31: woodhouse.api.v2.clients.Spec.int:type_name -> woodhouse.api.v2.clients.IntSpec
+	29, // 32: woodhouse.api.v2.clients.Spec.float:type_name -> woodhouse.api.v2.clients.FloatSpec
+	30, // 33: woodhouse.api.v2.clients.Spec.text:type_name -> woodhouse.api.v2.clients.TextSpec
+	31, // 34: woodhouse.api.v2.clients.Spec.duration:type_name -> woodhouse.api.v2.clients.DurationSpec
+	32, // 35: woodhouse.api.v2.clients.Spec.time:type_name -> woodhouse.api.v2.clients.TimeSpec
+	33, // 36: woodhouse.api.v2.clients.Spec.color:type_name -> woodhouse.api.v2.clients.ColorSpec
+	34, // 37: woodhouse.api.v2.clients.Spec.enum:type_name -> woodhouse.api.v2.clients.EnumSpec
+	35, // 38: woodhouse.api.v2.clients.Spec.image:type_name -> woodhouse.api.v2.clients.ImageSpec
+	36, // 39: woodhouse.api.v2.clients.Spec.list:type_name -> woodhouse.api.v2.clients.ListSpec
+	37, // 40: woodhouse.api.v2.clients.Spec.struct:type_name -> woodhouse.api.v2.clients.StructSpec
+	1,  // 41: woodhouse.api.v2.clients.IntSpec.unit:type_name -> woodhouse.api.v2.clients.Unit
+	1,  // 42: woodhouse.api.v2.clients.FloatSpec.unit:type_name -> woodhouse.api.v2.clients.Unit
+	26, // 43: woodhouse.api.v2.clients.ListSpec.item:type_name -> woodhouse.api.v2.clients.Spec
+	25, // 44: woodhouse.api.v2.clients.StructSpec.fields:type_name -> woodhouse.api.v2.clients.FieldSpec
+	40, // 45: woodhouse.api.v2.clients.Value.time:type_name -> woodhouse.api.v2.clients.TimeValue
+	41, // 46: woodhouse.api.v2.clients.Value.color:type_name -> woodhouse.api.v2.clients.ColorValue
+	44, // 47: woodhouse.api.v2.clients.Value.image:type_name -> woodhouse.api.v2.clients.ImageValue
+	45, // 48: woodhouse.api.v2.clients.Value.list:type_name -> woodhouse.api.v2.clients.ListValue
+	46, // 49: woodhouse.api.v2.clients.Value.struct:type_name -> woodhouse.api.v2.clients.StructValue
+	38, // 50: woodhouse.api.v2.clients.FieldValue.value:type_name -> woodhouse.api.v2.clients.Value
+	42, // 51: woodhouse.api.v2.clients.ColorValue.hue_sat:type_name -> woodhouse.api.v2.clients.ColorHueSat
+	43, // 52: woodhouse.api.v2.clients.ColorValue.xy:type_name -> woodhouse.api.v2.clients.ColorXY
+	38, // 53: woodhouse.api.v2.clients.ListValue.items:type_name -> woodhouse.api.v2.clients.Value
+	39, // 54: woodhouse.api.v2.clients.StructValue.fields:type_name -> woodhouse.api.v2.clients.FieldValue
+	7,  // 55: woodhouse.api.v2.clients.ClientService.StatusStream:input_type -> woodhouse.api.v2.clients.StatusUpdate
+	11, // 56: woodhouse.api.v2.clients.ClientService.ActionStream:input_type -> woodhouse.api.v2.clients.ActionResponse
+	17, // 57: woodhouse.api.v2.clients.ClientService.ImageStream:input_type -> woodhouse.api.v2.clients.ImageResponse
+	14, // 58: woodhouse.api.v2.clients.ClientService.DeviceStream:input_type -> woodhouse.api.v2.clients.DeviceStreamRequest
+	8,  // 59: woodhouse.api.v2.clients.ClientService.SendAction:input_type -> woodhouse.api.v2.clients.ActionRequest
+	16, // 60: woodhouse.api.v2.clients.ClientService.SendImageRequest:input_type -> woodhouse.api.v2.clients.ImageRequest
+	6,  // 61: woodhouse.api.v2.clients.ClientService.StatusStream:output_type -> woodhouse.api.v2.clients.Empty
+	8,  // 62: woodhouse.api.v2.clients.ClientService.ActionStream:output_type -> woodhouse.api.v2.clients.ActionRequest
+	16, // 63: woodhouse.api.v2.clients.ClientService.ImageStream:output_type -> woodhouse.api.v2.clients.ImageRequest
+	15, // 64: woodhouse.api.v2.clients.ClientService.DeviceStream:output_type -> woodhouse.api.v2.clients.DeviceStreamResponse
+	11, // 65: woodhouse.api.v2.clients.ClientService.SendAction:output_type -> woodhouse.api.v2.clients.ActionResponse
+	17, // 66: woodhouse.api.v2.clients.ClientService.SendImageRequest:output_type -> woodhouse.api.v2.clients.ImageResponse
+	61, // [61:67] is the sub-list for method output_type
+	55, // [55:61] is the sub-list for method input_type
+	55, // [55:55] is the sub-list for extension type_name
+	55, // [55:55] is the sub-list for extension extendee
+	0,  // [0:55] is the sub-list for field type_name
 }
 
 func init() { file_clients_client_service_proto_init() }

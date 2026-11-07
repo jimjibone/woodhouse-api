@@ -195,6 +195,12 @@ message Device {
     // device state: the server forwards them but does not include them in a
     // full_state snapshot.
     repeated Event events = 6;
+
+    // When the device was last seen: the newest of online.last_seen, the time
+    // of any other attribute update and the time of any event. Set by the
+    // server only; bridges leave it unset. Unset in a partial update means
+    // unchanged.
+    TimeValue last_seen = 7;
 }
 
 // Endpoint groups the services of one physical or logical unit of a device,
