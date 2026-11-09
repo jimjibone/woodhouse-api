@@ -249,6 +249,7 @@ message Service {
         SHARING            = 27;
         MODE               = 28;
         GENERIC            = 29;
+        ROTARY             = 30;
     }
 
     string      id              = 1; // The service ID, unique within the endpoint (typically the service type name, e.g. "light").

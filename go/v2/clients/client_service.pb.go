@@ -375,6 +375,7 @@ const (
 	Service_SHARING            Service_ServiceType = 27
 	Service_MODE               Service_ServiceType = 28
 	Service_GENERIC            Service_ServiceType = 29
+	Service_ROTARY             Service_ServiceType = 30
 )
 
 // Enum value maps for Service_ServiceType.
@@ -410,6 +411,7 @@ var (
 		27: "SHARING",
 		28: "MODE",
 		29: "GENERIC",
+		30: "ROTARY",
 	}
 	Service_ServiceType_value = map[string]int32{
 		"UNDEFINED":          0,
@@ -442,6 +444,7 @@ var (
 		"SHARING":            27,
 		"MODE":               28,
 		"GENERIC":            29,
+		"ROTARY":             30,
 	}
 )
 
@@ -3381,7 +3384,7 @@ const file_clients_client_service_proto_rawDesc = "" +
 	"\x05label\x18\x02 \x01(\tR\x05label\x12\x1d\n" +
 	"\n" +
 	"user_label\x18\x03 \x01(\tR\tuserLabel\x12=\n" +
-	"\bservices\x18\x04 \x03(\v2!.woodhouse.api.v2.clients.ServiceR\bservices\"\x9a\x06\n" +
+	"\bservices\x18\x04 \x03(\v2!.woodhouse.api.v2.clients.ServiceR\bservices\"\xa6\x06\n" +
 	"\aService\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12?\n" +
 	"\x03typ\x18\x02 \x01(\x0e2-.woodhouse.api.v2.clients.Service.ServiceTypeR\x03typ\x12\x14\n" +
@@ -3390,7 +3393,7 @@ const file_clients_client_service_proto_rawDesc = "" +
 	"\bfavorite\x18\x05 \x01(\bR\bfavorite\x12\x1a\n" +
 	"\bfeatures\x18\x06 \x03(\tR\bfeatures\x12A\n" +
 	"\bcommands\x18\a \x03(\v2%.woodhouse.api.v2.clients.CommandSpecR\bcommands\x12;\n" +
-	"\x06events\x18\b \x03(\v2#.woodhouse.api.v2.clients.EventSpecR\x06events\"\xb4\x03\n" +
+	"\x06events\x18\b \x03(\v2#.woodhouse.api.v2.clients.EventSpecR\x06events\"\xc0\x03\n" +
 	"\vServiceType\x12\r\n" +
 	"\tUNDEFINED\x10\x00\x12\b\n" +
 	"\x04INFO\x10\x01\x12\n" +
@@ -3431,7 +3434,9 @@ const file_clients_client_service_proto_rawDesc = "" +
 	"\aPAIRING\x10\x1a\x12\v\n" +
 	"\aSHARING\x10\x1b\x12\b\n" +
 	"\x04MODE\x10\x1c\x12\v\n" +
-	"\aGENERIC\x10\x1d\"\xfc\x01\n" +
+	"\aGENERIC\x10\x1d\x12\n" +
+	"\n" +
+	"\x06ROTARY\x10\x1e\"\xfc\x01\n" +
 	"\tAttribute\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12;\n" +
 	"\x05perms\x18\x02 \x01(\x0e2%.woodhouse.api.v2.clients.PermissionsR\x05perms\x122\n" +

@@ -235,6 +235,13 @@ services:
         fields:
           - { name: count, type: int, required: true, min: 1, max: 10, step: 1 }
 
+  - name: rotary
+    desc: A relative rotary input, e.g. a dial or knob. Each turn is an event; the service holds no position.
+    events:
+      - name: rotate
+        fields:
+          - { name: steps, type: int, required: true, min: -255, max: 255, step: 1, desc: "Signed step count; positive is clockwise (up), negative anticlockwise (down)." }
+
   - name: contact
     desc: A contact sensor, e.g. on a door or window.
     attributes:
